@@ -1,8 +1,13 @@
 package io.github.zrdzn.minecraft.greatlifesteal.datasource;
 
+import org.apache.ibatis.jdbc.ScriptRunner;
 import org.bukkit.configuration.ConfigurationSection;
 import org.slf4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -27,6 +32,24 @@ public class SqliteDataSource implements DataSource {
     }
 
     @Override
+    public void createDefaultSchemas() {
+        Connection connection = this.getConnection().orElseThrow(IllegalStateException::new);
+
+        ScriptRunner runner = new ScriptRunner(connection);
+
+        Reader reader;
+        try {
+            reader = new BufferedReader(new FileReader("schema.sql"));
+        } catch (FileNotFoundException exception) {
+            this.logger.error("Schema file could not be found.", exception);
+            return;
+        }
+
+        runner.setSendFullScript(true);
+        runner.runScript(reader);
+    }
+
+    @Override
     public Optional<ResultSet> query(String query, Object... replacements) {
         Optional<Connection> connectionMaybe = this.getConnection();
         if (!connectionMaybe.isPresent()) {
@@ -36,13 +59,13 @@ public class SqliteDataSource implements DataSource {
         Connection connection = connectionMaybe.get();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            for (int index = 1; index < replacements.length; index++) {
-                statement.setObject(index, replacements[index]);
+            for (int index = 0; index < replacements.length; index++) {
+                statement.setObject(index + 1, replacements[index]);
             }
 
             ResultSet resultSet = statement.executeQuery();
             if (resultSet == null || !resultSet.next()) {
-                return Optional.ofNullable(resultSet);
+                return Optional.empty();
             }
 
             connection.close();
@@ -81,7 +104,7 @@ public class SqliteDataSource implements DataSource {
         }
     }
 
-    private Optional<Connection> getConnection() {
+    public Optional<Connection> getConnection() {
         try {
             return Optional.of(DriverManager.getConnection(this.jdbc));
         } catch (SQLException exception) {

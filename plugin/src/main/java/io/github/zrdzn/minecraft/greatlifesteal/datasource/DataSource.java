@@ -22,6 +22,11 @@ public interface DataSource {
     void parse(ConfigurationSection section);
 
     /**
+     * Create default tables or schemas as you desire.
+     */
+    void createDefaultSchemas();
+
+    /**
      * Execute the specified query to the data source
      * and return a result set or an empty optional if
      * an error occurred.
