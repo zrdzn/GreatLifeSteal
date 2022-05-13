@@ -20,12 +20,12 @@ public class UserRepository {
     }
 
     public boolean save(UUID userId, int health) {
-        String query = "INSERT INTO " + TABLE_NAME + " (user_id, user_health) VALUES (?, ?);";
+        String query = "INSERT INTO " + TABLE_NAME + " (user_uuid, user_health) VALUES (?, ?);";
         return this.dataSource.update(query, userId.toString(), health) > 0;
     }
 
     public Optional<Entry<UUID, Integer>> findByUserId(UUID userId) {
-        String query = "SELECT user_health FROM " + TABLE_NAME + " WHERE user_id = ?;";
+        String query = "SELECT user_health FROM " + TABLE_NAME + " WHERE user_uuid = ?;";
 
         Optional<ResultSet> resultMaybe = this.dataSource.query(query, userId.toString());
         if (!resultMaybe.isPresent()) {
@@ -45,17 +45,17 @@ public class UserRepository {
     }
 
     public void setHealthByUserId(UUID userId, int value) {
-        String query = "UPDATE " + TABLE_NAME + " SET user_health = ? WHERE user_id = ?;";
+        String query = "UPDATE " + TABLE_NAME + " SET user_health = ? WHERE user_uuid = ?;";
         this.dataSource.update(query, value, userId.toString());
     }
 
     public void changeHealthByUserId(UUID userId, int change) {
-        String query = "UPDATE " + TABLE_NAME + " SET user_health = user_health + ? WHERE user_id = ?;";
+        String query = "UPDATE " + TABLE_NAME + " SET user_health = user_health + ? WHERE user_uuid = ?;";
         this.dataSource.update(query, change, userId.toString());
     }
 
     public boolean deleteByUserId(UUID userId) {
-        return this.dataSource.update("DELETE FROM " + TABLE_NAME + " WHERE user_id = ?;", userId.toString()) > 0;
+        return this.dataSource.update("DELETE FROM " + TABLE_NAME + " WHERE user_uuid = ?;", userId.toString()) > 0;
     }
 
 }
