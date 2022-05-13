@@ -37,7 +37,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 return;
             }
 
-            dataSource = new SqliteDataSource(logger);
+            dataSource = new SqliteDataSource(this, logger);
             dataSource.parse(configuration.getConfigurationSection("dataSource"));
         }
 

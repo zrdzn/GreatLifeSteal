@@ -1,12 +1,18 @@
 package io.github.zrdzn.minecraft.greatlifesteal.datasource;
 
+import com.google.common.io.Files;
+import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import org.apache.ibatis.jdbc.ScriptRunner;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,18 +23,34 @@ import java.util.Optional;
 
 public class SqliteDataSource implements DataSource {
 
+    private final JavaPlugin plugin;
     private final Logger logger;
 
     private String jdbc;
 
-    public SqliteDataSource(Logger logger) {
+    public SqliteDataSource(JavaPlugin plugin, Logger logger) {
+        this.plugin = plugin;
         this.logger = logger;
     }
 
     @Override
     public void parse(ConfigurationSection section) {
-        String file = section.getString("sqliteFile", "gls.db");
-        this.jdbc = "jdbc:sqlite:" + file;
+        File sqliteFile = new File(this.plugin.getDataFolder(), section.getString("sqliteFile", "gls.db"));
+        if (!sqliteFile.exists()) {
+            try {
+                Files.createParentDirs(sqliteFile);
+
+                if (!sqliteFile.createNewFile()) {
+                    this.logger.error("Something went wrong while creating a new SQLite file.");
+                    return;
+                }
+            } catch (final IOException exception) {
+                this.logger.error("Something went wrong while creating a new SQLite file.");
+                return;
+            }
+        }
+
+        this.jdbc = "jdbc:sqlite:" + sqliteFile.getAbsolutePath();
     }
 
     @Override
