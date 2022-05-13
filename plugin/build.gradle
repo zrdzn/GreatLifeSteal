@@ -7,5 +7,5 @@ java {
 }
 
 shadowJar {
-    archiveFileName = "GreatLifeSteal v${project.version}.jar"
+    archiveFileName = "${project.parent.name} v${project.version}.jar"
 }
