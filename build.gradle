@@ -1,0 +1,32 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+}
+
+allprojects {
+    group "io.github.zrdzn.minecraft"
+    version "1.0.0"
+}
+
+subprojects {
+    apply plugin: "java"
+    apply plugin: "com.github.johnrengelman.shadow"
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    compileJava.options.encoding = "UTF-8"
+
+    repositories {
+        mavenCentral()
+
+        maven {
+            name "spigot-repository"
+            url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+        }
+
+        maven {
+            name "sonatype-repository"
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+}
