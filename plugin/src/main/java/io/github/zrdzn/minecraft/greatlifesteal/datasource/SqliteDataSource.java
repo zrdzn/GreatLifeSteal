@@ -36,10 +36,8 @@ public class SqliteDataSource implements DataSource {
         Connection connection = connectionMaybe.get();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            if (replacements.length > 0) {
-                for (int index = 1; index < replacements.length; index++) {
-                    statement.setObject(index, replacements[index]);
-                }
+            for (int index = 1; index < replacements.length; index++) {
+                statement.setObject(index, replacements[index]);
             }
 
             ResultSet resultSet = statement.executeQuery();
@@ -67,10 +65,8 @@ public class SqliteDataSource implements DataSource {
         Connection connection = connectionMaybe.get();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            if (replacements.length > 0) {
-                for (int index = 1; index < replacements.length; index++) {
-                    statement.setObject(index, replacements[index]);
-                }
+            for (int index = 1; index < replacements.length; index++) {
+                statement.setObject(index, replacements[index]);
             }
 
             int affectedRows = statement.executeUpdate();
