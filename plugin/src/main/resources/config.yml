@@ -1,0 +1,8 @@
+# A section for the data source configuration.
+dataSource:
+  # A type of the data source that should be used. Available: SQLITE
+  type: SQLITE
+
+  # A file name for the SQLite data source.
+  sqliteFile: "gls.db"
+
