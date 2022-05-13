@@ -26,7 +26,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         DataSource dataSource = null;
 
-        DataSourceType type = DataSourceType.valueOf(configuration.getString("dataSource.type", "SQLITE"));
+        DataSourceType type = DataSourceType.valueOf(configuration.getString("dataSource.type", "SQLITE").toUpperCase());
         if (type == DataSourceType.SQLITE) {
             try {
                 Class.forName("org.sqlite.JDBC");
