@@ -6,3 +6,6 @@ dataSource:
   # A file name for the SQLite data source.
   sqliteFile: "gls.db"
 
+baseSettings:
+  healthChange: 2
+
