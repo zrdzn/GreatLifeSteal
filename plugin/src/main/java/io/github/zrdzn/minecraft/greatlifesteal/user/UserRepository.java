@@ -26,6 +26,10 @@ public class UserRepository {
     }
 
     public boolean save(UUID userId, int health) {
+        if (this.findByUserId(userId).isPresent()) {
+            return false;
+        }
+
         String query = "INSERT INTO " + TABLE_NAME + " (user_uuid, user_health) VALUES (?, ?);";
         return this.dataSource.update(query, userId.toString(), health) > 0;
     }
