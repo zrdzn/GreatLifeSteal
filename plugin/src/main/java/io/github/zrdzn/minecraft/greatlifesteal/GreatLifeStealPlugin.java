@@ -3,6 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal;
 import io.github.zrdzn.minecraft.greatlifesteal.datasource.DataSource;
 import io.github.zrdzn.minecraft.greatlifesteal.datasource.DataSourceType;
 import io.github.zrdzn.minecraft.greatlifesteal.datasource.SqliteDataSource;
+import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserService;
 import org.bukkit.Server;
@@ -52,6 +53,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         UserService userService = new UserService(new UserRepository(logger, dataSource));
         userService.load();
+
+        int healthChange = configuration.getInt("baseSettings.healthChange", 2);
+        UserListener userListener = new UserListener(this, userService, healthChange);
+
+        pluginManager.registerEvents(userListener, this);
     }
 
 }
