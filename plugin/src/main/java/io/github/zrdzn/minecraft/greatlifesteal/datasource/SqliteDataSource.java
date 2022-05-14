@@ -51,9 +51,9 @@ public class SqliteDataSource implements DataSource {
     @Override
     public Map<String, String> getTables() {
         String users = "CREATE TABLE IF NOT EXISTS gls_users (" +
-            "   id INT PRIMARY KEY," +
-            "   user_uuid VARCHAR(36) NOT NULL UNIQUE KEY," +
-            "   user_health INT DEFAULT 0" +
+            "   id INTEGER PRIMARY KEY AUTOINCREMENT," +
+            "   user_uuid VARCHAR(36) NOT NULL UNIQUE," +
+            "   user_health INTEGER DEFAULT 0" +
             ");";
 
         return Collections.singletonMap("gls_users", users);
@@ -98,8 +98,8 @@ public class SqliteDataSource implements DataSource {
         Connection connection = connectionMaybe.get();
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            for (int index = 1; index < replacements.length; index++) {
-                statement.setObject(index, replacements[index]);
+            for (int index = 0; index < replacements.length; index++) {
+                statement.setObject(index + 1, replacements[index]);
             }
 
             int affectedRows = statement.executeUpdate();
