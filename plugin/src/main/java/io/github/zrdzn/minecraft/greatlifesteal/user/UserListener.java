@@ -15,24 +15,20 @@ public class UserListener implements Listener {
 
     private final JavaPlugin plugin;
     private final UserService userService;
-    private int healthChange;
+    private final int healthChange;
 
-    public UserListener(UserService service, JavaPlugin plugin) {
+    public UserListener(JavaPlugin plugin, UserService service, int healthChange) {
         this.plugin = plugin;
         this.userService = service;
-    }
-
-    public void parse(ConfigurationSection section) {
-        this.healthChange = section.getInt("healthChange", 2);
+        this.healthChange = healthChange;
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         UUID playerUuid = player.getUniqueId();
-        CompletableFuture<Boolean> createFuture = this.userService.createUser(playerUuid, (int) player.getMaxHealth());
-            if(!createFuture.join()) {
-                this.userService.changeHealth(playerUuid, -healthChange);
-            }
+        if (!this.userService.createUser(playerUuid, (int) player.getMaxHealth()).join()) {
+            this.userService.changeHealth(playerUuid, -healthChange);
+        }
     }
 }
