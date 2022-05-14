@@ -97,11 +97,7 @@ public class SqliteDataSource implements DataSource {
                 statement.setObject(index + 1, replacements[index]);
             }
 
-            int affectedRows = statement.executeUpdate();
-
-            connection.close();
-
-            return affectedRows;
+            return statement.executeUpdate();
         } catch (SQLException exception) {
             this.logger.error("Something went wrong while executing the query.", exception);
             return -1;
