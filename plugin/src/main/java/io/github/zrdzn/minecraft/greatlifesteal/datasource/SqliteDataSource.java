@@ -73,7 +73,7 @@ public class SqliteDataSource implements DataSource {
             }
 
             ResultSet resultSet = statement.executeQuery();
-            if (resultSet == null || !resultSet.next()) {
+            if (resultSet == null) {
                 return Optional.empty();
             }
 
