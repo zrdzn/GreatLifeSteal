@@ -25,8 +25,8 @@ public class UserListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         UUID playerUuid = player.getUniqueId();
-        if (!this.userService.createUser(playerUuid, (int) player.getMaxHealth()).join()) {
-            this.userService.changeHealth(playerUuid, -healthChange);
+        if (!this.userService.createUser(playerUuid, (int) (player.getMaxHealth() - this.healthChange)).join()) {
+            this.userService.changeHealth(playerUuid, -this.healthChange);
         }
     }
 }
