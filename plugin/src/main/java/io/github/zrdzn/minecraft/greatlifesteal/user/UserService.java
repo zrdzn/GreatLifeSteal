@@ -1,5 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
+import org.bukkit.Bukkit;
+
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -24,14 +26,17 @@ public class UserService {
     public CompletableFuture<Boolean> createUser(UUID userId, int health) {
         return CompletableFuture.supplyAsync(() -> {
             if (this.users.containsKey(userId)) {
+                Bukkit.getLogger().warning("cache contains key");
                 return false;
             }
 
             if (!this.repository.save(userId, health)) {
+                Bukkit.getLogger().warning("could not save");
                 return false;
             }
 
             this.users.put(userId, health);
+            Bukkit.getLogger().warning("put in the cache");
             return true;
         });
     }
