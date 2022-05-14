@@ -48,7 +48,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             return;
         }
 
-        dataSource.createDefaultSchemas();
+        dataSource.getTables().values().forEach(dataSource::update);
 
         UserService userService = new UserService(new UserRepository(dataSource));
     }

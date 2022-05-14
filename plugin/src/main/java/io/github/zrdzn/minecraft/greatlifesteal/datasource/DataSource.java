@@ -3,6 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.datasource;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.sql.ResultSet;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -22,9 +23,11 @@ public interface DataSource {
     void parse(ConfigurationSection section);
 
     /**
-     * Create default tables or schemas as you desire.
+     * Get a map of the tables related to this data source.
+     * A key is the table name and a value is the query
+     * for its creation.
      */
-    void createDefaultSchemas();
+    Map<String, String> getTables();
 
     /**
      * Execute the specified query to the data source

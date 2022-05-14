@@ -1,24 +1,19 @@
 package io.github.zrdzn.minecraft.greatlifesteal.datasource;
 
 import com.google.common.io.Files;
-import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import org.apache.ibatis.jdbc.ScriptRunner;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 public class SqliteDataSource implements DataSource {
@@ -54,21 +49,14 @@ public class SqliteDataSource implements DataSource {
     }
 
     @Override
-    public void createDefaultSchemas() {
-        Connection connection = this.getConnection().orElseThrow(IllegalStateException::new);
+    public Map<String, String> getTables() {
+        String users = "CREATE TABLE IF NOT EXISTS gls_users (" +
+            "   id INT PRIMARY KEY," +
+            "   user_uuid VARCHAR(36) NOT NULL UNIQUE KEY," +
+            "   user_health INT DEFAULT 0" +
+            ");";
 
-        ScriptRunner runner = new ScriptRunner(connection);
-
-        Reader reader;
-        try {
-            reader = new BufferedReader(new FileReader("schema.sql"));
-        } catch (FileNotFoundException exception) {
-            this.logger.error("Schema file could not be found.", exception);
-            return;
-        }
-
-        runner.setSendFullScript(true);
-        runner.runScript(reader);
+        return Collections.singletonMap("gls_users", users);
     }
 
     @Override
