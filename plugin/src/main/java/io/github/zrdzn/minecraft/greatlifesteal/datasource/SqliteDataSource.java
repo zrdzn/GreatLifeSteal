@@ -66,9 +66,8 @@ public class SqliteDataSource implements DataSource {
             return Optional.empty();
         }
 
-        Connection connection = connectionMaybe.get();
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = connectionMaybe.get();
+             PreparedStatement statement = connection.prepareStatement(query)) {
             for (int index = 0; index < replacements.length; index++) {
                 statement.setObject(index + 1, replacements[index]);
             }
@@ -77,9 +76,6 @@ public class SqliteDataSource implements DataSource {
             if (resultSet == null || !resultSet.next()) {
                 return Optional.empty();
             }
-
-            connection.close();
-            statement.closeOnCompletion();
 
             return Optional.of(resultSet);
         } catch (SQLException exception) {
@@ -95,9 +91,8 @@ public class SqliteDataSource implements DataSource {
             return -1;
         }
 
-        Connection connection = connectionMaybe.get();
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        try (Connection connection = connectionMaybe.get();
+             PreparedStatement statement = connection.prepareStatement(query)) {
             for (int index = 0; index < replacements.length; index++) {
                 statement.setObject(index + 1, replacements[index]);
             }
@@ -105,7 +100,6 @@ public class SqliteDataSource implements DataSource {
             int affectedRows = statement.executeUpdate();
 
             connection.close();
-            statement.closeOnCompletion();
 
             return affectedRows;
         } catch (SQLException exception) {
