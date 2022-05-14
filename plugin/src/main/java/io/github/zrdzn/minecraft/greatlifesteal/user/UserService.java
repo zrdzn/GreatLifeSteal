@@ -62,7 +62,7 @@ public class UserService {
                 return;
             }
 
-            this.repository.changeHealthByUserId(userId, health + change);
+            this.repository.changeHealthByUserId(userId, change);
         });
     }
 
