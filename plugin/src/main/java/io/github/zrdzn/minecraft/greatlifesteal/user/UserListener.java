@@ -5,18 +5,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
 public class UserListener implements Listener {
 
-    private final JavaPlugin plugin;
     private final UserService userService;
     private final int healthChange;
 
-    public UserListener(JavaPlugin plugin, UserService service, int healthChange) {
-        this.plugin = plugin;
+    public UserListener(UserService service, int healthChange) {
         this.userService = service;
         this.healthChange = healthChange;
     }

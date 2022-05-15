@@ -55,7 +55,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         userService.load();
 
         int healthChange = configuration.getInt("baseSettings.healthChange", 2);
-        UserListener userListener = new UserListener(this, userService, healthChange);
+        UserListener userListener = new UserListener(userService, healthChange);
 
         pluginManager.registerEvents(userListener, this);
     }
