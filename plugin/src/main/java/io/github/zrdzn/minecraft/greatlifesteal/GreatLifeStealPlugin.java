@@ -1,10 +1,10 @@
 package io.github.zrdzn.minecraft.greatlifesteal;
 
-import io.github.zrdzn.minecraft.greatlifesteal.datasource.DataSource;
-import io.github.zrdzn.minecraft.greatlifesteal.datasource.DataSourceType;
-import io.github.zrdzn.minecraft.greatlifesteal.datasource.SqliteDataSource;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.SqliteStorage;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
-import io.github.zrdzn.minecraft.greatlifesteal.user.UserRepository;
+import io.github.zrdzn.minecraft.greatlifesteal.repository.repositories.sqlite.SqliteUserRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserService;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
@@ -25,10 +25,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         PluginManager pluginManager = server.getPluginManager();
 
-        DataSource dataSource = null;
+        Storage storage = null;
+        UserService userService = null;
 
-        DataSourceType type = DataSourceType.valueOf(configuration.getString("dataSource.type", "SQLITE").toUpperCase());
-        if (type == DataSourceType.SQLITE) {
+        StorageType type = StorageType.valueOf(configuration.getString("dataSource.type", "SQLITE").toUpperCase());
+        if (type == StorageType.SQLITE) {
             try {
                 Class.forName("org.sqlite.JDBC");
             } catch (ClassNotFoundException exception) {
@@ -38,20 +39,21 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 return;
             }
 
-            dataSource = new SqliteDataSource(this, logger);
-            dataSource.parse(configuration.getConfigurationSection("dataSource"));
+            storage = new SqliteStorage(logger, this);
+            storage.parse(configuration.getConfigurationSection("dataSource"));
+
+            userService = new UserService(new SqliteUserRepository(logger, (SqliteStorage) storage));
         }
 
-        if (dataSource == null) {
+        if (storage == null) {
             logger.error("Data source cannot be null.");
             pluginManager.disablePlugin(this);
 
             return;
         }
 
-        dataSource.getTables().values().forEach(dataSource::update);
+        storage.applySchemas();
 
-        UserService userService = new UserService(new UserRepository(logger, dataSource));
         userService.load();
 
         int healthChange = configuration.getInt("baseSettings.healthChange", 2);

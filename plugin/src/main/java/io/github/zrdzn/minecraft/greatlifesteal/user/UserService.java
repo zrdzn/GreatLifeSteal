@@ -1,5 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
+import io.github.zrdzn.minecraft.greatlifesteal.repository.UserRepository;
+
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,22 +49,22 @@ public class UserService {
         });
     }
 
-    public CompletableFuture<Void> setHealth(UUID userId, int health) {
-        return CompletableFuture.runAsync(() -> {
+    public CompletableFuture<Boolean> setHealth(UUID userId, int health) {
+        return CompletableFuture.supplyAsync(() -> {
             this.users.put(userId, health);
-            this.repository.setHealthByUserId(userId, health);
+            return this.repository.setHealthByUserId(userId, health);
         });
     }
 
-    public CompletableFuture<Void> changeHealth(UUID userId, int change) {
-        return CompletableFuture.runAsync(() -> {
+    public CompletableFuture<Boolean> changeHealth(UUID userId, int change) {
+        return CompletableFuture.supplyAsync(() -> {
             Integer health = this.users.get(userId);
             if (health == null) {
                 this.users.put(userId, change);
-                return;
+                return false;
             }
 
-            this.repository.changeHealthByUserId(userId, change);
+            return this.repository.changeHealthByUserId(userId, change);
         });
     }
 

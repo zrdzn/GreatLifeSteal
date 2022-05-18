@@ -1,5 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,9 +22,15 @@ public class UserListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+
         UUID playerUuid = player.getUniqueId();
-        if (!this.userService.createUser(playerUuid, (int) (player.getMaxHealth() - this.healthChange)).join()) {
-            this.userService.changeHealth(playerUuid, -this.healthChange);
+
+        if (this.userService.createUser(playerUuid, (int) (player.getMaxHealth() - this.healthChange)).join()) {
+            return;
+        }
+
+        if (!this.userService.changeHealth(playerUuid, -this.healthChange).join()) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', "Wystąpił błąd podczas nadawania serc."));
         }
     }
 }
