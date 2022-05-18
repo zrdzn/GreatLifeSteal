@@ -28,7 +28,7 @@ public class UserListener implements Listener {
             .ifPresent(health -> player.setMaxHealth(health.getValue()));
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler
     public void takePlayerHearts(PlayerDeathEvent event) {
         Player player = event.getEntity();
 
@@ -49,7 +49,7 @@ public class UserListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler
     public void givePlayerHearts(PlayerDeathEvent event) {
         Player killer = event.getEntity().getKiller();
 
