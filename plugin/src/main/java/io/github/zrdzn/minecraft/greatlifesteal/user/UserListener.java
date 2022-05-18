@@ -29,7 +29,7 @@ public class UserListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerDeath(PlayerDeathEvent event) {
+    public void takePlayerHearts(PlayerDeathEvent event) {
         Player player = event.getEntity();
 
         if (player.getKiller() == null) {
@@ -50,7 +50,7 @@ public class UserListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerKill(PlayerDeathEvent event) {
+    public void givePlayerHearts(PlayerDeathEvent event) {
         Player killer = event.getEntity().getKiller();
 
         if (killer == null) {
