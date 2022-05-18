@@ -1,5 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,10 +13,12 @@ import java.util.UUID;
 public class UserListener implements Listener {
 
     private final UserService userService;
+    private final DamageableAdapter adapter;
     private final int healthChange;
 
-    public UserListener(UserService service, int healthChange) {
+    public UserListener(UserService service, DamageableAdapter adapter, int healthChange) {
         this.userService = service;
+        this.adapter = adapter;
         this.healthChange = healthChange;
     }
 
@@ -24,7 +27,7 @@ public class UserListener implements Listener {
         Player player = event.getPlayer();
         this.userService.getUser(player.getUniqueId())
             .join()
-            .ifPresent(health -> player.setMaxHealth(health.getValue()));
+            .ifPresent(health -> this.adapter.setMaxHealth(player, health.getValue()));
     }
 
     @EventHandler
@@ -37,9 +40,11 @@ public class UserListener implements Listener {
 
         UUID playerUuid = player.getUniqueId();
 
-        player.setMaxHealth(player.getMaxHealth() - this.healthChange);
+        double health = this.adapter.getMaxHealth(player);
 
-        if (this.userService.createUser(playerUuid, (int) (player.getMaxHealth() - this.healthChange)).join()) {
+        this.adapter.setMaxHealth(player, health - this.healthChange);
+
+        if (this.userService.createUser(playerUuid, (int) (health - this.healthChange)).join()) {
             return;
         }
 
@@ -58,9 +63,11 @@ public class UserListener implements Listener {
 
         UUID killerUuid = killer.getUniqueId();
 
-        killer.setMaxHealth(killer.getMaxHealth() + this.healthChange);
+        double health = this.adapter.getMaxHealth(killer);
 
-        if (this.userService.createUser(killerUuid, (int) (killer.getMaxHealth() + this.healthChange)).join()) {
+        this.adapter.setMaxHealth(killer, health + this.healthChange);
+
+        if (this.userService.createUser(killerUuid, (int) (health + this.healthChange)).join()) {
             return;
         }
 

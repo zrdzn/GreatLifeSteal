@@ -1,5 +1,9 @@
 package io.github.zrdzn.minecraft.greatlifesteal;
 
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.SqliteStorage;
@@ -56,10 +60,23 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         userService.load();
 
+        DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
+
         int healthChange = configuration.getInt("baseSettings.healthChange", 2);
-        UserListener userListener = new UserListener(userService, healthChange);
+
+        UserListener userListener = new UserListener(userService, damageableAdapter, healthChange);
 
         pluginManager.registerEvents(userListener, this);
+    }
+
+    public SpigotAdapter prepareSpigotAdapter() {
+        try {
+            Class.forName("org.bukkit.attribute.Attributable");
+        } catch (ClassNotFoundException exception) {
+            return new V1_8SpigotAdapter();
+        }
+
+        return new V1_9SpigotAdapter();
     }
 
 }
