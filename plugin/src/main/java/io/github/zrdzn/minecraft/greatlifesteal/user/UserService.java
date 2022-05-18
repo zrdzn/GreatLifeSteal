@@ -23,55 +23,55 @@ public class UserService {
         this.users = this.repository.listAll();
     }
 
-    public CompletableFuture<Boolean> createUser(UUID userId, int health) {
+    public CompletableFuture<Boolean> createUser(UUID userUuid, int health) {
         return CompletableFuture.supplyAsync(() -> {
-            if (this.users.containsKey(userId)) {
+            if (this.users.containsKey(userUuid)) {
                 return false;
             }
 
-            if (!this.repository.save(userId, health)) {
+            if (!this.repository.save(userUuid, health)) {
                 return false;
             }
 
-            this.users.put(userId, health);
+            this.users.put(userUuid, health);
             return true;
         });
     }
 
-    public CompletableFuture<Optional<Entry<UUID, Integer>>> getUser(UUID userId) {
+    public CompletableFuture<Optional<Entry<UUID, Integer>>> getUser(UUID userUuid) {
         return CompletableFuture.supplyAsync(() -> {
-            Integer health = this.users.get(userId);
+            Integer health = this.users.get(userUuid);
             if (health == null) {
-                return Optional.of(new SimpleImmutableEntry<>(userId, health));
+                return Optional.of(new SimpleImmutableEntry<>(userUuid, health));
             }
 
-            return this.repository.findByUserId(userId);
+            return this.repository.findByUserId(userUuid);
         });
     }
 
-    public CompletableFuture<Boolean> setHealth(UUID userId, int health) {
+    public CompletableFuture<Boolean> setHealth(UUID userUuid, int health) {
         return CompletableFuture.supplyAsync(() -> {
-            this.users.put(userId, health);
-            return this.repository.setHealthByUserId(userId, health);
+            this.users.put(userUuid, health);
+            return this.repository.setHealthByUserId(userUuid, health);
         });
     }
 
-    public CompletableFuture<Boolean> changeHealth(UUID userId, int change) {
+    public CompletableFuture<Boolean> changeHealth(UUID userUuid, int change) {
         return CompletableFuture.supplyAsync(() -> {
-            Integer health = this.users.get(userId);
+            Integer health = this.users.get(userUuid);
             if (health == null) {
-                this.users.put(userId, change);
+                this.users.put(userUuid, change);
                 return false;
             }
 
-            return this.repository.changeHealthByUserId(userId, change);
+            return this.repository.changeHealthByUserId(userUuid, change);
         });
     }
 
-    public CompletableFuture<Boolean> removeUser(UUID userId) {
+    public CompletableFuture<Boolean> removeUser(UUID userUuid) {
         return CompletableFuture.supplyAsync(() -> {
-            this.users.remove(userId);
-            return this.repository.deleteByUserId(userId);
+            this.users.remove(userUuid);
+            return this.repository.deleteByUserId(userUuid);
         });
     }
 

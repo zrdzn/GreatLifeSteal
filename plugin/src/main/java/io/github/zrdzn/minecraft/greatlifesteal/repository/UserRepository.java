@@ -6,16 +6,16 @@ import java.util.UUID;
 
 public interface UserRepository {
 
-    boolean save(UUID userId, int health);
+    boolean save(UUID userUuid, int health);
 
-    Optional<Map.Entry<UUID, Integer>> findByUserId(UUID userId);
+    Optional<Map.Entry<UUID, Integer>> findByUserId(UUID userUuid);
 
     Map<UUID, Integer> listAll();
 
-    boolean setHealthByUserId(UUID userId, int value);
+    boolean setHealthByUserId(UUID userUuid, int value);
 
-    boolean changeHealthByUserId(UUID userId, int change);
+    boolean changeHealthByUserId(UUID userUuid, int change);
 
-    boolean deleteByUserId(UUID userId);
+    boolean deleteByUserId(UUID userUuid);
 
 }

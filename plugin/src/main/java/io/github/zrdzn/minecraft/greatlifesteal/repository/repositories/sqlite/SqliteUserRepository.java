@@ -33,12 +33,12 @@ public class SqliteUserRepository implements UserRepository {
         this.storage = storage;
     }
 
-    public boolean save(UUID userId, int health) {
+    public boolean save(UUID userUuid, int health) {
         try (
             Connection connection = this.storage.getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT)
         ) {
-            statement.setString(1, userId.toString());
+            statement.setString(1, userUuid.toString());
             statement.setInt(2, health);
 
             return statement.executeUpdate() > 0;
@@ -48,12 +48,12 @@ public class SqliteUserRepository implements UserRepository {
         }
     }
 
-    public Optional<Entry<UUID, Integer>> findByUserId(UUID userId) {
+    public Optional<Entry<UUID, Integer>> findByUserId(UUID userUuid) {
         try (
             Connection connection = this.storage.getConnection();
             PreparedStatement statement = connection.prepareStatement(SELECT_USER_BY_UUID)
         ) {
-            statement.setString(1, userId.toString());
+            statement.setString(1, userUuid.toString());
 
             ResultSet result = statement.executeQuery();
 
@@ -62,7 +62,7 @@ public class SqliteUserRepository implements UserRepository {
                 return Optional.empty();
             }
 
-            return Optional.of(new SimpleImmutableEntry<>(userId, health));
+            return Optional.of(new SimpleImmutableEntry<>(userUuid, health));
         } catch (SQLException exception) {
             this.logger.error("Could not get the user from the database.");
             return Optional.empty();
@@ -88,8 +88,8 @@ public class SqliteUserRepository implements UserRepository {
         }
     }
 
-    public boolean setHealthByUserId(UUID userId, int value) {
-        if (!this.findByUserId(userId).isPresent()) {
+    public boolean setHealthByUserId(UUID userUuid, int value) {
+        if (!this.findByUserId(userUuid).isPresent()) {
             return false;
         }
 
@@ -98,7 +98,7 @@ public class SqliteUserRepository implements UserRepository {
             PreparedStatement statement = connection.prepareStatement(UPDATE_HEALTH_SET_BY_UUID)
         ) {
             statement.setInt(1, value);
-            statement.setString(2, userId.toString());
+            statement.setString(2, userUuid.toString());
 
             return statement.executeUpdate() > 0;
         } catch (SQLException exception) {
@@ -107,8 +107,8 @@ public class SqliteUserRepository implements UserRepository {
         }
     }
 
-    public boolean changeHealthByUserId(UUID userId, int change) {
-        if (!this.findByUserId(userId).isPresent()) {
+    public boolean changeHealthByUserId(UUID userUuid, int change) {
+        if (!this.findByUserId(userUuid).isPresent()) {
             return false;
         }
 
@@ -117,7 +117,7 @@ public class SqliteUserRepository implements UserRepository {
             PreparedStatement statement = connection.prepareStatement(UPDATE_HEALTH_CHANGE_BY_UUID)
         ) {
             statement.setInt(1, change);
-            statement.setString(2, userId.toString());
+            statement.setString(2, userUuid.toString());
 
             return statement.executeUpdate() > 0;
         } catch (SQLException exception) {
@@ -126,8 +126,8 @@ public class SqliteUserRepository implements UserRepository {
         }
     }
 
-    public boolean deleteByUserId(UUID userId) {
-        if (!this.findByUserId(userId).isPresent()) {
+    public boolean deleteByUserId(UUID userUuid) {
+        if (!this.findByUserId(userUuid).isPresent()) {
             return false;
         }
 
@@ -135,7 +135,7 @@ public class SqliteUserRepository implements UserRepository {
             Connection connection = this.storage.getConnection();
             PreparedStatement statement = connection.prepareStatement(DELETE_USER_BY_UUID)
         ) {
-            statement.setString(1, userId.toString());
+            statement.setString(1, userUuid.toString());
 
             return statement.executeUpdate() > 0;
         } catch (SQLException exception) {
