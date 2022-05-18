@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.UUID;
 
@@ -17,6 +18,14 @@ public class UserListener implements Listener {
     public UserListener(UserService service, int healthChange) {
         this.userService = service;
         this.healthChange = healthChange;
+    }
+
+    @EventHandler
+    public void restorePlayerHearts(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        this.userService.getUser(player.getUniqueId())
+            .join()
+            .ifPresent(health -> player.setMaxHealth(health.getValue()));
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -60,4 +69,5 @@ public class UserListener implements Listener {
             killer.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cWystąpił błąd podczas dodawania serc."));
         }
     }
+
 }
