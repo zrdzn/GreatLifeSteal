@@ -38,7 +38,6 @@ public class UserListener implements Listener {
         if (!this.userService.changeHealth(playerUuid, -this.healthChange).join()) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cWystąpił błąd podczas odejmowania serc."));
         }
-
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -60,6 +59,5 @@ public class UserListener implements Listener {
         if (!this.userService.changeHealth(killerUuid, +this.healthChange).join()) {
             killer.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cWystąpił błąd podczas dodawania serc."));
         }
-
     }
 }
