@@ -34,10 +34,6 @@ public class SqliteUserRepository implements UserRepository {
     }
 
     public boolean save(UUID userId, int health) {
-        if (this.findByUserId(userId).isPresent()) {
-            return false;
-        }
-
         try (
             Connection connection = this.storage.getConnection();
             PreparedStatement statement = connection.prepareStatement(INSERT)
