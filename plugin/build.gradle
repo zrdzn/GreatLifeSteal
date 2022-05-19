@@ -1,4 +1,8 @@
 dependencies {
+    implementation(project(":spigot"))
+    implementation(project(":v1_8"))
+    implementation(project(":v1_9"))
+
     compileOnly "org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT"
 
     implementation "org.slf4j:slf4j-reload4j:1.7.36"
