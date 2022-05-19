@@ -4,15 +4,8 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.SqliteStorage;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
-import io.github.zrdzn.minecraft.greatlifesteal.repository.repositories.sqlite.SqliteUserRepository;
-import io.github.zrdzn.minecraft.greatlifesteal.user.UserService;
-import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,48 +18,13 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         Configuration configuration = this.getConfig();
 
-        Server server = this.getServer();
-
-        PluginManager pluginManager = server.getPluginManager();
-
-        Storage storage = null;
-        UserService userService = null;
-
-        StorageType type = StorageType.valueOf(configuration.getString("dataSource.type", "SQLITE").toUpperCase());
-        if (type == StorageType.SQLITE) {
-            try {
-                Class.forName("org.sqlite.JDBC");
-            } catch (ClassNotFoundException exception) {
-                logger.error("Could not find a driver for the sqlite data source.");
-                pluginManager.disablePlugin(this);
-
-                return;
-            }
-
-            storage = new SqliteStorage(logger, this);
-            storage.parse(configuration.getConfigurationSection("dataSource"));
-
-            userService = new UserService(new SqliteUserRepository(logger, (SqliteStorage) storage));
-        }
-
-        if (storage == null) {
-            logger.error("Data source cannot be null.");
-            pluginManager.disablePlugin(this);
-
-            return;
-        }
-
-        storage.applySchemas();
-
-        userService.load();
-
         DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
 
         int healthChange = configuration.getInt("baseSettings.healthChange", 2);
 
-        UserListener userListener = new UserListener(userService, damageableAdapter, healthChange);
+        UserListener userListener = new UserListener(damageableAdapter, healthChange);
 
-        pluginManager.registerEvents(userListener, this);
+        this.getServer().getPluginManager().registerEvents(userListener, this);
     }
 
     public SpigotAdapter prepareSpigotAdapter() {

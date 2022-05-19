@@ -1,11 +1,3 @@
-# A section for the data source configuration.
-dataSource:
-  # A type of the data source that should be used. Available: SQLITE
-  type: SQLITE
-
-  # A file name for the SQLite data source.
-  sqliteFile: "gls.db"
-
 # A section for the plugin operation.
 baseSettings:
   # Amount of health points revoked when a player was killed or awarded when a kill was scored.
