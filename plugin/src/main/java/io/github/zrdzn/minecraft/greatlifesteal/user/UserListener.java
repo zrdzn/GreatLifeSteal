@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.Map.Entry;
 
@@ -20,6 +21,14 @@ public class UserListener implements Listener {
     public UserListener(PluginConfig config, DamageableAdapter adapter) {
         this.config = config;
         this.adapter = adapter;
+    }
+
+    @EventHandler
+    public void setDefaultHearts(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        if (!player.hasPlayedBefore()) {
+            this.adapter.setMaxHealth(player, this.config.getDefaultHealth());
+        }
     }
 
     @EventHandler

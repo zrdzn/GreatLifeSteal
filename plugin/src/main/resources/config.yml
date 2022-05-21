@@ -1,6 +1,9 @@
 # A section for the plugin operation.
 # 1 heart = 2 health points.
 baseSettings:
+  # Amount of maximum health points that will be given to the new player that did not play before.
+  defaultHealth: 20
+
   # Amount of health points revoked when a player was killed or awarded when a kill was scored.
   healthChange: 2
 
