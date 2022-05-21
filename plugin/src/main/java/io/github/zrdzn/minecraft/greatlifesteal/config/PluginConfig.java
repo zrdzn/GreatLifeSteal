@@ -6,10 +6,12 @@ public class PluginConfig {
 
     private final int healthChange;
     private final Entry<Integer, Integer> healthRange;
+    private final boolean killByPlayerOnly;
 
-    public PluginConfig(int healthChange, Entry<Integer, Integer> healthRange) {
+    public PluginConfig(int healthChange, Entry<Integer, Integer> healthRange, boolean killByPlayerOnly) {
         this.healthChange = healthChange;
         this.healthRange = healthRange;
+        this.killByPlayerOnly = killByPlayerOnly;
     }
 
     public int getHealthChange() {
@@ -18,6 +20,10 @@ public class PluginConfig {
 
     public Entry<Integer, Integer> getHealthRange() {
         return this.healthRange;
+    }
+
+    public boolean isKillByPlayerOnly() {
+        return this.killByPlayerOnly;
     }
 
 }
