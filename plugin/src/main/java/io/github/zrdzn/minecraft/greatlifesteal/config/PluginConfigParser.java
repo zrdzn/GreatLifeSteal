@@ -12,6 +12,11 @@ public class PluginConfigParser {
             throw new InvalidConfigurationException("Configuration section cannot be null.");
         }
 
+        int defaultHealth = section.getInt("defaultHealth");
+        if (defaultHealth < 1) {
+            throw new InvalidConfigurationException("Property 'defaultHealth' cannot be lower than 1.");
+        }
+
         int healthChange = section.getInt("healthChange");
         if (healthChange < 0) {
             throw new InvalidConfigurationException("Property 'healthChange' cannot be lower than 0.");
@@ -26,10 +31,11 @@ public class PluginConfigParser {
         if (maximumHealth < minimumHealth) {
             throw new InvalidConfigurationException("Property 'maximumHealth' cannot be lower than 'minimumHealth'.");
         }
-
+        
         boolean killByPlayerOnly = section.getBoolean("killByPlayerOnly");
 
-        return new PluginConfig(healthChange, new SimpleImmutableEntry<>(minimumHealth, maximumHealth), killByPlayerOnly);
+        return new PluginConfig(defaultHealth, healthChange, new SimpleImmutableEntry<>(minimumHealth, maximumHealth),
+                               killByPlayerOnly);
     }
 
 }
