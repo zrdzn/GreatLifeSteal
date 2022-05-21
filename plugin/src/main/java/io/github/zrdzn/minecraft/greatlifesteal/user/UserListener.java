@@ -1,19 +1,22 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
+import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
+import java.util.Map.Entry;
+
 public class UserListener implements Listener {
 
+    private final PluginConfig config;
     private final DamageableAdapter adapter;
-    private final int healthChange;
 
-    public UserListener(DamageableAdapter adapter, int healthChange) {
+    public UserListener(PluginConfig config, DamageableAdapter adapter) {
+        this.config = config;
         this.adapter = adapter;
-        this.healthChange = healthChange;
     }
 
     @EventHandler
@@ -25,8 +28,19 @@ public class UserListener implements Listener {
             return;
         }
 
-        this.adapter.setMaxHealth(victim, this.adapter.getMaxHealth(victim) - this.healthChange);
-        this.adapter.setMaxHealth(killer, this.adapter.getMaxHealth(killer) + this.healthChange);
+        Entry<Integer, Integer> healthRange = this.config.getHealthRange();
+
+        int healthChange = this.config.getHealthChange();
+
+        double victimNewHealth = this.adapter.getMaxHealth(victim) - healthChange;
+        if (victimNewHealth >= healthRange.getKey()) {
+            this.adapter.setMaxHealth(victim, victimNewHealth);
+        }
+
+        double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
+        if (killerNewHealth <= healthRange.getValue()) {
+            this.adapter.setMaxHealth(killer, killerNewHealth);
+        }
     }
 
 }
