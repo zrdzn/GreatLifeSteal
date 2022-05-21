@@ -31,8 +31,11 @@ public class PluginConfigParser {
         if (maximumHealth < minimumHealth) {
             throw new InvalidConfigurationException("Property 'maximumHealth' cannot be lower than 'minimumHealth'.");
         }
+        
+        boolean killByPlayerOnly = section.getBoolean("killByPlayerOnly");
 
-        return new PluginConfig(defaultHealth, healthChange, new SimpleImmutableEntry<>(minimumHealth, maximumHealth));
+        return new PluginConfig(defaultHealth, healthChange, new SimpleImmutableEntry<>(minimumHealth, maximumHealth),
+                               killByPlayerOnly);
     }
 
 }

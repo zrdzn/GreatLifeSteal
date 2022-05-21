@@ -12,3 +12,6 @@ baseSettings:
 
   # Maximum amount of health points a player can have.
   maximumHealth: 40
+
+  # Health points will be changed only if the player was killed by the other player.
+  killByPlayerOnly: true

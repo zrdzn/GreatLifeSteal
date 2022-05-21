@@ -33,22 +33,24 @@ public class UserListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
-        if (killer == null) {
-            return;
-        }
-
         Entry<Integer, Integer> healthRange = this.config.getHealthRange();
 
         int healthChange = this.config.getHealthChange();
 
+        if (this.config.isKillByPlayerOnly()) {
+            if (killer == null) {
+                return;
+            }
+
+            double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
+            if (killerNewHealth <= healthRange.getValue()) {
+                this.adapter.setMaxHealth(killer, killerNewHealth);
+            }
+        }
+
         double victimNewHealth = this.adapter.getMaxHealth(victim) - healthChange;
         if (victimNewHealth >= healthRange.getKey()) {
             this.adapter.setMaxHealth(victim, victimNewHealth);
-        }
-
-        double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
-        if (killerNewHealth <= healthRange.getValue()) {
-            this.adapter.setMaxHealth(killer, killerNewHealth);
         }
     }
 
