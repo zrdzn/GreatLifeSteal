@@ -35,7 +35,7 @@ public class PluginConfigParser {
         boolean killByPlayerOnly = section.getBoolean("killByPlayerOnly");
 
         return new PluginConfig(defaultHealth, healthChange, new SimpleImmutableEntry<>(minimumHealth, maximumHealth),
-                               killByPlayerOnly);
+            killByPlayerOnly);
     }
 
 }
