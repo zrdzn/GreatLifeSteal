@@ -27,7 +27,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         ConfigurationSection baseSection = configuration.getConfigurationSection("baseSettings");
         if (baseSection == null) {
-            logger.error("Could not found the 'baseSettings' section.");
+            logger.error("Could not find the 'baseSettings' section.");
             pluginManager.disablePlugin(this);
             return;
         }
@@ -36,7 +36,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         try {
             pluginConfig = new PluginConfigParser().parse(baseSection);
         } catch (InvalidConfigurationException exception) {
-            logger.error("Could not parse the 'baseSection' section.");
+            logger.error("Could not parse the 'baseSettings' section.");
             pluginManager.disablePlugin(this);
             return;
         }
