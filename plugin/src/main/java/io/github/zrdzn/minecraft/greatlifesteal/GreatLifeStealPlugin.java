@@ -7,6 +7,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
+import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -21,7 +22,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
     public void onEnable() {
         Logger logger = LoggerFactory.getLogger("GreatLifeSteal");
 
-        PluginManager pluginManager = this.getServer().getPluginManager();
+        Server server = this.getServer();
+
+        PluginManager pluginManager = server.getPluginManager();
 
         Configuration configuration = this.getConfig();
 
@@ -40,6 +43,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             pluginManager.disablePlugin(this);
             return;
         }
+
+        server.addRecipe(pluginConfig.getHeartItem().getCraftingRecipe());
 
         DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
 

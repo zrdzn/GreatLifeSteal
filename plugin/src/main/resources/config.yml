@@ -15,3 +15,32 @@ baseSettings:
 
   # Health points will be changed only if the player was killed by the other player.
   killByPlayerOnly: true
+
+  # Item that can be used by a player to give him a specified amount of health points.
+  heartItem:
+    # If any heart item should be enabled on the server.
+    enabled: false
+
+    # Amount of health points that should be given to a player on item consume.
+    healthAmount: 2
+
+    # Type of the item that the heart item should be.
+    type: APPLE
+
+    # Meta for the heart item.
+    meta:
+      displayName: "&aThe Heart of an Elk"
+      lore:
+        - "&aUse this item to give yourself health points."
+
+    # Recipe for the heart item creation. Each number is an ordered slot in the workbench. (1-9)
+    craftingRecipe:
+      1: DIAMOND_BLOCK
+      2: DIAMOND_BLOCK
+      3: DIAMOND_BLOCK
+      4: DIAMOND_BLOCK
+      5: OBSIDIAN
+      6: DIAMOND_BLOCK
+      7: DIAMOND_BLOCK
+      8: DIAMOND_BLOCK
+      9: DIAMOND_BLOCK
