@@ -1,7 +1,10 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationModeAction;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,9 +42,22 @@ public class UserListener implements Listener {
             }
         }
 
-        double victimNewHealth = this.adapter.getMaxHealth(victim) - healthChange;
+        double victimMaxHealth = this.adapter.getMaxHealth(victim);
+
+        double victimNewHealth = victimMaxHealth - healthChange;
         if (victimNewHealth >= healthRange.getKey()) {
             this.adapter.setMaxHealth(victim, victimNewHealth);
+        }
+
+        EliminationMode elimination = this.config.getEliminationMode();
+        if (elimination == null) {
+            return;
+        }
+
+        if (victimMaxHealth <= elimination.getRequiredHealth()) {
+            if (elimination.getAction() == EliminationModeAction.SPECTATOR_MODE) {
+                victim.setGameMode(GameMode.SPECTATOR);
+            }
         }
     }
 

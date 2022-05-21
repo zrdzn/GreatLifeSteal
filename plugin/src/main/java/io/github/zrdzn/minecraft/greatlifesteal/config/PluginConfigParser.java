@@ -1,5 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.config;
 
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationModeAction;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 
@@ -29,7 +31,37 @@ public class PluginConfigParser {
 
         boolean killByPlayerOnly = section.getBoolean("killByPlayerOnly");
 
-        return new PluginConfig(healthChange, new SimpleImmutableEntry<>(minimumHealth, maximumHealth), killByPlayerOnly);
+        ConfigurationSection eliminationSection = section.getConfigurationSection("eliminationMode");
+        if (eliminationSection == null) {
+            throw new InvalidConfigurationException("Section 'eliminationMode' cannot be null.");
+        }
+
+        EliminationMode elimination = null;
+
+        boolean eliminationEnabled = eliminationSection.getBoolean("enabled");
+        if (eliminationEnabled) {
+            int eliminationRequiredHealth = eliminationSection.getInt("requiredHealth");
+            if (eliminationRequiredHealth < 1) {
+                throw new InvalidConfigurationException("Property 'requiredHealth' cannot be lower than 1.");
+            }
+
+            String eliminationActionRaw = eliminationSection.getString("action");
+            if (eliminationActionRaw == null) {
+                throw new InvalidConfigurationException("Property 'action' cannot be null.");
+            }
+
+            EliminationModeAction eliminationAction;
+            try {
+                eliminationAction = EliminationModeAction.valueOf(eliminationActionRaw);
+            } catch (IllegalArgumentException exception) {
+                throw new InvalidConfigurationException("Property 'action' is not a valid action.");
+            }
+
+            elimination = new EliminationMode(eliminationRequiredHealth, eliminationAction);
+        }
+
+        return new PluginConfig(healthChange, new SimpleImmutableEntry<>(minimumHealth, maximumHealth), killByPlayerOnly,
+            elimination);
     }
 
 }

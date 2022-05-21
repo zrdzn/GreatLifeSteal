@@ -12,3 +12,16 @@ baseSettings:
 
   # Health points will be changed only if the player was killed by the other player.
   killByPlayerOnly: true
+
+  # Define what will happen if a player reaches specific amount of maximum health points.
+  eliminationMode:
+    # If any action below should be executed.
+    enabled: false
+
+    # Amount of health points that are needed to execute an action.
+    requiredHealth: 4
+
+    # Action that should be done on reaching health points goal.
+    # Available:
+    #  SPECTATOR_MODE - change player's game mode to spectator.
+    action: SPECTATOR_MODE
