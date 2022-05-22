@@ -78,7 +78,7 @@ public class PluginConfigParser {
                 heartItemStack.setItemMeta(heartItemMeta);
             }
 
-            ShapedRecipe heartItemRecipe = new ShapedRecipe(heartItemStack.clone());
+            ShapedRecipe heartItemRecipe = new ShapedRecipe(heartItemStack);
 
             heartItemRecipe.shape("123", "456", "789");
 
