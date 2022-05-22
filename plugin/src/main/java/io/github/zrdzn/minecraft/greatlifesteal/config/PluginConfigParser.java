@@ -48,9 +48,7 @@ public class PluginConfigParser {
         }
 
         HeartItem heartItem = null;
-
-        boolean heartItemEnabled = heartItemSection.getBoolean("enabled");
-        if (heartItemEnabled) {
+        if (heartItemSection.getBoolean("enabled")) {
             int heartItemHealthAmount = heartItemSection.getInt("healthAmount");
             if (heartItemHealthAmount < 0) {
                 throw new InvalidConfigurationException("Property 'healthAmount' cannot be lower than 0.");
