@@ -105,9 +105,7 @@ public class PluginConfigParser {
         }
 
         EliminationMode elimination = null;
-
-        boolean eliminationEnabled = eliminationSection.getBoolean("enabled");
-        if (eliminationEnabled) {
+        if (eliminationSection.getBoolean("enabled")) {
             int eliminationRequiredHealth = eliminationSection.getInt("requiredHealth");
             if (eliminationRequiredHealth < 1) {
                 throw new InvalidConfigurationException("Property 'requiredHealth' cannot be lower than 1.");
