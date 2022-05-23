@@ -6,6 +6,7 @@ dependencies {
     compileOnly "org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT"
 
     implementation "org.slf4j:slf4j-reload4j:1.7.36"
+    implementation "org.bstats:bstats-bukkit:3.0.0"
 }
 
 java {
@@ -14,4 +15,6 @@ java {
 
 shadowJar {
     archiveFileName = "${project.parent.name} v${project.version}.jar"
+
+    relocate "org.bstats", "io.github.zrdzn.minecraft.greatlifesteal.libs.bstats"
 }

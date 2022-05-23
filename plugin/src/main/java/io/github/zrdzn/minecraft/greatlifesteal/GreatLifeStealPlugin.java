@@ -7,6 +7,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,6 +22,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         Logger logger = LoggerFactory.getLogger("GreatLifeSteal");
+
+        new Metrics(this, 15277);
 
         Server server = this.getServer();
 
