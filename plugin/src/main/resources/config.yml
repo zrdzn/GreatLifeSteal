@@ -56,4 +56,12 @@ baseSettings:
     # Action that should be done on reaching health points goal.
     # Available:
     #  SPECTATOR_MODE - change player's game mode to spectator.
+    #  DISPATCH_COMMANDS - execute a list of commands as a console.
     action: SPECTATOR_MODE
+
+    # If using DISPATCH_COMMANDS action, specify commands to execute below.
+    # Placeholders:
+    #  {killer} - represents killer username
+    #  {victim} - represents victim username
+    commands:
+      - "ban {victim}"

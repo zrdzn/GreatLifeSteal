@@ -41,7 +41,7 @@ public class PluginConfigParser {
         if (maximumHealth < minimumHealth) {
             throw new InvalidConfigurationException("Property 'maximumHealth' cannot be lower than 'minimumHealth'.");
         }
-        
+
         boolean killByPlayerOnly = section.getBoolean("killByPlayerOnly");
 
         ConfigurationSection heartItemSection = section.getConfigurationSection("heartItem");
@@ -98,7 +98,7 @@ public class PluginConfigParser {
 
             heartItem = new HeartItem(heartItemHealthAmount, heartItemRecipe);
         }
-        
+
         ConfigurationSection eliminationSection = section.getConfigurationSection("eliminationMode");
         if (eliminationSection == null) {
             throw new InvalidConfigurationException("Section 'eliminationMode' cannot be null.");
@@ -123,7 +123,9 @@ public class PluginConfigParser {
                 throw new InvalidConfigurationException("Property 'action' is not a valid action.");
             }
 
-            elimination = new EliminationMode(eliminationRequiredHealth, eliminationAction);
+            List<String> eliminationActionCommands = eliminationSection.getStringList("commands");
+
+            elimination = new EliminationMode(eliminationRequiredHealth, eliminationAction, eliminationActionCommands);
         }
 
         return new PluginConfig(defaultHealth, healthChange, new SimpleImmutableEntry<>(minimumHealth, maximumHealth),
