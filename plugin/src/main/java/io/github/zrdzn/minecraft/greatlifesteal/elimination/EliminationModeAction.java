@@ -2,6 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
 public enum EliminationModeAction {
 
-    SPECTATOR_MODE
+    SPECTATOR_MODE,
+    DISPATCH_COMMANDS
 
 }

@@ -2,6 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal;
 
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfigParser;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
@@ -26,6 +27,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         PluginManager pluginManager = server.getPluginManager();
 
+        this.saveDefaultConfig();
         Configuration configuration = this.getConfig();
 
         ConfigurationSection baseSection = configuration.getConfigurationSection("baseSettings");
@@ -44,7 +46,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             return;
         }
 
-        server.addRecipe(pluginConfig.getHeartItem().getCraftingRecipe());
+        HeartItem heartItem = pluginConfig.getHeartItem();
+        if (heartItem != null) server.addRecipe(heartItem.getCraftingRecipe());
 
         DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
 

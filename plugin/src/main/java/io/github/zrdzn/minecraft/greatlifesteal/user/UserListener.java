@@ -2,8 +2,9 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationModeAction;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -64,10 +65,23 @@ public class UserListener implements Listener {
         }
 
         if (victimMaxHealth <= elimination.getRequiredHealth()) {
-            if (elimination.getAction() == EliminationModeAction.SPECTATOR_MODE) {
-                victim.setGameMode(GameMode.SPECTATOR);
+            switch (elimination.getAction()) {
+                case SPECTATOR_MODE:
+                    victim.setGameMode(GameMode.SPECTATOR);
+                    break;
+                case DISPATCH_COMMANDS:
+                    for (String command : elimination.getActionCommands()) {
+                        command = command.replaceAll("\\{victim}", victim.getName());
+                        if (killer != null) command = command.replaceAll("\\{killer}", killer.getName());
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                    }
+                    break;
             }
         }
+    }
+
+    private static String formatColor(String string) {
+        return ChatColor.translateAlternateColorCodes('&', string);
     }
 
 }
