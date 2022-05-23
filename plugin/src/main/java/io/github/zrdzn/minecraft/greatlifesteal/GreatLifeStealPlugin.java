@@ -47,7 +47,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         }
 
         HeartItem heartItem = pluginConfig.getHeartItem();
-        if (heartItem != null) server.addRecipe(heartItem.getCraftingRecipe());
+        if (heartItem != null) {
+            server.addRecipe(heartItem.getCraftingRecipe());
+        }
 
         DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
 

@@ -3,8 +3,8 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -71,17 +71,15 @@ public class UserListener implements Listener {
                     break;
                 case DISPATCH_COMMANDS:
                     for (String command : elimination.getActionCommands()) {
-                        command = command.replaceAll("\\{victim}", victim.getName());
-                        if (killer != null) command = command.replaceAll("\\{killer}", killer.getName());
+                        command = StringUtils.replace(command, "{victim}", victim.getName());
+                        if (killer != null) {
+                            command = StringUtils.replace(command, "{killer}", killer.getName());
+                        }
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     }
                     break;
             }
         }
-    }
-
-    private static String formatColor(String string) {
-        return ChatColor.translateAlternateColorCodes('&', string);
     }
 
 }

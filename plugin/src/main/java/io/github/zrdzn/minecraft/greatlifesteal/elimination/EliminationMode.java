@@ -1,5 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
+import java.util.Collections;
 import java.util.List;
 
 public class EliminationMode {
@@ -23,6 +24,7 @@ public class EliminationMode {
     }
 
     public List<String> getActionCommands() {
-        return this.actionCommands;
+        return Collections.unmodifiableList(this.actionCommands);
     }
+
 }
