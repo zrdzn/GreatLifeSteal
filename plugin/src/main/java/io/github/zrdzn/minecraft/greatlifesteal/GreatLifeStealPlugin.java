@@ -88,7 +88,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         try {
             url = new URL("https://api.spigotmc.org/simple/0.1/index.php?action=getResource&id=102206");
         } catch (MalformedURLException exception) {
-            logger.error("Could not get the resource from spigotmc.", exception);
+            logger.warn("Update notifier: Could not get the resource from spigotmc.");
             return;
         }
 
@@ -110,12 +110,12 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 JSONObject json = (JSONObject) parser.parse(response.toString());
                 latestVersion = (String) json.get("current_version");
             } catch (ParseException exception) {
-                logger.error("Could not parse the json string.", exception);
+                logger.warn("Update notifier: Could not parse the json string.");
                 return;
             }
 
             if (latestVersion == null) {
-                logger.error("Something went wrong while getting a version.");
+                logger.warn("Update notifier: Something went wrong while getting a version.");
                 return;
             }
 
@@ -125,7 +125,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 logger.warn("https://www.spigotmc.org/resources/greatlifesteal.102206/");
             }
         } catch (IOException exception) {
-            logger.error("Could not read from the json body.", exception);
+            logger.warn("Update notifier: Could not read from the json body.");
             return;
         }
 
