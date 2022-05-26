@@ -3,6 +3,9 @@ package io.github.zrdzn.minecraft.greatlifesteal;
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfigParser;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageCache;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageLoader;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
@@ -21,6 +24,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.MenuElement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -69,6 +73,21 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         UserListener userListener = new UserListener(pluginConfig, damageableAdapter);
 
         pluginManager.registerEvents(userListener, this);
+
+        MessageCache messageCache = new MessageCache();
+
+        MessageLoader messageLoader = new MessageLoader(messageCache);
+        try {
+            messageLoader.load(configuration.getConfigurationSection("messages"));
+        } catch (InvalidConfigurationException exception) {
+            logger.error("Could not parse the 'messages' section.");
+            pluginManager.disablePlugin(this);
+            return;
+        }
+
+        MessageService messageService = new MessageService(messageCache);
+
+        this.getCommand("lifesteal").setExecutor(new LifeStealCommand(messageService, damageableAdapter, server));
 
         this.checkPluginUpdates(logger);
     }
