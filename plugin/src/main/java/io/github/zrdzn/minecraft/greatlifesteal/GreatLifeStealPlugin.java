@@ -3,6 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal;
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfigParser;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageCache;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageLoader;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
@@ -76,7 +77,10 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         UserListener userListener = new UserListener(pluginConfig, damageableAdapter);
 
+        HeartListener heartListener = new HeartListener(pluginConfig, damageableAdapter, heartItem);
+
         pluginManager.registerEvents(userListener, this);
+        pluginManager.registerEvents(heartListener, this);
 
         MessageCache messageCache = new MessageCache();
 
