@@ -29,9 +29,15 @@ public class HeartListener implements Listener {
         ItemStack item = event.getItem();
         Action action = event.getAction();
 
-        if (item == null) return;
-        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
-        if (!heartItemStack.isSimilar(item)) return;
+        if (item == null) {
+            return;
+        }
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+        if (!heartItemStack.isSimilar(item)) {
+            return;
+        }
 
         Player player = event.getPlayer();
         Entry<Integer, Integer> healthRange = this.config.getHealthRange();
