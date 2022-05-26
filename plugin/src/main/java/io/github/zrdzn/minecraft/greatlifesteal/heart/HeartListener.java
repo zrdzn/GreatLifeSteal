@@ -9,7 +9,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
+import java.util.Map.Entry;
 
 public class HeartListener implements Listener {
 
@@ -28,18 +28,21 @@ public class HeartListener implements Listener {
         ItemStack heartItemStack = this.heartItem.getCraftingRecipe().getResult();
         ItemStack item = event.getItem();
         Action action = event.getAction();
-        if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
-            if (heartItemStack.isSimilar(item)) {
-                Player player = event.getPlayer();
-                Map.Entry<Integer, Integer> healthRange = this.config.getHealthRange();
 
-                double playerNewHealth = this.adapter.getMaxHealth(player) + this.heartItem.getHealthAmount();
-                if (playerNewHealth <= healthRange.getValue()) {
-                    this.adapter.setMaxHealth(player, playerNewHealth);
-                    item.setAmount(item.getAmount() - 1);
-                }
-                event.setCancelled(true);
-            }
+        if (item == null) return;
+        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
+        if (!heartItemStack.isSimilar(item)) return;
+
+        Player player = event.getPlayer();
+        Entry<Integer, Integer> healthRange = this.config.getHealthRange();
+
+        double playerNewHealth = this.adapter.getMaxHealth(player) + this.heartItem.getHealthAmount();
+        if (playerNewHealth <= healthRange.getValue()) {
+            this.adapter.setMaxHealth(player, playerNewHealth);
+            item.setAmount(item.getAmount() - 1);
         }
+
+        event.setCancelled(true);
+
     }
 }

@@ -66,21 +66,21 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             return;
         }
 
-        HeartItem heartItem = pluginConfig.getHeartItem();
-        if (heartItem != null) {
-            if (!server.addRecipe(heartItem.getCraftingRecipe())) {
-                logger.error("Could not add a recipe for some unknown reason.");
-            }
-        }
 
         DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
 
         UserListener userListener = new UserListener(pluginConfig, damageableAdapter);
 
-        HeartListener heartListener = new HeartListener(pluginConfig, damageableAdapter, heartItem);
-
         pluginManager.registerEvents(userListener, this);
-        pluginManager.registerEvents(heartListener, this);
+
+        HeartItem heartItem = pluginConfig.getHeartItem();
+        if (heartItem != null) {
+            if (!server.addRecipe(heartItem.getCraftingRecipe())) {
+                logger.error("Could not add a recipe for some unknown reason.");
+            }
+
+            pluginManager.registerEvents(new HeartListener(pluginConfig, damageableAdapter, heartItem), this);
+        }
 
         MessageCache messageCache = new MessageCache();
 
@@ -128,7 +128,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             String readLine;
             while ((readLine = reader.readLine()) != null) {
                 response.append(readLine);
-            } reader.close();
+            }
+            reader.close();
 
             JSONParser parser = new JSONParser();
 
