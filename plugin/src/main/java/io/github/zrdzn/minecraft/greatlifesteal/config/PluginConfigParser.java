@@ -56,7 +56,7 @@ public class PluginConfigParser {
                 throw new InvalidConfigurationException("Property 'healthAmount' cannot be lower than 0.");
             }
 
-            Material heartItemType = Material.matchMaterial("type");
+            Material heartItemType = Material.matchMaterial(heartItemSection.getString("type"));
             if (heartItemType == null) {
                 throw new InvalidConfigurationException("Property 'type' is not a valid item type.");
             }
