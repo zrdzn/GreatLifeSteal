@@ -1,5 +1,5 @@
 name: GreatLifeSteal
-version: 1.1.0
+version: 1.1.1
 main: io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin
 api-version: 1.13
 authors: [zrdzn, some0ne3]
