@@ -11,6 +11,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
+import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Server;
 import org.bukkit.configuration.Configuration;
@@ -35,6 +36,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        BasicConfigurator.configure();
+
         Logger logger = LoggerFactory.getLogger("GreatLifeSteal");
 
         new Metrics(this, 15277);
@@ -57,14 +60,16 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         try {
             pluginConfig = new PluginConfigParser().parse(baseSection);
         } catch (InvalidConfigurationException exception) {
-            logger.error("Could not parse the 'baseSettings' section.");
+            logger.error("Could not parse the 'baseSettings' section.", exception);
             pluginManager.disablePlugin(this);
             return;
         }
 
         HeartItem heartItem = pluginConfig.getHeartItem();
         if (heartItem != null) {
-            server.addRecipe(heartItem.getCraftingRecipe());
+            if (!server.addRecipe(heartItem.getCraftingRecipe())) {
+                logger.error("Could not add a recipe for some unknown reason.");
+            }
         }
 
         DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
@@ -79,7 +84,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         try {
             messageLoader.load(configuration.getConfigurationSection("messages"));
         } catch (InvalidConfigurationException exception) {
-            logger.error("Could not parse the 'messages' section.");
+            logger.error("Could not parse the 'messages' section.", exception);
             pluginManager.disablePlugin(this);
             return;
         }
