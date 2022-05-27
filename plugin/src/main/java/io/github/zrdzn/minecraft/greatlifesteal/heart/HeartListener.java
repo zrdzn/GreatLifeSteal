@@ -32,9 +32,11 @@ public class HeartListener implements Listener {
         if (item == null) {
             return;
         }
+
         if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
+
         if (!heartItemStack.isSimilar(item)) {
             return;
         }
