@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 public class PluginConfig {
 
+    public boolean takeHealthFromVictim;
+    public boolean giveHealthToKiller;
     public int defaultHealth;
     public int healthChange;
     public Entry<Integer, Integer> healthRange;
@@ -30,6 +32,10 @@ public class PluginConfig {
         if (section == null) {
             throw new InvalidConfigurationException("Configuration section cannot be null.");
         }
+
+        this.takeHealthFromVictim = section.getBoolean("takeHealthFromVictim");
+
+        this.giveHealthToKiller = section.getBoolean("giveHealthToKiller");
 
         int defaultHealth = section.getInt("defaultHealth");
         if (defaultHealth < 1) {

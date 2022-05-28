@@ -60,7 +60,7 @@ public class UserListener implements Listener {
 
         int healthChange = this.config.healthChange;
 
-        if (this.config.killByPlayerOnly) {
+        if (this.config.giveHealthToKiller && this.config.killByPlayerOnly) {
             if (killer == null) {
                 return;
             }
@@ -81,7 +81,7 @@ public class UserListener implements Listener {
         double victimMaxHealth = this.adapter.getMaxHealth(victim);
 
         double victimNewHealth = victimMaxHealth - healthChange;
-        if (victimNewHealth >= healthRange.getKey()) {
+        if (this.config.takeHealthFromVictim && victimNewHealth >= healthRange.getKey()) {
             this.adapter.setMaxHealth(victim, victimNewHealth);
         }
 
