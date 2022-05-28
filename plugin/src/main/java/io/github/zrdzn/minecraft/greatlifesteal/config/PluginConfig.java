@@ -13,15 +13,17 @@ public class PluginConfig {
     private final boolean killByPlayerOnly;
     private final HeartItem heartItem;
     private final EliminationMode eliminationMode;
+    private final boolean giveToKillerOverlimit;
 
     public PluginConfig(int defaultHealth, int healthChange, Entry<Integer, Integer> healthRange,
-                        boolean killByPlayerOnly, HeartItem heartItem, EliminationMode eliminationMode) {
+                        boolean killByPlayerOnly, HeartItem heartItem, EliminationMode eliminationMode, boolean giveToKillerOverlimit) {
         this.defaultHealth = defaultHealth;
         this.healthChange = healthChange;
         this.healthRange = healthRange;
         this.killByPlayerOnly = killByPlayerOnly;
         this.heartItem = heartItem;
         this.eliminationMode = eliminationMode;
+        this.giveToKillerOverlimit = giveToKillerOverlimit;
     }
 
     public int getDefaultHealth() {
@@ -48,4 +50,7 @@ public class PluginConfig {
         return this.eliminationMode;
     }
 
+    public boolean isGiveToKillerOverlimit() {
+        return this.giveToKillerOverlimit;
+    }
 }

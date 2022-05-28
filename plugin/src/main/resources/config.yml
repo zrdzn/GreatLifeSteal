@@ -21,6 +21,9 @@ baseSettings:
     # If any heart item should be enabled on the server.
     enabled: false
 
+    # If the heart item should be given to killer, when he reaches maximumHealth.
+    giveToKillerOverlimit: false
+
     # Amount of health points that should be given to a player on item consume.
     healthAmount: 2
 
