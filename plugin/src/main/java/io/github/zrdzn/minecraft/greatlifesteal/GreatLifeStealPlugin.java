@@ -79,23 +79,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             return;
         }
 
-
         DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
-
-        UserListener userListener = new UserListener(pluginConfig, messageService, damageableAdapter);
-
-        pluginManager.registerEvents(userListener, this);
-
-        HeartItem heartItem = pluginConfig.getHeartItem();
-        if (heartItem != null) {
-            if (!server.addRecipe(heartItem.getCraftingRecipe())) {
-                logger.error("Could not add a recipe for some unknown reason.");
-            }
-
-            HeartListener heartListener = new HeartListener(pluginConfig, damageableAdapter, messageService, heartItem);
-
-            pluginManager.registerEvents(heartListener, this);
-        }
 
         boolean latestVersion = this.checkLatestVersion(logger);
 
@@ -109,7 +93,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 logger.error("Could not add a recipe for some unknown reason.");
             }
 
-            pluginManager.registerEvents(new HeartListener(pluginConfig, damageableAdapter, heartItem), this);
+            HeartListener heartListener = new HeartListener(pluginConfig, damageableAdapter, messageService, heartItem);
+
+            pluginManager.registerEvents(heartListener, this);
         }
 
         this.getCommand("lifesteal").setExecutor(new LifeStealCommand(messageService, damageableAdapter, server));
