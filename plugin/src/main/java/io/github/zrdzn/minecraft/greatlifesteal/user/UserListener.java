@@ -2,6 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.apache.commons.lang.StringUtils;
@@ -67,6 +68,11 @@ public class UserListener implements Listener {
             double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
             if (killerNewHealth <= healthRange.getValue()) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
+            } else {
+                HeartItem heartItem = this.config.getHeartItem();
+                if (heartItem != null && this.config.isRewardHeartOnOverlimit()) {
+                    killer.getInventory().addItem(heartItem.getCraftingRecipe().getResult());
+                }
             }
         }
 
