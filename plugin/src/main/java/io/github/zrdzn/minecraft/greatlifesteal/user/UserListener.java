@@ -69,6 +69,8 @@ public class UserListener implements Listener {
             if (killerNewHealth <= healthRange.getValue()) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
             } else {
+                this.messageService.send(killer, "maxHealthReached");
+
                 HeartItem heartItem = this.config.getHeartItem();
                 if (heartItem != null && this.config.isRewardHeartOnOverlimit()) {
                     killer.getInventory().addItem(heartItem.getCraftingRecipe().getResult());

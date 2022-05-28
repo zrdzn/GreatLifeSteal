@@ -77,4 +77,5 @@ messages:
   successfulCommandSet: "&aYou have successfully set &e{HEALTH} &ahp for &e{PLAYER}&a."
   invalidPlayerProvided: "&cYou have provided invalid player."
   invalidHealthProvided: "&cYou have provided invalid health number."
+  maxHealthReached: "&cYou have reached the maximum amount of health points."
   pluginOutdated: "&eYou are using an outdated version of the plugin - please consider updating it on https://www.spigotmc.org/resources/greatlifesteal.102206/."
