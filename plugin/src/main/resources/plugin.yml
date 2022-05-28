@@ -7,5 +7,7 @@ description: A recently popular Minecraft plugin for life stealing system in SMP
 permissions:
   greatlifesteal.command.set:
     default: op
+  greatlifesteal.notify.update:
+    default: op
 commands:
   lifesteal:

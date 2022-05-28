@@ -2,6 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.apache.commons.lang.StringUtils;
@@ -18,13 +19,28 @@ import java.util.Map.Entry;
 public class UserListener implements Listener {
 
     private final PluginConfig config;
-    private final DamageableAdapter adapter;
     private final MessageService messageService;
+    private final DamageableAdapter adapter;
+    private final boolean latestVersion;
 
-    public UserListener(PluginConfig config, MessageService messageService, DamageableAdapter adapter) {
+    public UserListener(PluginConfig config, MessageService messageService, DamageableAdapter adapter,
+                        boolean latestVersion) {
         this.config = config;
         this.messageService = messageService;
         this.adapter = adapter;
+        this.latestVersion = latestVersion;
+    }
+
+    @EventHandler
+    public void notifyPermittedPlayer(PlayerJoinEvent event) {
+        if (this.latestVersion) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        if (player.hasPermission("greatlifesteal.notify.update")) {
+            this.messageService.send(player, "pluginOutdated");
+        }
     }
 
     @EventHandler
@@ -54,6 +70,11 @@ public class UserListener implements Listener {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
             } else {
                 this.messageService.send(killer, "maxHealthReached");
+
+                HeartItem heartItem = this.config.getHeartItem();
+                if (heartItem != null && this.config.isRewardHeartOnOverlimit()) {
+                    killer.getInventory().addItem(heartItem.getCraftingRecipe().getResult());
+                }
             }
         }
 

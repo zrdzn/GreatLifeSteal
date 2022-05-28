@@ -49,6 +49,8 @@ public class PluginConfigParser {
             throw new InvalidConfigurationException("Section 'heartItem' cannot be null.");
         }
 
+        boolean rewardHeartOnOverlimit = heartItemSection.getBoolean("rewardHeartOnOverlimit");
+
         HeartItem heartItem = null;
         if (heartItemSection.getBoolean("enabled")) {
             int heartItemHealthAmount = heartItemSection.getInt("healthAmount");
@@ -129,7 +131,7 @@ public class PluginConfigParser {
         }
 
         return new PluginConfig(defaultHealth, healthChange, new SimpleImmutableEntry<>(minimumHealth, maximumHealth),
-            killByPlayerOnly, heartItem, elimination);
+            killByPlayerOnly, heartItem, elimination, rewardHeartOnOverlimit);
     }
 
     private static String formatColor(String string) {

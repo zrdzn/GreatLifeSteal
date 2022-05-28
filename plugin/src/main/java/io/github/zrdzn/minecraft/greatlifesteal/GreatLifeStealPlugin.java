@@ -97,10 +97,22 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             pluginManager.registerEvents(heartListener, this);
         }
 
+        boolean latestVersion = this.checkLatestVersion(logger);
+
+        UserListener userListener = new UserListener(pluginConfig, messageService, damageableAdapter, latestVersion);
+
+        pluginManager.registerEvents(userListener, this);
+
+        HeartItem heartItem = pluginConfig.getHeartItem();
+        if (heartItem != null) {
+            if (!server.addRecipe(heartItem.getCraftingRecipe())) {
+                logger.error("Could not add a recipe for some unknown reason.");
+            }
+
+            pluginManager.registerEvents(new HeartListener(pluginConfig, damageableAdapter, heartItem), this);
+        }
 
         this.getCommand("lifesteal").setExecutor(new LifeStealCommand(messageService, damageableAdapter, server));
-
-        this.checkPluginUpdates(logger);
     }
 
     public SpigotAdapter prepareSpigotAdapter() {
@@ -113,13 +125,20 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         return new V1_9SpigotAdapter();
     }
 
-    private void checkPluginUpdates(Logger logger) {
+    /**
+     * Checks if the plugin is using the latest version.
+     *
+     * @param logger an instance of a logger
+     *
+     * @return true if plugin is using the latest version or an error occurred, false if it uses an older version
+     */
+    private boolean checkLatestVersion(Logger logger) {
         URL url;
         try {
             url = new URL("https://api.spigotmc.org/simple/0.1/index.php?action=getResource&id=102206");
         } catch (MalformedURLException exception) {
             logger.warn("Update notifier: Could not get the resource from spigotmc.");
-            return;
+            return true;
         }
 
         HttpURLConnection http;
@@ -142,25 +161,29 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 latestVersion = (String) json.get("current_version");
             } catch (ParseException exception) {
                 logger.warn("Update notifier: Could not parse the json string.");
-                return;
+                return true;
             }
 
             if (latestVersion == null) {
                 logger.warn("Update notifier: Something went wrong while getting a version.");
-                return;
+                return true;
             }
 
             if (!latestVersion.equals(this.getDescription().getVersion())) {
                 logger.warn("You are using an outdated version of the plugin!");
                 logger.warn("You can download the latest one here:");
                 logger.warn("https://www.spigotmc.org/resources/greatlifesteal.102206/");
+
+                http.disconnect();
+
+                return false;
             }
+
+            return true;
         } catch (IOException exception) {
             logger.warn("Update notifier: Could not read from the json body.");
-            return;
+            return true;
         }
-
-        http.disconnect();
     }
 
 }
