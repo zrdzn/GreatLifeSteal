@@ -127,14 +127,14 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         try {
             for (Constructor<?> constructor : Class.forName("org.bukkit.inventory.ShapedRecipe").getDeclaredConstructors()) {
                 if (constructor.getParameterCount() == 2) {
-                    return new V1_12SpigotAdapter(plugin);
+                    return new V1_12SpigotAdapter(this);
                 }
             }
 
             return new V1_9SpigotAdapter();
         } catch (ClassNotFoundException exception) {
-            logger.error("Could not find the ShapedRecipe class.", exception);
-            plugin.getServer().getPluginManager().disablePlugin(plugin);
+            this.logger.error("Could not find the ShapedRecipe class.", exception);
+            this.pluginManager.disablePlugin(this);
             return null;
         }
     }
