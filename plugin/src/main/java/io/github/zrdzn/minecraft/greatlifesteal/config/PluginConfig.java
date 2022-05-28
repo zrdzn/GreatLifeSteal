@@ -1,58 +1,157 @@
 package io.github.zrdzn.minecraft.greatlifesteal.config;
 
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationModeAction;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class PluginConfig {
 
-    private final int defaultHealth;
-    private final int healthChange;
-    private final Entry<Integer, Integer> healthRange;
-    private final boolean killByPlayerOnly;
-    private final HeartItem heartItem;
-    private final EliminationMode eliminationMode;
-    private final boolean rewardHeartOnOverlimit;
+    public int defaultHealth;
+    public int healthChange;
+    public Entry<Integer, Integer> healthRange;
+    public boolean killByPlayerOnly;
+    public HeartItem heartItem;
+    public EliminationMode elimination;
+    public boolean rewardHeartOnOverlimit;
 
-    public PluginConfig(int defaultHealth, int healthChange, Entry<Integer, Integer> healthRange,
-                        boolean killByPlayerOnly, HeartItem heartItem, EliminationMode eliminationMode,
-                        boolean rewardHeartOnOverlimit) {
+    public void parseAndLoad(ConfigurationSection section) throws InvalidConfigurationException {
+        if (section == null) {
+            throw new InvalidConfigurationException("Configuration section cannot be null.");
+        }
+
+        int defaultHealth = section.getInt("defaultHealth");
+        if (defaultHealth < 1) {
+            throw new InvalidConfigurationException("Property 'defaultHealth' cannot be lower than 1.");
+        }
+
         this.defaultHealth = defaultHealth;
+
+        int healthChange = section.getInt("healthChange");
+        if (healthChange < 0) {
+            throw new InvalidConfigurationException("Property 'healthChange' cannot be lower than 0.");
+        }
+
         this.healthChange = healthChange;
-        this.healthRange = healthRange;
-        this.killByPlayerOnly = killByPlayerOnly;
-        this.heartItem = heartItem;
-        this.eliminationMode = eliminationMode;
-        this.rewardHeartOnOverlimit = rewardHeartOnOverlimit;
+
+        int minimumHealth = section.getInt("minimumHealth");
+        if (minimumHealth < 1) {
+            throw new InvalidConfigurationException("Property 'minimumHealth' cannot be lower than 1.");
+        }
+
+        int maximumHealth = section.getInt("maximumHealth");
+        if (maximumHealth < minimumHealth) {
+            throw new InvalidConfigurationException("Property 'maximumHealth' cannot be lower than 'minimumHealth'.");
+        }
+
+        this.healthRange = new SimpleImmutableEntry<>(minimumHealth, maximumHealth);
+
+        this.killByPlayerOnly = section.getBoolean("killByPlayerOnly");
+
+        ConfigurationSection heartItemSection = section.getConfigurationSection("heartItem");
+        if (heartItemSection == null) {
+            throw new InvalidConfigurationException("Section 'heartItem' cannot be null.");
+        }
+
+        this.rewardHeartOnOverlimit = heartItemSection.getBoolean("rewardHeartOnOverlimit");
+
+        if (heartItemSection.getBoolean("enabled")) {
+            int heartItemHealthAmount = heartItemSection.getInt("healthAmount");
+            if (heartItemHealthAmount < 0) {
+                throw new InvalidConfigurationException("Property 'healthAmount' cannot be lower than 0.");
+            }
+
+            Material heartItemType = Material.matchMaterial(heartItemSection.getString("type"));
+            if (heartItemType == null) {
+                throw new InvalidConfigurationException("Property 'type' is not a valid item type.");
+            }
+
+            ItemStack heartItemStack = new ItemStack(heartItemType);
+
+            ConfigurationSection heartItemMetaSection = heartItemSection.getConfigurationSection("meta");
+            if (heartItemMetaSection != null) {
+                ItemMeta heartItemMeta = heartItemStack.getItemMeta();
+
+                String displayName = heartItemSection.getString("meta.displayName");
+                if (displayName == null) {
+                    throw new InvalidConfigurationException("Property 'displayName' cannot be null.");
+                }
+
+                heartItemMeta.setDisplayName(formatColor(displayName));
+                heartItemMeta.setLore(formatColor(heartItemMetaSection.getStringList("lore")));
+
+                heartItemStack.setItemMeta(heartItemMeta);
+            }
+
+            ShapedRecipe heartItemRecipe = new ShapedRecipe(heartItemStack);
+
+            heartItemRecipe.shape("123", "456", "789");
+
+            ConfigurationSection heartItemRecipeSection = heartItemSection.getConfigurationSection("craftingRecipe");
+            if (heartItemRecipeSection == null) {
+                throw new InvalidConfigurationException("Section 'craftingRecipe' cannot be null.");
+            }
+
+            for (String key : heartItemRecipeSection.getKeys(false)) {
+                Material material = Material.matchMaterial(heartItemRecipeSection.getString(key));
+                if (material == null) {
+                    throw new InvalidConfigurationException("Item type in the recipe section is invalid.");
+                }
+
+                heartItemRecipe.setIngredient(key.charAt(0), material);
+            }
+
+            this.heartItem = new HeartItem(heartItemHealthAmount, heartItemRecipe);
+        }
+
+        ConfigurationSection eliminationSection = section.getConfigurationSection("eliminationMode");
+        if (eliminationSection == null) {
+            throw new InvalidConfigurationException("Section 'eliminationMode' cannot be null.");
+        }
+
+        if (eliminationSection.getBoolean("enabled")) {
+            int eliminationRequiredHealth = eliminationSection.getInt("requiredHealth");
+            if (eliminationRequiredHealth < 1) {
+                throw new InvalidConfigurationException("Property 'requiredHealth' cannot be lower than 1.");
+            }
+
+            String eliminationActionRaw = eliminationSection.getString("action");
+            if (eliminationActionRaw == null) {
+                throw new InvalidConfigurationException("Property 'action' cannot be null.");
+            }
+
+            EliminationModeAction eliminationAction;
+            try {
+                eliminationAction = EliminationModeAction.valueOf(eliminationActionRaw);
+            } catch (IllegalArgumentException exception) {
+                throw new InvalidConfigurationException("Property 'action' is not a valid action.");
+            }
+
+            List<String> eliminationActionCommands = eliminationSection.getStringList("commands");
+
+            this.elimination = new EliminationMode(eliminationRequiredHealth, eliminationAction, eliminationActionCommands);
+        }
     }
 
-    public int getDefaultHealth() {
-        return this.defaultHealth;
+    private static String formatColor(String string) {
+        return ChatColor.translateAlternateColorCodes('&', string);
     }
 
-    public int getHealthChange() {
-        return this.healthChange;
-    }
-
-    public Entry<Integer, Integer> getHealthRange() {
-        return this.healthRange;
-    }
-
-    public boolean isKillByPlayerOnly() {
-        return this.killByPlayerOnly;
-    }
-
-    public HeartItem getHeartItem() {
-        return this.heartItem;
-    }
-
-    public EliminationMode getEliminationMode() {
-        return this.eliminationMode;
-    }
-
-    public boolean isRewardHeartOnOverlimit() {
-        return this.rewardHeartOnOverlimit;
+    private static List<String> formatColor(List<String> strings) {
+        return strings.stream()
+            .map(PluginConfig::formatColor)
+            .collect(Collectors.toList());
     }
 
 }

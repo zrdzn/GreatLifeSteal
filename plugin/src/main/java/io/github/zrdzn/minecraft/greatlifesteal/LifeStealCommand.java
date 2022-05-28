@@ -10,11 +10,14 @@ import org.bukkit.entity.Player;
 
 public class LifeStealCommand implements CommandExecutor {
 
+    private final GreatLifeStealPlugin plugin;
     private final MessageService messageService;
     private final DamageableAdapter adapter;
     private final Server server;
 
-    public LifeStealCommand(MessageService messageService, DamageableAdapter adapter, Server server) {
+    public LifeStealCommand(GreatLifeStealPlugin plugin, MessageService messageService, DamageableAdapter adapter,
+                            Server server) {
+        this.plugin = plugin;
         this.messageService = messageService;
         this.adapter = adapter;
         this.server = server;
@@ -27,13 +30,13 @@ public class LifeStealCommand implements CommandExecutor {
             return true;
         }
 
-        if (!sender.hasPermission("greatlifesteal.command.set")) {
-            this.messageService.send(sender, "noPermissions");
-            return true;
-        }
-
         switch (args[0].toLowerCase()) {
             case "set":
+                if (!sender.hasPermission("greatlifesteal.command.set")) {
+                    this.messageService.send(sender, "noPermissions");
+                    return true;
+                }
+
                 if (args.length < 3) {
                     this.messageService.send(sender, "commandUsage");
                     return true;
@@ -57,6 +60,20 @@ public class LifeStealCommand implements CommandExecutor {
 
                 String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
                 this.messageService.send(sender, "successfulCommandSet", placeholders);
+
+                break;
+            case "reload":
+                if (!sender.hasPermission("greatlifesteal.command.reload")) {
+                    this.messageService.send(sender, "noPermissions");
+                    return true;
+                }
+
+                if (this.plugin.loadConfigurations()) {
+                    this.messageService.send(sender, "successfulCommandReload");
+                    return true;
+                }
+
+                this.messageService.send(sender, "failCommandReload");
 
                 break;
             default:

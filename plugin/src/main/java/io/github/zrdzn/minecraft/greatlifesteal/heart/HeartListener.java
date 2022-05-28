@@ -45,7 +45,7 @@ public class HeartListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        Entry<Integer, Integer> healthRange = this.config.getHealthRange();
+        Entry<Integer, Integer> healthRange = this.config.healthRange;
 
         double playerNewHealth = this.adapter.getMaxHealth(player) + this.heartItem.getHealthAmount();
         if (playerNewHealth <= healthRange.getValue()) {
