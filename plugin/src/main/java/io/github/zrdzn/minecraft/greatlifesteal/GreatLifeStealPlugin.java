@@ -8,6 +8,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.message.MessageLoader;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -122,7 +124,19 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             return new V1_8SpigotAdapter();
         }
 
-        return new V1_9SpigotAdapter();
+        try {
+            for (Constructor<?> constructor : Class.forName("org.bukkit.inventory.ShapedRecipe").getDeclaredConstructors()) {
+                if (constructor.getParameterCount() == 2) {
+                    return new V1_12SpigotAdapter(plugin);
+                }
+            }
+
+            return new V1_9SpigotAdapter();
+        } catch (ClassNotFoundException exception) {
+            logger.error("Could not find the ShapedRecipe class.", exception);
+            plugin.getServer().getPluginManager().disablePlugin(plugin);
+            return null;
+        }
     }
 
     /**
