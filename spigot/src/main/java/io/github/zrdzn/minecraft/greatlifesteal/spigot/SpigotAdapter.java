@@ -4,4 +4,6 @@ public interface SpigotAdapter {
 
     DamageableAdapter getDamageableAdapter();
 
+    ShapedRecipeAdapter getShapedRecipeAdapter();
+
 }

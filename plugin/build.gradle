@@ -2,6 +2,7 @@ dependencies {
     implementation(project(":spigot"))
     implementation(project(":v1_8"))
     implementation(project(":v1_9"))
+    implementation(project(":v1_12"))
 
     compileOnly "org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT"
 
