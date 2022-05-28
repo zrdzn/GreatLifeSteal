@@ -2,6 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -18,10 +19,12 @@ public class UserListener implements Listener {
 
     private final PluginConfig config;
     private final DamageableAdapter adapter;
+    private final MessageService messageService;
 
-    public UserListener(PluginConfig config, DamageableAdapter adapter) {
+    public UserListener(PluginConfig config, DamageableAdapter adapter, MessageService messageService) {
         this.config = config;
         this.adapter = adapter;
+        this.messageService = messageService;
     }
 
     @EventHandler
@@ -49,6 +52,8 @@ public class UserListener implements Listener {
             double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
             if (killerNewHealth <= healthRange.getValue()) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
+            } else {
+                this.messageService.send(killer, "maxHealthReached");
             }
         }
 

@@ -51,6 +51,19 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         Configuration configuration = this.getConfig();
 
         ConfigurationSection baseSection = configuration.getConfigurationSection("baseSettings");
+
+        MessageCache messageCache = new MessageCache();
+
+        MessageLoader messageLoader = new MessageLoader(messageCache);
+        try {
+            messageLoader.load(configuration.getConfigurationSection("messages"));
+        } catch (InvalidConfigurationException exception) {
+            logger.error("Could not parse the 'messages' section.", exception);
+            pluginManager.disablePlugin(this);
+            return;
+        }
+
+        MessageService messageService = new MessageService(messageCache);
         if (baseSection == null) {
             logger.error("Could not find the 'baseSettings' section.");
             pluginManager.disablePlugin(this);
@@ -69,7 +82,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
 
-        UserListener userListener = new UserListener(pluginConfig, damageableAdapter);
+        UserListener userListener = new UserListener(pluginConfig, damageableAdapter, messageService);
 
         pluginManager.registerEvents(userListener, this);
 
@@ -79,21 +92,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 logger.error("Could not add a recipe for some unknown reason.");
             }
 
-            pluginManager.registerEvents(new HeartListener(pluginConfig, damageableAdapter, heartItem), this);
+            HeartListener heartListener = new HeartListener(pluginConfig, damageableAdapter, messageService, heartItem);
+
+            pluginManager.registerEvents(heartListener, this);
         }
 
-        MessageCache messageCache = new MessageCache();
-
-        MessageLoader messageLoader = new MessageLoader(messageCache);
-        try {
-            messageLoader.load(configuration.getConfigurationSection("messages"));
-        } catch (InvalidConfigurationException exception) {
-            logger.error("Could not parse the 'messages' section.", exception);
-            pluginManager.disablePlugin(this);
-            return;
-        }
-
-        MessageService messageService = new MessageService(messageCache);
 
         this.getCommand("lifesteal").setExecutor(new LifeStealCommand(messageService, damageableAdapter, server));
 

@@ -1,6 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
 import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,11 +16,13 @@ public class HeartListener implements Listener {
 
     private final PluginConfig config;
     private final DamageableAdapter adapter;
+    private final MessageService messageService;
     private final HeartItem heartItem;
 
-    public HeartListener(PluginConfig config, DamageableAdapter adapter, HeartItem heartItem) {
+    public HeartListener(PluginConfig config, DamageableAdapter adapter, MessageService messageService, HeartItem heartItem) {
         this.config = config;
         this.adapter = adapter;
+        this.messageService = messageService;
         this.heartItem = heartItem;
     }
 
@@ -48,6 +51,8 @@ public class HeartListener implements Listener {
         if (playerNewHealth <= healthRange.getValue()) {
             this.adapter.setMaxHealth(player, playerNewHealth);
             item.setAmount(item.getAmount() - 1);
+        } else {
+            this.messageService.send(player, "maxHealthReached");
         }
 
         event.setCancelled(true);
