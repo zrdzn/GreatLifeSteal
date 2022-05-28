@@ -47,7 +47,7 @@ public class UserListener implements Listener {
     public void setDefaultHearts(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (!player.hasPlayedBefore()) {
-            this.adapter.setMaxHealth(player, this.config.getDefaultHealth());
+            this.adapter.setMaxHealth(player, this.config.defaultHealth);
         }
     }
 
@@ -56,11 +56,11 @@ public class UserListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
-        Entry<Integer, Integer> healthRange = this.config.getHealthRange();
+        Entry<Integer, Integer> healthRange = this.config.healthRange;
 
-        int healthChange = this.config.getHealthChange();
+        int healthChange = this.config.healthChange;
 
-        if (this.config.isKillByPlayerOnly()) {
+        if (this.config.killByPlayerOnly) {
             if (killer == null) {
                 return;
             }
@@ -71,8 +71,8 @@ public class UserListener implements Listener {
             } else {
                 this.messageService.send(killer, "maxHealthReached");
 
-                HeartItem heartItem = this.config.getHeartItem();
-                if (heartItem != null && this.config.isRewardHeartOnOverlimit()) {
+                HeartItem heartItem = this.config.heartItem;
+                if (heartItem != null && this.config.rewardHeartOnOverlimit) {
                     killer.getInventory().addItem(heartItem.getCraftingRecipe().getResult());
                 }
             }
@@ -85,7 +85,7 @@ public class UserListener implements Listener {
             this.adapter.setMaxHealth(victim, victimNewHealth);
         }
 
-        EliminationMode elimination = this.config.getEliminationMode();
+        EliminationMode elimination = this.config.elimination;
         if (elimination == null) {
             return;
         }

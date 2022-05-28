@@ -72,9 +72,11 @@ baseSettings:
 # All messages that can be sent by the plugin to players.
 # If you want to disable specific messages just place a '#' before them.
 messages:
-  commandUsage: "&aType /lifesteal set <player> <health_points>"
+  commandUsage: "&aType /lifesteal set/reload [player] [health_points]"
   noPermissions: "&cYou don't have enough permissions."
   successfulCommandSet: "&aYou have successfully set &e{HEALTH} &ahp for &e{PLAYER}&a."
+  successfulCommandReload: "&aPlugin has been successfully reloaded."
+  failCommandReload: "&cCould not reload the plugin."
   invalidPlayerProvided: "&cYou have provided invalid player."
   invalidHealthProvided: "&cYou have provided invalid health number."
   maxHealthReached: "&cYou have reached the maximum amount of health points."
