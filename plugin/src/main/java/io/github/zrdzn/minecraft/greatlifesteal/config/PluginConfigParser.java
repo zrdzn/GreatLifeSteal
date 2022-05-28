@@ -1,6 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.config;
 
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.ShapedRecipeAdapter;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
@@ -16,6 +17,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PluginConfigParser {
+
+    private final ShapedRecipeAdapter recipeAdapter;
+
+    public PluginConfigParser(ShapedRecipeAdapter recipeAdapter) {
+        this.recipeAdapter = recipeAdapter;
+    }
 
     public PluginConfig parse(ConfigurationSection section) throws InvalidConfigurationException {
         if (section == null) {
@@ -80,7 +87,7 @@ public class PluginConfigParser {
                 heartItemStack.setItemMeta(heartItemMeta);
             }
 
-            ShapedRecipe heartItemRecipe = new ShapedRecipe(heartItemStack);
+            ShapedRecipe heartItemRecipe = this.recipeAdapter.createRecipe(heartItemStack);
 
             heartItemRecipe.shape("123", "456", "789");
 
