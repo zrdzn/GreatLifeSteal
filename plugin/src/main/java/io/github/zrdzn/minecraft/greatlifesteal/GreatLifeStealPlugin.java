@@ -82,7 +82,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         DamageableAdapter damageableAdapter = this.prepareSpigotAdapter().getDamageableAdapter();
 
-        UserListener userListener = new UserListener(pluginConfig, damageableAdapter, messageService);
+        UserListener userListener = new UserListener(pluginConfig, messageService, damageableAdapter);
 
         pluginManager.registerEvents(userListener, this);
 

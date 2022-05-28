@@ -21,10 +21,10 @@ public class UserListener implements Listener {
     private final DamageableAdapter adapter;
     private final MessageService messageService;
 
-    public UserListener(PluginConfig config, DamageableAdapter adapter, MessageService messageService) {
+    public UserListener(PluginConfig config, MessageService messageService, DamageableAdapter adapter) {
         this.config = config;
-        this.adapter = adapter;
         this.messageService = messageService;
+        this.adapter = adapter;
     }
 
     @EventHandler
