@@ -21,7 +21,6 @@ public class LifeStealTabCompleter implements TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            System.out.println("args.length == 0");
             return new ArrayList<String>() {{
                 add("set");
                 add("reload");
