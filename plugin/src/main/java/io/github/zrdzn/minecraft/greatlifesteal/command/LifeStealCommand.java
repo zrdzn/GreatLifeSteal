@@ -2,6 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.command;
 
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.Server;
 import org.bukkit.command.Command;

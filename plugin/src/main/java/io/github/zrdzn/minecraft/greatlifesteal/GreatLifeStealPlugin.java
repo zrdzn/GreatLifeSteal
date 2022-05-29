@@ -8,7 +8,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
-import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
@@ -100,7 +99,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         PluginCommand lifeStealCommand = this.getCommand("lifesteal");
         lifeStealCommand.setExecutor(new LifeStealCommand(this, this.config.messages, damageableAdapter, this.server));
-        lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.config));
+        lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.config.baseSettings));
     }
 
     public boolean loadConfigurations() {

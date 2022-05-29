@@ -1,6 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
-import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.configs.BaseSettingsConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,9 +12,9 @@ import java.util.List;
 
 public class LifeStealTabCompleter implements TabCompleter {
 
-    private final PluginConfig config;
+    private final BaseSettingsConfig config;
 
-    public LifeStealTabCompleter(PluginConfig config) {
+    public LifeStealTabCompleter(BaseSettingsConfig config) {
         this.config = config;
     }
 
