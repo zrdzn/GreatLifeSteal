@@ -1,5 +1,6 @@
-package io.github.zrdzn.minecraft.greatlifesteal;
+package io.github.zrdzn.minecraft.greatlifesteal.command;
 
+import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.Server;
