@@ -1,6 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
-import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.entity.Player;
@@ -10,19 +10,15 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map.Entry;
-
 public class HeartListener implements Listener {
 
     private final PluginConfig config;
     private final DamageableAdapter adapter;
-    private final MessageService messageService;
     private final HeartItem heartItem;
 
-    public HeartListener(PluginConfig config, DamageableAdapter adapter, MessageService messageService, HeartItem heartItem) {
+    public HeartListener(PluginConfig config, DamageableAdapter adapter, HeartItem heartItem) {
         this.config = config;
         this.adapter = adapter;
-        this.messageService = messageService;
         this.heartItem = heartItem;
     }
 
@@ -45,14 +41,13 @@ public class HeartListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        Entry<Integer, Integer> healthRange = this.config.healthRange;
 
         double playerNewHealth = this.adapter.getMaxHealth(player) + this.heartItem.getHealthAmount();
-        if (playerNewHealth <= healthRange.getValue()) {
+        if (playerNewHealth <= this.config.baseSettings.maximumHealth) {
             this.adapter.setMaxHealth(player, playerNewHealth);
-            item.setAmount(item.getAmount() - 1);
+            player.getInventory().removeItem(heartItemStack);
         } else {
-            this.messageService.send(player, "maxHealthReached");
+            MessageService.send(player, this.config.messages.maxHealthReached);
         }
 
         event.setCancelled(true);

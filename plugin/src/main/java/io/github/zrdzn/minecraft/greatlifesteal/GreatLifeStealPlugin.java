@@ -1,11 +1,13 @@
 package io.github.zrdzn.minecraft.greatlifesteal;
 
-import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
+import eu.okaeri.configs.ConfigManager;
+import eu.okaeri.configs.exception.OkaeriException;
+import eu.okaeri.configs.validator.okaeri.OkaeriValidator;
+import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
+import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageCache;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageLoader;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
@@ -14,10 +16,11 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
 import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
-import org.bukkit.configuration.Configuration;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.json.simple.JSONObject;
@@ -27,24 +30,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class GreatLifeStealPlugin extends JavaPlugin {
 
     private final Logger logger = LoggerFactory.getLogger("GreatLifeSteal");
-    private final PluginConfig pluginConfig = new PluginConfig();
-    private final MessageCache messageCache = new MessageCache();
-    private final MessageLoader messageLoader = new MessageLoader(this.messageCache);
-    private final MessageService messageService = new MessageService(this.messageCache);
     private final Server server = this.getServer();
     private final PluginManager pluginManager = this.server.getPluginManager();
 
+    private PluginConfig config;
+    private HeartItem heartItem;
     private SpigotAdapter spigotAdapter;
+
+    public static String formatColor(String string) {
+        return ChatColor.translateAlternateColorCodes('&', string);
+    }
+
+    public static List<String> formatColor(List<String> strings) {
+        return strings.stream()
+            .map(GreatLifeStealPlugin::formatColor)
+            .collect(Collectors.toList());
+    }
 
     @Override
     public void onEnable() {
@@ -52,66 +66,68 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         new Metrics(this, 15277);
 
-        if (!this.loadConfigurations()) {
+        try {
+            this.config = ConfigManager.create(PluginConfig.class, (it) -> {
+                it.withConfigurer(new OkaeriValidator(new YamlBukkitConfigurer()));
+                it.withBindFile(new File(this.getDataFolder(), "config.yml"));
+                it.saveDefaults();
+                it.load(true);
+            });
+        } catch (OkaeriException exception) {
+            this.logger.error("Could not load the plugin configuration.", exception);
             this.pluginManager.disablePlugin(this);
             return;
         }
 
         this.spigotAdapter = this.prepareSpigotAdapter();
 
+        if (!this.loadConfigurations()) {
+            this.pluginManager.disablePlugin(this);
+            return;
+        }
+
         DamageableAdapter damageableAdapter = this.spigotAdapter.getDamageableAdapter();
 
         boolean latestVersion = this.checkLatestVersion();
 
-        UserListener userListener = new UserListener(this.pluginConfig, this.messageService, damageableAdapter, latestVersion);
+        UserListener userListener = new UserListener(this.config, damageableAdapter, this.heartItem, latestVersion);
 
         this.pluginManager.registerEvents(userListener, this);
 
-        this.getCommand("lifesteal").setExecutor(new LifeStealCommand(this, this.messageService, damageableAdapter, this.server));
+        this.getCommand("lifesteal").setExecutor(new LifeStealCommand(this, this.config.messages, damageableAdapter, this.server));
     }
 
     public boolean loadConfigurations() {
         this.saveDefaultConfig();
         this.reloadConfig();
 
-        Configuration configuration = this.getConfig();
+        this.config.load();
 
-        try {
-            ConfigurationSection section = configuration.getConfigurationSection("baseSettings");
-            if (section == null) {
-                this.logger.error("Could not find the 'baseSettings' section.");
-                return false;
-            }
+        HeartItemConfig heartItemConfig = this.config.baseSettings.heartItem;
+        if (heartItemConfig.enabled) {
+            ItemStack heartItemStack = new ItemStack(heartItemConfig.type);
 
-            this.pluginConfig.parseAndLoad(section);
-        } catch (InvalidConfigurationException exception) {
-            this.logger.error("Could not load the plugin configuration.", exception);
-            return false;
-        }
+            ItemMeta heartItemMeta = heartItemStack.getItemMeta();
+            heartItemMeta.setDisplayName(heartItemConfig.meta.getDisplayName());
+            heartItemMeta.setLore(heartItemConfig.meta.getLore());
+            heartItemStack.setItemMeta(heartItemMeta);
 
-        HeartItem heartItem = this.pluginConfig.heartItem;
-        if (heartItem != null) {
-            if (!this.server.addRecipe(heartItem.getCraftingRecipe())) {
+            ShapedRecipe recipe = new ShapedRecipe(heartItemStack.clone());
+
+            recipe.shape("123", "456", "789");
+
+            heartItemConfig.craftingRecipe.forEach((number, type) -> recipe.setIngredient(number.charAt(0), type));
+
+            this.heartItem = new HeartItem(heartItemConfig.healthAmount, recipe);
+
+            if (!this.server.addRecipe(this.heartItem.getCraftingRecipe())) {
                 this.logger.error("Could not add a recipe for some unknown reason.");
             }
 
             DamageableAdapter adapter = this.spigotAdapter.getDamageableAdapter();
 
-            HeartListener heartListener = new HeartListener(this.pluginConfig, adapter, this.messageService, heartItem);
+            HeartListener heartListener = new HeartListener(this.config, adapter, this.heartItem);
             this.pluginManager.registerEvents(heartListener, this);
-        }
-
-        try {
-            ConfigurationSection section = configuration.getConfigurationSection("messages");
-            if (section == null) {
-                this.logger.error("Could not find the 'messages' section.");
-                return false;
-            }
-
-            this.messageLoader.load(section);
-        } catch (InvalidConfigurationException exception) {
-            this.logger.error("Could not load messages from the plugin configuration.", exception);
-            return false;
         }
 
         return true;
