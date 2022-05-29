@@ -1,7 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
-import io.github.zrdzn.minecraft.greatlifesteal.config.PluginConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationMode;
+import io.github.zrdzn.minecraft.greatlifesteal.configs.EliminationConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
@@ -14,20 +14,20 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.Map.Entry;
-
 public class UserListener implements Listener {
 
     private final PluginConfig config;
     private final MessageService messageService;
     private final DamageableAdapter adapter;
+    private final HeartItem heartItem;
     private final boolean latestVersion;
 
     public UserListener(PluginConfig config, MessageService messageService, DamageableAdapter adapter,
-                        boolean latestVersion) {
+                        HeartItem heartItem, boolean latestVersion) {
         this.config = config;
         this.messageService = messageService;
         this.adapter = adapter;
+        this.heartItem = heartItem;
         this.latestVersion = latestVersion;
     }
 
@@ -47,7 +47,7 @@ public class UserListener implements Listener {
     public void setDefaultHearts(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (!player.hasPlayedBefore()) {
-            this.adapter.setMaxHealth(player, this.config.defaultHealth);
+            this.adapter.setMaxHealth(player, this.config.baseSettings.defaultHealth);
         }
     }
 
@@ -56,23 +56,21 @@ public class UserListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
-        Entry<Integer, Integer> healthRange = this.config.healthRange;
+        int healthChange = this.config.baseSettings.healthChange;
 
-        int healthChange = this.config.healthChange;
-
-        if (this.config.giveHealthToKiller && this.config.killByPlayerOnly) {
+        if (this.config.baseSettings.giveHealthToKiller && this.config.baseSettings.killByPlayerOnly) {
             if (killer == null) {
                 return;
             }
 
             double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
-            if (killerNewHealth <= healthRange.getValue()) {
+            if (killerNewHealth <= this.config.baseSettings.maximumHealth) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
             } else {
                 this.messageService.send(killer, "maxHealthReached");
 
-                HeartItem heartItem = this.config.heartItem;
-                if (heartItem != null && this.config.rewardHeartOnOverlimit) {
+                HeartItem heartItem = this.heartItem;
+                if (heartItem != null && this.config.baseSettings.heartItem.rewardHeartOnOverlimit) {
                     killer.getInventory().addItem(heartItem.getCraftingRecipe().getResult());
                 }
             }
@@ -81,22 +79,22 @@ public class UserListener implements Listener {
         double victimMaxHealth = this.adapter.getMaxHealth(victim);
 
         double victimNewHealth = victimMaxHealth - healthChange;
-        if (this.config.takeHealthFromVictim && victimNewHealth >= healthRange.getKey()) {
+        if (this.config.baseSettings.takeHealthFromVictim && victimNewHealth >= this.config.baseSettings.minimumHealth) {
             this.adapter.setMaxHealth(victim, victimNewHealth);
         }
 
-        EliminationMode elimination = this.config.elimination;
-        if (elimination == null) {
+        EliminationConfig elimination = this.config.baseSettings.eliminationMode;
+        if (!elimination.enabled) {
             return;
         }
 
-        if (victimMaxHealth <= elimination.getRequiredHealth()) {
-            switch (elimination.getAction()) {
+        if (victimMaxHealth <= elimination.requiredHealth) {
+            switch (elimination.action) {
                 case SPECTATOR_MODE:
                     victim.setGameMode(GameMode.SPECTATOR);
                     break;
                 case DISPATCH_COMMANDS:
-                    for (String command : elimination.getActionCommands()) {
+                    for (String command : elimination.commands) {
                         command = StringUtils.replace(command, "{victim}", victim.getName());
                         if (killer != null) {
                             command = StringUtils.replace(command, "{killer}", killer.getName());
