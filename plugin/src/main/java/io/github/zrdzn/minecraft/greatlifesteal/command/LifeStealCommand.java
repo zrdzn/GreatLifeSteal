@@ -1,7 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
+import io.github.zrdzn.minecraft.greatlifesteal.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -12,14 +12,14 @@ import org.bukkit.entity.Player;
 public class LifeStealCommand implements CommandExecutor {
 
     private final GreatLifeStealPlugin plugin;
-    private final MessageService messageService;
+    private final MessagesConfig messages;
     private final DamageableAdapter adapter;
     private final Server server;
 
-    public LifeStealCommand(GreatLifeStealPlugin plugin, MessageService messageService, DamageableAdapter adapter,
+    public LifeStealCommand(GreatLifeStealPlugin plugin, MessagesConfig messages, DamageableAdapter adapter,
                             Server server) {
         this.plugin = plugin;
-        this.messageService = messageService;
+        this.messages = messages;
         this.adapter = adapter;
         this.server = server;
     }
@@ -27,25 +27,25 @@ public class LifeStealCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            this.messageService.send(sender, "commandUsage");
+            MessageService.send(sender, this.messages.commandUsage);
             return true;
         }
 
         switch (args[0].toLowerCase()) {
             case "set":
                 if (!sender.hasPermission("greatlifesteal.command.set")) {
-                    this.messageService.send(sender, "noPermissions");
+                    MessageService.send(sender, this.messages.noPermissions);
                     return true;
                 }
 
                 if (args.length < 3) {
-                    this.messageService.send(sender, "commandUsage");
+                    MessageService.send(sender, this.messages.commandUsage);
                     return true;
                 }
 
                 Player target = this.server.getPlayer(args[1]);
                 if (target == null) {
-                    this.messageService.send(sender, "invalidPlayerProvided");
+                    MessageService.send(sender, this.messages.invalidPlayerProvided);
                     return true;
                 }
 
@@ -53,32 +53,32 @@ public class LifeStealCommand implements CommandExecutor {
                 try {
                     health = Integer.parseInt(args[2]);
                 } catch (NumberFormatException exception) {
-                    this.messageService.send(sender, "invalidHealthProvided");
+                    MessageService.send(sender, this.messages.invalidHealthProvided);
                     return true;
                 }
 
                 this.adapter.setMaxHealth(target, health);
 
                 String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
-                this.messageService.send(sender, "successfulCommandSet", placeholders);
+                MessageService.send(sender, this.messages.successfulCommandSet, placeholders);
 
                 break;
             case "reload":
                 if (!sender.hasPermission("greatlifesteal.command.reload")) {
-                    this.messageService.send(sender, "noPermissions");
+                    MessageService.send(sender, this.messages.noPermissions);
                     return true;
                 }
 
                 if (this.plugin.loadConfigurations()) {
-                    this.messageService.send(sender, "successfulCommandReload");
+                    MessageService.send(sender, this.messages.successfulCommandReload);
                     return true;
                 }
 
-                this.messageService.send(sender, "failCommandReload");
+                MessageService.send(sender, this.messages.failCommandReload);
 
                 break;
             default:
-                this.messageService.send(sender, "commandUsage");
+                MessageService.send(sender, this.messages.commandUsage);
         }
 
         return true;
