@@ -8,7 +8,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
@@ -48,7 +47,6 @@ public class GreatLifeStealPlugin extends JavaPlugin {
     private final PluginManager pluginManager = this.server.getPluginManager();
 
     private PluginConfig config;
-    private MessageService messageService;
     private HeartItem heartItem;
     private SpigotAdapter spigotAdapter;
 
@@ -83,8 +81,6 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         this.spigotAdapter = this.prepareSpigotAdapter();
 
-        this.messageService = new MessageService(this.config.getMessages());
-
         if (!this.loadConfigurations()) {
             this.pluginManager.disablePlugin(this);
             return;
@@ -94,12 +90,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         boolean latestVersion = this.checkLatestVersion();
 
-        UserListener userListener = new UserListener(this.config, this.messageService, damageableAdapter, this.heartItem,
-            latestVersion);
+        UserListener userListener = new UserListener(this.config, damageableAdapter, this.heartItem, latestVersion);
 
         this.pluginManager.registerEvents(userListener, this);
 
-        this.getCommand("lifesteal").setExecutor(new LifeStealCommand(this, this.messageService, damageableAdapter, this.server));
+        this.getCommand("lifesteal").setExecutor(new LifeStealCommand(this, this.config.messages, damageableAdapter, this.server));
     }
 
     public boolean loadConfigurations() {
@@ -131,8 +126,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
             DamageableAdapter adapter = this.spigotAdapter.getDamageableAdapter();
 
-            HeartListener heartListener = new HeartListener(this.config.baseSettings, adapter, this.messageService,
-                this.heartItem);
+            HeartListener heartListener = new HeartListener(this.config, adapter, this.heartItem);
             this.pluginManager.registerEvents(heartListener, this);
         }
 

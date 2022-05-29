@@ -17,15 +17,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class UserListener implements Listener {
 
     private final PluginConfig config;
-    private final MessageService messageService;
     private final DamageableAdapter adapter;
     private final HeartItem heartItem;
     private final boolean latestVersion;
 
-    public UserListener(PluginConfig config, MessageService messageService, DamageableAdapter adapter,
-                        HeartItem heartItem, boolean latestVersion) {
+    public UserListener(PluginConfig config, DamageableAdapter adapter, HeartItem heartItem, boolean latestVersion) {
         this.config = config;
-        this.messageService = messageService;
         this.adapter = adapter;
         this.heartItem = heartItem;
         this.latestVersion = latestVersion;
@@ -39,7 +36,7 @@ public class UserListener implements Listener {
 
         Player player = event.getPlayer();
         if (player.hasPermission("greatlifesteal.notify.update")) {
-            this.messageService.send(player, "pluginOutdated");
+            MessageService.send(player, this.config.messages.pluginOutdated);
         }
     }
 
@@ -67,7 +64,7 @@ public class UserListener implements Listener {
             if (killerNewHealth <= this.config.baseSettings.maximumHealth) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
             } else {
-                this.messageService.send(killer, "maxHealthReached");
+                MessageService.send(killer, this.config.messages.maxHealthReached);
 
                 HeartItem heartItem = this.heartItem;
                 if (heartItem != null && this.config.baseSettings.heartItem.rewardHeartOnOverlimit) {
