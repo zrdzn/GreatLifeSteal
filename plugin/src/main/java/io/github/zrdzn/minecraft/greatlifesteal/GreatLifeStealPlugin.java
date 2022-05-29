@@ -6,6 +6,8 @@ import eu.okaeri.configs.validator.okaeri.OkaeriValidator;
 import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
+import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
@@ -18,6 +20,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -94,7 +97,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         this.pluginManager.registerEvents(userListener, this);
 
-        this.getCommand("lifesteal").setExecutor(new LifeStealCommand(this, this.config.messages, damageableAdapter, this.server));
+        PluginCommand lifeStealCommand = this.getCommand("lifesteal");
+        lifeStealCommand.setExecutor(new LifeStealCommand(this, this.config.messages, damageableAdapter, this.server));
+        lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.config.baseSettings));
     }
 
     public boolean loadConfigurations() {
