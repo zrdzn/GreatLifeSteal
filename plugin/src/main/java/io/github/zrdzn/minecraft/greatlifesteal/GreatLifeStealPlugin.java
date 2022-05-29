@@ -17,6 +17,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
 import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Server;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -69,8 +70,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         this.pluginManager.registerEvents(userListener, this);
 
-        this.getCommand("lifesteal").setExecutor(new LifeStealCommand(this, this.messageService, damageableAdapter, this.server));
-        this.getCommand("lifesteal").setTabCompleter(new LifeStealTabCompleter(this.pluginConfig));
+        PluginCommand lifeStealCommand = this.getCommand("lifesteal");
+        lifeStealCommand.setExecutor(new LifeStealCommand(this, this.messageService, damageableAdapter, this.server));
+        lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.pluginConfig));
     }
 
     public boolean loadConfigurations() {

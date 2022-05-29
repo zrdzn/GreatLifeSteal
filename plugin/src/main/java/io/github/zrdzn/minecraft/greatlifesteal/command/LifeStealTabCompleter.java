@@ -34,9 +34,7 @@ public class LifeStealTabCompleter implements TabCompleter {
                     Bukkit.getServer().getOnlinePlayers().forEach(player -> players.add(player.getName()));
                     return players;
                 } else if (args.length == 3) {
-                    List<String> health = new ArrayList<>();
-                    health.add(String.valueOf(this.config.defaultHealth));
-                    return health;
+                    return Collections.singletonList(String.valueOf(this.config.defaultHealth));
                 }
             case "reload":
                 return Collections.emptyList();
