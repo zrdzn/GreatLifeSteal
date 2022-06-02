@@ -1,5 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
+import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
@@ -13,6 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import java.util.stream.Collectors;
 
 public class UserListener implements Listener {
 
@@ -99,6 +102,13 @@ public class UserListener implements Listener {
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     }
                     break;
+                case BROADCAST:
+                    String[] messages = elimination.broadcastMessages.stream()
+                        .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
+                        .map(GreatLifeStealPlugin::formatColor)
+                        .toArray(String[]::new);
+
+                    victim.sendMessage(messages);
             }
         }
     }
