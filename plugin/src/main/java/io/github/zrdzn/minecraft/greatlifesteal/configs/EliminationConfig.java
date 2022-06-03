@@ -23,6 +23,7 @@ public class EliminationConfig extends OkaeriConfig {
     @Comment("Available:")
     @Comment(" SPECTATOR_MODE - change player's game mode to spectator.")
     @Comment(" DISPATCH_COMMANDS - execute a list of commands as a console.")
+    @Comment(" BROADCAST - broadcast a message that is specified below.")
     public EliminationModeAction action = EliminationModeAction.SPECTATOR_MODE;
 
     @Comment("")
@@ -31,5 +32,12 @@ public class EliminationConfig extends OkaeriConfig {
     @Comment(" {killer} - represents killer username")
     @Comment(" {victim} - represents victim username")
     public List<String> commands = Collections.singletonList("ban {victim}");
+
+    @Comment("")
+    @Comment("Message that should be broadcasted on the elimination.")
+    @Comment("Works only if the action is set to BROADCAST.")
+    @Comment("Placeholders:")
+    @Comment(" {player} - represents player's username")
+    public List<String> broadcastMessages = Collections.singletonList("&aPlayer &e{player} &ahas been eliminated.");
 
 }
