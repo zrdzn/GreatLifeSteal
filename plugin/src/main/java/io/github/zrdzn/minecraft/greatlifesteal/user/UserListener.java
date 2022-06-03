@@ -103,12 +103,10 @@ public class UserListener implements Listener {
                     }
                     break;
                 case BROADCAST:
-                    String[] messages = elimination.broadcastMessages.stream()
+                    elimination.broadcastMessages.stream()
                         .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
                         .map(GreatLifeStealPlugin::formatColor)
-                        .toArray(String[]::new);
-
-                    victim.sendMessage(messages);
+                        .forEach(Bukkit::broadcastMessage);
             }
         }
     }
