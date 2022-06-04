@@ -112,13 +112,13 @@ public class LifeStealCommand implements CommandExecutor {
 
                 int requiredHealth = this.config.eliminationMode.requiredHealth;
                 double playerHealth = this.adapter.getMaxHealth(target);
-                double lives = (playerHealth - requiredHealth) / this.config.healthChange;
+                int lives = 0;
 
-                if (playerHealth < requiredHealth) {
-                    lives = 0;
+                if (playerHealth > requiredHealth) {
+                    lives = (int) Math.ceil((playerHealth - requiredHealth) / this.config.healthChange);
                 }
 
-                String[] placeholders = { "{PLAYER}", target.getName(), "{LIVES}", String.valueOf((int) lives) };
+                String[] placeholders = { "{PLAYER}", target.getName(), "{LIVES}", String.valueOf(lives) };
                 MessageService.send(sender, this.messages.successfulCommandLives, placeholders);
 
                 break;
