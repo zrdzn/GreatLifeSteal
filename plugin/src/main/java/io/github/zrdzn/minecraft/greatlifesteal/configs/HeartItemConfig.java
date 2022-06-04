@@ -14,7 +14,7 @@ import java.util.Map;
 public class HeartItemConfig extends OkaeriConfig {
 
     @Comment("If any heart item should be enabled on the server.")
-    public boolean enabled = false;
+    public boolean enabled = true;
 
     @Comment("")
     @Comment("If the heart item should be given to killer, when he reaches maximumHealth.")
