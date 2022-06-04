@@ -10,6 +10,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
+import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
@@ -18,6 +19,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
 import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
@@ -68,6 +70,10 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         BasicConfigurator.configure();
 
         new Metrics(this, 15277);
+        if(pluginManager.getPlugin("PlaceholderAPI") != null) {
+            new GreatLifeStealExpansion().register();
+        }
+
 
         try {
             this.config = ConfigManager.create(PluginConfig.class, (it) -> {
