@@ -117,7 +117,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             heartItemMeta.setLore(heartItemConfig.meta.getLore());
             heartItemStack.setItemMeta(heartItemMeta);
 
-            ShapedRecipe recipe = new ShapedRecipe(heartItemStack.clone());
+            ShapedRecipe recipe = this.spigotAdapter.getShapedRecipeAdapter().createRecipe(heartItemStack.clone());
 
             recipe.shape("123", "456", "789");
 
