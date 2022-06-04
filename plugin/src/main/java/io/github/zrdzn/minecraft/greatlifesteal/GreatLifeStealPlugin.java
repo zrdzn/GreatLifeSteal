@@ -99,7 +99,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         this.pluginManager.registerEvents(userListener, this);
 
         PluginCommand lifeStealCommand = this.getCommand("lifesteal");
-        lifeStealCommand.setExecutor(new LifeStealCommand(this, this.config.messages, damageableAdapter, this.server));
+        lifeStealCommand.setExecutor(new LifeStealCommand(this, this.config, damageableAdapter, this.server));
         lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.config.baseSettings));
     }
 

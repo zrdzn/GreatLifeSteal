@@ -20,8 +20,12 @@ public class LifeStealTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        boolean eliminationEnabled = this.config.eliminationMode.enabled;
         if (args.length == 1) {
             return new ArrayList<String>() {{
+                if (eliminationEnabled) {
+                    add("lives");
+                }
                 add("set");
                 add("reload");
             }};
@@ -36,6 +40,14 @@ public class LifeStealTabCompleter implements TabCompleter {
                 } else if (args.length == 3) {
                     return Collections.singletonList(String.valueOf(this.config.defaultHealth));
                 }
+                break;
+            case "lives":
+                if (args.length == 2 && eliminationEnabled) {
+                    List<String> players = new ArrayList<>();
+                    Bukkit.getServer().getOnlinePlayers().forEach(player -> players.add(player.getName()));
+                    return players;
+                }
+                break;
             case "reload":
                 return Collections.emptyList();
         }

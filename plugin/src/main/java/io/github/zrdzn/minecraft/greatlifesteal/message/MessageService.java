@@ -18,7 +18,7 @@ public class MessageService {
 
             String formattedMessage = message;
             for (int index = 0; index < length; index += 2) {
-                formattedMessage = StringUtils.replace(message, placeholders[index], placeholders[index + 1]);
+                formattedMessage = StringUtils.replace(formattedMessage, placeholders[index], placeholders[index + 1]);
             }
 
             receiver.sendMessage(GreatLifeStealPlugin.formatColor(formattedMessage));
