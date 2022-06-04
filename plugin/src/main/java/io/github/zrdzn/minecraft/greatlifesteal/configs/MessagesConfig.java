@@ -10,9 +10,9 @@ public class MessagesConfig extends OkaeriConfig {
 
     public String successfulCommandSet = "&aYou have successfully set &e{HEALTH} &ahp for &e{PLAYER}&a.";
 
-    public String successfulCommandLives = "&aPlayer &e{PLAYER} &ahas &e{LIVES} &aleft.";
+    public String successfulCommandLives = "&aPlayer &e{PLAYER} &ahas &e{LIVES} lives &aleft.";
 
-    public String eliminationNotEnabled = "&cEnable &eeliminationMode &csetting in order to use this command.";
+    public String eliminationNotEnabled = "&cEnable the &eeliminationMode &csetting in order to use this command.";
 
     public String successfulCommandReload = "&aPlugin has been successfully reloaded.";
 
