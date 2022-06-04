@@ -4,11 +4,15 @@ import eu.okaeri.configs.OkaeriConfig;
 
 public class MessagesConfig extends OkaeriConfig {
 
-    public String commandUsage = "&aType /lifesteal set/reload [player] [health_points]";
+    public String commandUsage = "&aType /lifesteal set/reload/lives [player] [health_points]";
 
     public String noPermissions = "&cYou don't have enough permissions.";
 
     public String successfulCommandSet = "&aYou have successfully set &e{HEALTH} &ahp for &e{PLAYER}&a.";
+
+    public String successfulCommandLives = "&aPlayer &e{PLAYER} &ahas &e{LIVES} &aleft.";
+
+    public String eliminationNotEnabled = "&cEnable &eeliminationMode &csetting in order to use this command.";
 
     public String successfulCommandReload = "&aPlugin has been successfully reloaded.";
 
