@@ -83,6 +83,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         }
 
         this.spigotAdapter = this.prepareSpigotAdapter();
+        this.logger.info("Using {} version of the adapter.", this.spigotAdapter.getVersion());
 
         if (!this.loadConfigurations()) {
             this.pluginManager.disablePlugin(this);
