@@ -73,6 +73,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             this.config = ConfigManager.create(PluginConfig.class, (it) -> {
                 it.withConfigurer(new OkaeriValidator(new YamlBukkitConfigurer()));
                 it.withBindFile(new File(this.getDataFolder(), "config.yml"));
+                it.withRemoveOrphans(true);
                 it.saveDefaults();
                 it.load(true);
             });
