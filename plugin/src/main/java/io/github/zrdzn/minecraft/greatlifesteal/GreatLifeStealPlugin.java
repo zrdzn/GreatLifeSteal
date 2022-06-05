@@ -37,10 +37,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GreatLifeStealPlugin extends JavaPlugin {
@@ -104,6 +106,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.config.baseSettings));
     }
 
+    @SuppressWarnings("unchecked")
     public boolean loadConfigurations() {
         this.saveDefaultConfig();
         this.reloadConfig();
@@ -123,7 +126,21 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
             recipe.shape("123", "456", "789");
 
-            heartItemConfig.craftingRecipe.forEach((number, type) -> recipe.setIngredient(number.charAt(0), type));
+            try {
+                Field ingredientsField = recipe.getClass().getDeclaredField("ingredients");
+                ingredientsField.setAccessible(true);
+
+                if (ingredientsField.getType().equals(Map.class)) {
+                    Map<Character, ItemStack> ingredients = (Map<Character, ItemStack>) ingredientsField.get(recipe);
+
+                    heartItemConfig.crafting.forEach((slot, item) -> {
+                        this.logger.info("Putting {}x {} to ingredient's {} slot.", item.amount, item.type, slot);
+                        ingredients.put(slot.charAt(0), new ItemStack(item.type, item.amount));});
+                }
+            } catch (NoSuchFieldException | IllegalAccessException exception) {
+                this.logger.error("Could not set ingredients for the heart item recipe.", exception);
+                return false;
+            }
 
             this.heartItem = new HeartItem(heartItemConfig.healthAmount, recipe);
 
