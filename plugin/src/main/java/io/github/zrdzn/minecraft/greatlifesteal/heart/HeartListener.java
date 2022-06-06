@@ -14,6 +14,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Map;
+
 public class HeartListener implements Listener {
 
     private final PluginConfig config;
@@ -30,11 +32,6 @@ public class HeartListener implements Listener {
     public void prepareItem(PrepareItemCraftEvent event) {
         CraftingInventory inventory = event.getInventory();
 
-        ItemStack[] matrix = inventory.getMatrix();
-        if (matrix.length < 10) {
-            return;
-        }
-
         ItemStack eventResult = inventory.getResult();
         if (eventResult == null) {
             return;
@@ -44,27 +41,34 @@ public class HeartListener implements Listener {
             return;
         }
 
+        Map<Integer, ItemStack> ingredients = this.heartItem.getIngredients();
+
         ItemStack air = new ItemStack(Material.AIR);
 
         for (int matrixIndex = 0; matrixIndex < 9; matrixIndex++) {
-            ItemStack slotItem = matrix[matrixIndex];
+            ItemStack slotItem = inventory.getMatrix()[matrixIndex];
             if (slotItem == null) {
                 continue;
             }
 
-            ItemStack ingredient = this.heartItem.getIngredients().get(matrixIndex + 1);
-            if (ingredient == null) {
-                continue;
+            ItemStack ingredient = ingredients.get(matrixIndex + 1);
+
+            if (matrixIndex + 1 <= ingredients.size()) {
+                if (ingredient == null) {
+                    continue;
+                }
             }
 
-            if (slotItem.getType() != ingredient.getType()) {
-                inventory.setResult(air);
-                break;
-            }
+            if (ingredient != null) {
+                if (slotItem.getType() != ingredient.getType()) {
+                    inventory.setResult(air);
+                    break;
+                }
 
-            if (slotItem.getAmount() < ingredient.getAmount()) {
-                inventory.setResult(air);
-                break;
+                if (slotItem.getAmount() < ingredient.getAmount()) {
+                    inventory.setResult(air);
+                    break;
+                }
             }
         }
     }
