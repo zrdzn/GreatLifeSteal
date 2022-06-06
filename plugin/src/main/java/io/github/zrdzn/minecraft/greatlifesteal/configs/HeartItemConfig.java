@@ -35,16 +35,10 @@ public class HeartItemConfig extends OkaeriConfig {
 
     @Comment("")
     @Comment("Recipe for the heart item creation. Each number is an ordered slot in the workbench (1-9).")
-    public Map<String, Material> craftingRecipe = new HashMap<String, Material>() {{
-        this.put("1", Material.DIAMOND_BLOCK);
-        this.put("2", Material.DIAMOND_BLOCK);
-        this.put("3", Material.DIAMOND_BLOCK);
-        this.put("4", Material.DIAMOND_BLOCK);
-        this.put("5", Material.OBSIDIAN);
-        this.put("6", Material.DIAMOND_BLOCK);
-        this.put("7", Material.DIAMOND_BLOCK);
-        this.put("8", Material.DIAMOND_BLOCK);
-        this.put("9", Material.DIAMOND_BLOCK);
+    public Map<String, RecipeItemConfig> crafting = new HashMap<String, RecipeItemConfig>() {{
+        for (int i = 1; i < 10; i++) {
+            this.put(String.valueOf(i), new RecipeItemConfig());
+        }
     }};
 
     public class HeartMetaConfig extends OkaeriConfig {
@@ -71,6 +65,14 @@ public class HeartItemConfig extends OkaeriConfig {
         public void setLore(List<String> lore) {
             this.lore = lore;
         }
+
+    }
+
+    public class RecipeItemConfig extends OkaeriConfig {
+
+        public Material type = Material.DIAMOND_BLOCK;
+
+        public Integer amount = 1;
 
     }
 

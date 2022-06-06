@@ -15,8 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.stream.Collectors;
-
 public class UserListener implements Listener {
 
     private final PluginConfig config;
@@ -71,7 +69,7 @@ public class UserListener implements Listener {
 
                 HeartItem heartItem = this.heartItem;
                 if (heartItem != null && this.config.baseSettings.heartItem.rewardHeartOnOverlimit) {
-                    killer.getInventory().addItem(heartItem.getCraftingRecipe().getResult());
+                    killer.getInventory().addItem(heartItem.getResult());
                 }
             }
         }
