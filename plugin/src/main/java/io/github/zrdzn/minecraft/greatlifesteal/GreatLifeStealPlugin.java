@@ -5,6 +5,7 @@ import eu.okaeri.configs.exception.OkaeriException;
 import eu.okaeri.configs.validator.okaeri.OkaeriValidator;
 import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig.RecipeItemConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
@@ -37,12 +38,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 public class GreatLifeStealPlugin extends JavaPlugin {
@@ -106,7 +108,6 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.config.baseSettings));
     }
 
-    @SuppressWarnings("unchecked")
     public boolean loadConfigurations() {
         this.saveDefaultConfig();
         this.reloadConfig();
@@ -122,31 +123,31 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             heartItemMeta.setLore(heartItemConfig.meta.getLore());
             heartItemStack.setItemMeta(heartItemMeta);
 
-            ShapedRecipe recipe = this.spigotAdapter.getShapedRecipeAdapter().createRecipe(heartItemStack.clone());
-
+            ShapedRecipe recipe = this.spigotAdapter.getShapedRecipeAdapter().createRecipe(heartItemStack);
             recipe.shape("123", "456", "789");
 
-            try {
-                Field ingredientsField = recipe.getClass().getDeclaredField("ingredients");
-                ingredientsField.setAccessible(true);
-
-                if (ingredientsField.getType().equals(Map.class)) {
-                    Map<Character, ItemStack> ingredients = (Map<Character, ItemStack>) ingredientsField.get(recipe);
-
-                    heartItemConfig.crafting.forEach((slot, item) -> {
-                        this.logger.info("Putting {}x {} to ingredient's {} slot.", item.amount, item.type, slot);
-                        ingredients.put(slot.charAt(0), new ItemStack(item.type, item.amount));});
+            Map<Integer, ItemStack> ingredients = new HashMap<>();
+            for (Entry<String, RecipeItemConfig> item : heartItemConfig.crafting.entrySet()) {
+                String slotRaw = item.getKey();
+                int slot;
+                try {
+                    slot = Integer.parseUnsignedInt(slotRaw);
+                } catch (NumberFormatException exception) {
+                    this.logger.warn("Could not parse the {} slot, because it is not a positive integer.", slotRaw);
+                    continue;
                 }
-            } catch (NoSuchFieldException | IllegalAccessException exception) {
-                this.logger.error("Could not set ingredients for the heart item recipe.", exception);
-                return false;
+
+                RecipeItemConfig recipeItem = item.getValue();
+
+                recipe.setIngredient(slotRaw.charAt(0), recipeItem.type);
+                ingredients.put(slot, new ItemStack(recipeItem.type, recipeItem.amount));
             }
 
-            this.heartItem = new HeartItem(heartItemConfig.healthAmount, recipe);
-
-            if (!this.server.addRecipe(this.heartItem.getCraftingRecipe())) {
+            if (!this.server.addRecipe(recipe)) {
                 this.logger.error("Could not add a recipe for some unknown reason.");
             }
+
+            this.heartItem = new HeartItem(heartItemConfig.healthAmount, heartItemStack, ingredients);
 
             DamageableAdapter adapter = this.spigotAdapter.getDamageableAdapter();
 
