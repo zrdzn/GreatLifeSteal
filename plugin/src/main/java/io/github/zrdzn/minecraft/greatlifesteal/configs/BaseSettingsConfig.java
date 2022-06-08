@@ -39,6 +39,11 @@ public class BaseSettingsConfig extends OkaeriConfig {
     public boolean killByPlayerOnly = true;
 
     @Comment("")
+    @Comment("If players with same ip address should be prevented from gaining health points.")
+    @Comment("This option can prevent from farming health points via multi accounts on a single device.")
+    public boolean preventTakeFromSameIp = true;
+
+    @Comment("")
     @Comment("Item that can be used by a player to give him a specified amount of health points.")
     public HeartItemConfig heartItem = new HeartItemConfig();
 
