@@ -61,6 +61,12 @@ public class UserListener implements Listener {
                 return;
             }
 
+            if (this.config.baseSettings.ignoreSameIp) {
+                if (victim.getAddress().getAddress().equals(killer.getAddress().getAddress())) {
+                    return;
+                }
+            }
+
             double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
             if (killerNewHealth <= this.config.baseSettings.maximumHealth) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
