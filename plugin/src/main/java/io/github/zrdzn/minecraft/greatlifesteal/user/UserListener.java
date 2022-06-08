@@ -61,7 +61,7 @@ public class UserListener implements Listener {
                 return;
             }
 
-            if (this.config.baseSettings.preventTakeFromSameIp) {
+            if (this.config.baseSettings.ignoreSameIp) {
                 if (victim.getAddress().getAddress().equals(killer.getAddress().getAddress())) {
                     return;
                 }
