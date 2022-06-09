@@ -4,7 +4,8 @@ repositories {
         url "https://storehouse.okaeri.eu/repository/maven-public/"
     }
     maven {
-        url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
+        name "placeholderapi-repository"
+        url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
     }
 
 }
@@ -16,7 +17,7 @@ dependencies {
     implementation(project(":v1_12"))
 
     compileOnly "org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT"
-    compileOnly 'me.clip:placeholderapi:2.11.1'
+    compileOnly "me.clip:placeholderapi:2.11.1"
 
     implementation "eu.okaeri:okaeri-configs-yaml-bukkit:3.4.2"
     implementation "eu.okaeri:okaeri-configs-validator-okaeri:3.4.2"
