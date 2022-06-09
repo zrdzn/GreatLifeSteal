@@ -26,28 +26,21 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
     }
 
     @Override
-    public String onRequest(OfflinePlayer player, String params) {
-        if(params.equalsIgnoreCase("lives")){
-            return "lives";
+    public String onRequest(OfflinePlayer player, String parameters) {
+        switch (parameters.toLowerCase()) {
+            case "lives":
+                return "lives";
+            case "hearts":
+                return "hearts";
+            case "health":
+                return "health";
+            case "hearts_left":
+                return "hearts_left";
+            case "health_left":
+                return "health_left";
+            default:
+                return null;
         }
-
-        if(params.equalsIgnoreCase("hearts")) {
-            return "hearts";
-        }
-
-        if(params.equalsIgnoreCase("health")) {
-            return "health";
-        }
-
-        if(params.equalsIgnoreCase("hearts_left")) {
-            return "hearts_left";
-        }
-
-        if(params.equalsIgnoreCase("health_left")) {
-            return "health_left";
-        }
-
-        return null;
     }
 
 }
