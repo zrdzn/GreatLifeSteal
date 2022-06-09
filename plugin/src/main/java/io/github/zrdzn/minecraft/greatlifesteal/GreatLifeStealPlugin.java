@@ -70,10 +70,14 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         BasicConfigurator.configure();
 
         new Metrics(this, 15277);
-        if(pluginManager.getPlugin("PlaceholderAPI") != null) {
-            new GreatLifeStealExpansion().register();
-        }
 
+        if (this.pluginManager.getPlugin("PlaceholderAPI") == null) {
+            this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
+        } else {
+            if (new GreatLifeStealExpansion().register()) {
+                this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
+            }
+        }
 
         try {
             this.config = ConfigManager.create(PluginConfig.class, (it) -> {
