@@ -31,13 +31,19 @@ public class EliminationConfig extends OkaeriConfig {
     @Comment("Placeholders:")
     @Comment(" {killer} - represents killer username")
     @Comment(" {victim} - represents victim username")
+    @Comment(" {killer_max_health} - represents killer's max health")
+    @Comment(" {victim_max_health} - represents victim's max health")
     public List<String> commands = Collections.singletonList("ban {victim}");
 
     @Comment("")
     @Comment("Message that should be broadcasted on the elimination.")
     @Comment("Works only if the action is set to BROADCAST.")
     @Comment("Placeholders:")
-    @Comment(" {player} - represents player's username")
-    public List<String> broadcastMessages = Collections.singletonList("&aPlayer &e{player} &ahas been eliminated.");
+    @Comment(" {killer} - represents killer username")
+    @Comment(" {victim} - represents victim username")
+    @Comment(" {killer_max_health} - represents killer's max health")
+    @Comment(" {victim_max_health} - represents victim's max health")
+    public List<String> broadcastMessages = Collections.singletonList(
+        "&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a.");
 
 }

@@ -39,11 +39,32 @@ public class BaseSettingsConfig extends OkaeriConfig {
     public boolean killByPlayerOnly = true;
 
     @Comment("")
+    @Comment("If players with same ip address should be prevented from gaining health points.")
+    @Comment("This option can prevent from farming health points via multi accounts on a single device.")
+    public boolean ignoreSameIp = true;
+
+    @Comment("")
+    @Comment("Specify if life steal cooldown should be enabled and how long should it last.")
+    @Comment("Killers will not be able to take hearts from victims unless a cooldown time expires.")
+    public StealCooldownConfig stealCooldown = new StealCooldownConfig();
+
+    @Comment("")
     @Comment("Item that can be used by a player to give him a specified amount of health points.")
     public HeartItemConfig heartItem = new HeartItemConfig();
 
     @Comment("")
     @Comment("Define what will happen if a player reaches specific amount of maximum health points.")
     public EliminationConfig eliminationMode = new EliminationConfig();
+
+    public class StealCooldownConfig extends OkaeriConfig {
+
+        @Comment("If the life steal cooldown should be enabled on the server.")
+        public boolean enabled = true;
+
+        @Comment("")
+        @Comment("Cooldown time in seconds.")
+        public int cooldown = 30;
+
+    }
 
 }

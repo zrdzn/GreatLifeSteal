@@ -17,7 +17,16 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class UserListener implements Listener {
+
+    private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
     private final PluginConfig config;
     private final DamageableAdapter adapter;
@@ -74,6 +83,28 @@ public class UserListener implements Listener {
                 return;
             }
 
+            if (this.config.baseSettings.ignoreSameIp) {
+                if (victim.getAddress().getAddress().equals(killer.getAddress().getAddress())) {
+                    return;
+                }
+            }
+
+            // Checks if there is any cooldown active on the killer.
+            if (this.config.baseSettings.stealCooldown.enabled) {
+                Entry<Player, Instant> cooldownEntry = this.stealCooldowns.get(killer);
+                if (cooldownEntry != null && victim.equals(cooldownEntry.getKey())) {
+                    Duration difference = Duration.between(cooldownEntry.getValue(), Instant.now());
+                    Duration limit = Duration.ofSeconds(this.config.baseSettings.stealCooldown.cooldown);
+                    if (difference.compareTo(limit) < 0) {
+                        String[] placeholders = { "{AMOUNT}", String.valueOf(limit.getSeconds() - difference.getSeconds()) };
+                        MessageService.send(killer, this.config.messages.stealCooldownActive, placeholders);
+                        return;
+                    }
+                }
+
+                this.stealCooldowns.put(killer, new SimpleImmutableEntry<>(victim, Instant.now()));
+            }
+
             double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
             if (killerNewHealth <= this.config.baseSettings.maximumHealth) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
@@ -82,7 +113,7 @@ public class UserListener implements Listener {
 
                 HeartItem heartItem = this.heartItem;
                 if (heartItem != null && this.config.baseSettings.heartItem.rewardHeartOnOverlimit) {
-                    killer.getInventory().addItem(heartItem.getCraftingRecipe().getResult());
+                    killer.getInventory().addItem(heartItem.getResult());
                 }
             }
         }
@@ -106,20 +137,31 @@ public class UserListener implements Listener {
                     break;
                 case DISPATCH_COMMANDS:
                     for (String command : elimination.commands) {
-                        command = StringUtils.replace(command, "{victim}", victim.getName());
-                        if (killer != null) {
-                            command = StringUtils.replace(command, "{killer}", killer.getName());
-                        }
+                        command = this.formatPlaceholders(command, victim, killer);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     }
                     break;
                 case BROADCAST:
                     elimination.broadcastMessages.stream()
+                        .map(message -> this.formatPlaceholders(message, victim, killer))
                         .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
                         .map(GreatLifeStealPlugin::formatColor)
                         .forEach(Bukkit::broadcastMessage);
             }
         }
+    }
+
+    private String formatPlaceholders(String string, Player victim, Player killer) {
+        string = StringUtils.replaceEach(string,
+            new String[] { "{victim}", "{victim_max_health}" },
+            new String[] { victim.getName(), String.valueOf((int) victim.getMaxHealth()) });
+        if (killer != null) {
+            string = StringUtils.replaceEach(string,
+                new String[] { "{killer}", "{killer_max_health}" },
+                new String[] { killer.getName(), String.valueOf((int) killer.getMaxHealth()) });
+        }
+
+        return string;
     }
 
 }

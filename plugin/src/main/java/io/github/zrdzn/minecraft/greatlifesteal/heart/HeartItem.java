@@ -1,23 +1,32 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
-import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Collections;
+import java.util.Map;
 
 public class HeartItem {
 
     private final int healthAmount;
-    private final ShapedRecipe craftingRecipe;
+    private final ItemStack result;
+    private final Map<Integer, ItemStack> ingredients;
 
-    public HeartItem(int healthAmount, ShapedRecipe craftingRecipe) {
+    public HeartItem(int healthAmount, ItemStack result, Map<Integer, ItemStack> ingredients) {
         this.healthAmount = healthAmount;
-        this.craftingRecipe = craftingRecipe;
+        this.result = result;
+        this.ingredients = ingredients;
     }
 
     public int getHealthAmount() {
         return this.healthAmount;
     }
 
-    public ShapedRecipe getCraftingRecipe() {
-        return this.craftingRecipe;
+    public ItemStack getResult() {
+        return this.result.clone();
+    }
+
+    public Map<Integer, ItemStack> getIngredients() {
+        return Collections.unmodifiableMap(this.ingredients);
     }
 
 }
