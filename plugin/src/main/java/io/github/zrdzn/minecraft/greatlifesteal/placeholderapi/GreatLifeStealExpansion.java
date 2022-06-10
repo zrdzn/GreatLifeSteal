@@ -1,29 +1,27 @@
 package io.github.zrdzn.minecraft.greatlifesteal.placeholderapi;
 
 import io.github.zrdzn.minecraft.greatlifesteal.configs.BaseSettingsConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.querz.nbt.io.NBTUtil;
-import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.DoubleTag;
-import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.StringTag;
 import org.bukkit.OfflinePlayer;
-import org.slf4j.Logger;
+import org.bukkit.Server;
+import org.bukkit.entity.Player;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
-    private final Logger logger;
     private final BaseSettingsConfig config;
-    private final File playerData;
+    private final DamageableAdapter adapter;
+    private final Server server;
+    private final HealthCache cache;
 
-    public GreatLifeStealExpansion(Logger logger, BaseSettingsConfig config, File playerData) {
-        this.logger = logger;
+    public GreatLifeStealExpansion(BaseSettingsConfig config, DamageableAdapter adapter, Server server, HealthCache cache) {
         this.config = config;
-        this.playerData = playerData;
+        this.adapter = adapter;
+        this.server = server;
+        this.cache = cache;
     }
 
     @Override
@@ -48,28 +46,19 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String parameters) {
-        CompoundTag compoundFile;
-        try {
-            String uuid = player.getUniqueId().toString();
+        String targetName = parameters.split("_")[parameters.length() - 1];
 
-            compoundFile = (CompoundTag) NBTUtil.read(this.playerData.getAbsolutePath() + "/" + uuid + ".dat").getTag();
-        } catch (IOException exception) {
-            this.logger.error("Could not read a .dat file for the " + player.getName() + " player.", exception);
-            return null;
-        }
+        double maxHealth;
 
-        double maxHealth = 0.0D;
-
-        ListTag<CompoundTag> attributes = compoundFile.getListTag("Attributes").asCompoundTagList();
-        for (int i = 0; i < attributes.size(); i++) {
-            Object[] attributeEntry = attributes.get(i).values().toArray();
-
-            String attributeName = ((StringTag) attributeEntry[1]).getValue();
-            if (!attributeName.equals("generic.maxHealth")) {
-                continue;
+        Player target = this.server.getPlayer(targetName);
+        if (target == null) {
+            if (!this.cache.getHealths().containsKey(targetName)) {
+                return null;
             }
 
-            maxHealth = ((DoubleTag) attributeEntry[0]).asDouble();
+            maxHealth = this.cache.getHealth(targetName);
+        } else {
+            maxHealth = this.adapter.getMaxHealth(target);
         }
 
         DecimalFormat decimalFormat = new DecimalFormat("#.##");

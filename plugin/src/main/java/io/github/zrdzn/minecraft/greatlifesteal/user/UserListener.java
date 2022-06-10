@@ -3,6 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
@@ -14,19 +15,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-
-import java.util.stream.Collectors;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class UserListener implements Listener {
 
     private final PluginConfig config;
     private final DamageableAdapter adapter;
+    private final HealthCache cache;
     private final HeartItem heartItem;
     private final boolean latestVersion;
 
-    public UserListener(PluginConfig config, DamageableAdapter adapter, HeartItem heartItem, boolean latestVersion) {
+    public UserListener(PluginConfig config, DamageableAdapter adapter, HealthCache cache, HeartItem heartItem,
+                        boolean latestVersion) {
         this.config = config;
         this.adapter = adapter;
+        this.cache = cache;
         this.heartItem = heartItem;
         this.latestVersion = latestVersion;
     }
@@ -49,6 +52,14 @@ public class UserListener implements Listener {
         if (!player.hasPlayedBefore()) {
             this.adapter.setMaxHealth(player, this.config.baseSettings.defaultHealth);
         }
+
+        this.cache.removeHealth(player.getName());
+    }
+
+    @EventHandler
+    public void removeFromCache(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        this.cache.addHealth(player.getName(), player.getMaxHealth());
     }
 
     @EventHandler

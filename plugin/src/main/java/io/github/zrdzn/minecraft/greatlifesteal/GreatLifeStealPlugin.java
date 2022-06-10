@@ -8,6 +8,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
+import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
 import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
@@ -17,13 +18,10 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
-import net.querz.nbt.io.NBTUtil;
 import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
-import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -74,6 +72,10 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         new Metrics(this, 15277);
 
+        this.spigotAdapter = this.prepareSpigotAdapter();
+        this.logger.info("Using {} version of the adapter.", this.spigotAdapter.getVersion());
+
+        HealthCache healthCache = new HealthCache(this.logger);
         if (this.pluginManager.getPlugin("PlaceholderAPI") == null) {
             this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
         } else {
@@ -89,8 +91,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 return;
             }
 
-            if (new GreatLifeStealExpansion(this.logger, this.config.baseSettings, playerDataMaybe.get()).register()) {
-                this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
+            if (healthCache.loadFromFiles(playerDataMaybe.get())) {
+                if (new GreatLifeStealExpansion(this.config.baseSettings, this.spigotAdapter.getDamageableAdapter(),
+                    this.server, healthCache).register()) {
+                    this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
+                }
             }
         }
 
@@ -107,9 +112,6 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             return;
         }
 
-        this.spigotAdapter = this.prepareSpigotAdapter();
-        this.logger.info("Using {} version of the adapter.", this.spigotAdapter.getVersion());
-
         if (!this.loadConfigurations()) {
             this.pluginManager.disablePlugin(this);
             return;
@@ -119,7 +121,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         boolean latestVersion = this.checkLatestVersion();
 
-        UserListener userListener = new UserListener(this.config, damageableAdapter, this.heartItem, latestVersion);
+        UserListener userListener = new UserListener(this.config, damageableAdapter, healthCache, this.heartItem,
+            latestVersion);
 
         this.pluginManager.registerEvents(userListener, this);
 
