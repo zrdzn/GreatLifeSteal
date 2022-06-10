@@ -130,7 +130,7 @@ public class UserListener implements Listener {
             return;
         }
 
-        if (victimMaxHealth <= elimination.requiredHealth) {
+        if (victimMaxHealth - healthChange <= elimination.requiredHealth) {
             switch (elimination.action) {
                 case SPECTATOR_MODE:
                     victim.setGameMode(GameMode.SPECTATOR);
