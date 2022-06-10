@@ -4,11 +4,13 @@ import io.github.zrdzn.minecraft.greatlifesteal.configs.BaseSettingsConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
@@ -46,24 +48,32 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String parameters) {
-        String targetName = parameters.split("_")[parameters.length() - 1];
+        String[] parametersSplitted = parameters.split("_");
+        String targetName = parametersSplitted[parametersSplitted.length - 1];
+        Bukkit.broadcastMessage("target: " + targetName);
 
         double maxHealth;
 
         Player target = this.server.getPlayer(targetName);
         if (target == null) {
+            /*
             if (!this.cache.getHealths().containsKey(targetName)) {
                 return null;
             }
 
             maxHealth = this.cache.getHealth(targetName);
+            */
+            return null;
         } else {
             maxHealth = this.adapter.getMaxHealth(target);
         }
 
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-        switch (parameters.toLowerCase()) {
+        String placeholderKey = String.join("_", Arrays.copyOf(parametersSplitted, parametersSplitted.length - 1));
+        Bukkit.broadcastMessage(placeholderKey);
+
+        switch (placeholderKey.toLowerCase()) {
             case "lives":
                 if (!this.config.eliminationMode.enabled) {
                     return null;
@@ -76,20 +86,20 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
                 return String.valueOf(lives);
             case "hearts":
-                return String.valueOf(maxHealth / 2.0D);
+                return decimalFormat.format(maxHealth / 2.0D);
             case "health":
-                return String.valueOf(maxHealth);
+                return decimalFormat.format(maxHealth);
             case "hearts_left":
                 if (!this.config.eliminationMode.enabled) {
                     return null;
                 }
 
-                double heartsLeft = 0;
+                int heartsLeft = 0;
                 if (maxHealth > this.config.eliminationMode.requiredHealth) {
-                    heartsLeft = (maxHealth - this.config.eliminationMode.requiredHealth) / 2;
+                    heartsLeft = (int) (maxHealth - this.config.eliminationMode.requiredHealth) / 2;
                 }
 
-                return decimalFormat.format(heartsLeft);
+                return String.valueOf(heartsLeft);
             case "health_left":
                 if (!this.config.eliminationMode.enabled) {
                     return null;

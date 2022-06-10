@@ -53,13 +53,13 @@ public class UserListener implements Listener {
             this.adapter.setMaxHealth(player, this.config.baseSettings.defaultHealth);
         }
 
-        this.cache.removeHealth(player.getName());
+        // (PAPI) this.cache.removeHealth(player.getName());
     }
 
     @EventHandler
     public void removeFromCache(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        this.cache.addHealth(player.getName(), player.getMaxHealth());
+        // (PAPI) this.cache.addHealth(player.getName(), player.getMaxHealth());
     }
 
     @EventHandler

@@ -75,11 +75,32 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         this.spigotAdapter = this.prepareSpigotAdapter();
         this.logger.info("Using {} version of the adapter.", this.spigotAdapter.getVersion());
 
+        try {
+            this.config = ConfigManager.create(PluginConfig.class, (it) -> {
+                it.withConfigurer(new OkaeriValidator(new YamlBukkitConfigurer()));
+                it.withBindFile(new File(this.getDataFolder(), "config.yml"));
+                it.saveDefaults();
+                it.load(true);
+            });
+        } catch (OkaeriException exception) {
+            this.logger.error("Could not load the plugin configuration.", exception);
+            this.pluginManager.disablePlugin(this);
+            return;
+        }
+
+        if (!this.loadConfigurations()) {
+            this.pluginManager.disablePlugin(this);
+            return;
+        }
+
         HealthCache healthCache = new HealthCache(this.logger);
         if (this.pluginManager.getPlugin("PlaceholderAPI") == null) {
             this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
         } else {
+            /* (PAPI) Until .dat files are parsed correctly depending on the version, we cannot support offline players in placeholders.
+
             Optional<File> playerDataMaybe = this.server.getWorlds().stream()
+
                 .map(world -> new File(this.server.getWorldContainer() + "/" + world.getName() + "/playerdata"))
                 .filter(File::exists)
                 .filter(File::isDirectory)
@@ -97,24 +118,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                     this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
                 }
             }
-        }
-
-        try {
-            this.config = ConfigManager.create(PluginConfig.class, (it) -> {
-                it.withConfigurer(new OkaeriValidator(new YamlBukkitConfigurer()));
-                it.withBindFile(new File(this.getDataFolder(), "config.yml"));
-                it.saveDefaults();
-                it.load(true);
-            });
-        } catch (OkaeriException exception) {
-            this.logger.error("Could not load the plugin configuration.", exception);
-            this.pluginManager.disablePlugin(this);
-            return;
-        }
-
-        if (!this.loadConfigurations()) {
-            this.pluginManager.disablePlugin(this);
-            return;
+            */
+            if (new GreatLifeStealExpansion(this.config.baseSettings, this.spigotAdapter.getDamageableAdapter(),
+                this.server, healthCache).register()) {
+                this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
+            }
         }
 
         DamageableAdapter damageableAdapter = this.spigotAdapter.getDamageableAdapter();
