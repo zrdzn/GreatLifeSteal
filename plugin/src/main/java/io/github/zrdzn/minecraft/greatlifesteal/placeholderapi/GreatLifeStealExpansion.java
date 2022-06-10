@@ -91,18 +91,18 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
                     return null;
                 }
 
-                int heartsLeft = 0;
+                double heartsLeft = 0.0D;
                 if (maxHealth > this.config.eliminationMode.requiredHealth) {
-                    heartsLeft = (int) (maxHealth - this.config.eliminationMode.requiredHealth) / 2;
+                    heartsLeft = (maxHealth - this.config.eliminationMode.requiredHealth) / 2;
                 }
 
-                return String.valueOf(heartsLeft);
+                return decimalFormat.format(heartsLeft);
             case "health_left":
                 if (!this.config.eliminationMode.enabled) {
                     return null;
                 }
 
-                double healthLeft = 0;
+                double healthLeft = 0.0D;
                 if (maxHealth > this.config.eliminationMode.requiredHealth) {
                     healthLeft = (maxHealth - this.config.eliminationMode.requiredHealth);
                 }
