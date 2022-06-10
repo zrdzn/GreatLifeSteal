@@ -1,13 +1,18 @@
 repositories {
     maven {
+        name "jitpack-repository"
+        url "https://jitpack.io/"
+    }
+
+    maven {
         name "okaeri-repository"
         url "https://storehouse.okaeri.eu/repository/maven-public/"
     }
+
     maven {
         name "placeholderapi-repository"
         url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
     }
-
 }
 
 dependencies {
@@ -21,6 +26,7 @@ dependencies {
 
     implementation "eu.okaeri:okaeri-configs-yaml-bukkit:3.4.2"
     implementation "eu.okaeri:okaeri-configs-validator-okaeri:3.4.2"
+    implementation "com.github.Querz:NBT:6.1"
     implementation "org.slf4j:slf4j-reload4j:1.7.36"
     implementation "org.bstats:bstats-bukkit:3.0.0"
 }

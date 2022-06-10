@@ -17,11 +17,13 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
+import net.querz.nbt.io.NBTUtil;
 import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -43,6 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GreatLifeStealPlugin extends JavaPlugin {
@@ -74,7 +77,19 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         if (this.pluginManager.getPlugin("PlaceholderAPI") == null) {
             this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
         } else {
-            if (new GreatLifeStealExpansion().register()) {
+            Optional<File> playerDataMaybe = this.server.getWorlds().stream()
+                .map(world -> new File(this.server.getWorldContainer() + "/" + world.getName() + "/playerdata"))
+                .filter(File::exists)
+                .filter(File::isDirectory)
+                .findAny();
+
+            if (!playerDataMaybe.isPresent()) {
+                this.logger.error("Could not find the world that stores 'playerdata' directory.");
+                this.pluginManager.disablePlugin(this);
+                return;
+            }
+
+            if (new GreatLifeStealExpansion(this.logger, this.config.baseSettings, playerDataMaybe.get()).register()) {
                 this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
             }
         }
