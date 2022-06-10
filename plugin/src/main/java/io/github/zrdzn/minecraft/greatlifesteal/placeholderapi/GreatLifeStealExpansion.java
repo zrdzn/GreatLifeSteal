@@ -50,7 +50,6 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
     public String onRequest(OfflinePlayer player, String parameters) {
         String[] parametersSplitted = parameters.split("_");
         String targetName = parametersSplitted[parametersSplitted.length - 1];
-        Bukkit.broadcastMessage("target: " + targetName);
 
         double maxHealth;
 
@@ -71,8 +70,6 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
         String placeholderKey = String.join("_", Arrays.copyOf(parametersSplitted, parametersSplitted.length - 1));
-        Bukkit.broadcastMessage(placeholderKey);
-
         switch (placeholderKey.toLowerCase()) {
             case "lives":
                 if (!this.config.eliminationMode.enabled) {
