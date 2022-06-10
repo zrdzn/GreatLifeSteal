@@ -124,20 +124,31 @@ public class UserListener implements Listener {
                     break;
                 case DISPATCH_COMMANDS:
                     for (String command : elimination.commands) {
-                        command = StringUtils.replace(command, "{victim}", victim.getName());
-                        if (killer != null) {
-                            command = StringUtils.replace(command, "{killer}", killer.getName());
-                        }
+                        command = this.formatPlaceholders(command, victim, killer);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     }
                     break;
                 case BROADCAST:
                     elimination.broadcastMessages.stream()
+                        .map(message -> this.formatPlaceholders(message, victim, killer))
                         .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
                         .map(GreatLifeStealPlugin::formatColor)
                         .forEach(Bukkit::broadcastMessage);
             }
         }
+    }
+
+    private String formatPlaceholders(String string, Player victim, Player killer) {
+        string = StringUtils.replaceEach(string,
+            new String[] { "{victim}", "{victim_max_health}" },
+            new String[] { victim.getName(), String.valueOf((int) victim.getMaxHealth()) });
+        if (killer != null) {
+            string = StringUtils.replaceEach(string,
+                new String[] { "{killer}", "{killer_max_health}" },
+                new String[] { killer.getName(), String.valueOf((int) killer.getMaxHealth()) });
+        }
+
+        return string;
     }
 
 }
