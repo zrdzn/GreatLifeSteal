@@ -179,8 +179,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 ingredients.put(slot, new ItemStack(recipeItem.type, recipeItem.amount));
             }
 
-            if (!this.server.addRecipe(recipe)) {
-                this.logger.error("Could not add a recipe for some unknown reason.");
+            try {
+                if (!this.server.addRecipe(recipe)) {
+                    this.logger.error("Could not add a new recipe for some unknown reason.");
+                }
+            } catch (Exception ignored) {
             }
 
             this.heartItem = new HeartItem(heartItemConfig.healthAmount, heartItemStack, ingredients);
