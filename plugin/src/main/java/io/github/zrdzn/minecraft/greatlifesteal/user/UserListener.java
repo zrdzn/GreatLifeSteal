@@ -15,7 +15,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class UserListener implements Listener {
+
+    private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
     private final PluginConfig config;
     private final DamageableAdapter adapter;
@@ -65,6 +74,22 @@ public class UserListener implements Listener {
                 if (victim.getAddress().getAddress().equals(killer.getAddress().getAddress())) {
                     return;
                 }
+            }
+
+            // Checks if there is any cooldown active on the killer.
+            if (this.config.baseSettings.stealCooldown.enabled) {
+                Entry<Player, Instant> cooldownEntry = this.stealCooldowns.get(killer);
+                if (cooldownEntry != null && victim.equals(cooldownEntry.getKey())) {
+                    Duration difference = Duration.between(cooldownEntry.getValue(), Instant.now());
+                    Duration limit = Duration.ofSeconds(this.config.baseSettings.stealCooldown.cooldown);
+                    if (difference.compareTo(limit) < 0) {
+                        String[] placeholders = { "{AMOUNT}", String.valueOf(limit.getSeconds() - difference.getSeconds()) };
+                        MessageService.send(killer, this.config.messages.stealCooldownActive, placeholders);
+                        return;
+                    }
+                }
+
+                this.stealCooldowns.put(killer, new SimpleImmutableEntry<>(victim, Instant.now()));
             }
 
             double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;

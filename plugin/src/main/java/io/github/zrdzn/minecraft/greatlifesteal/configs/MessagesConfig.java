@@ -24,6 +24,8 @@ public class MessagesConfig extends OkaeriConfig {
 
     public String maxHealthReached = "&cYou have reached the maximum amount of health points.";
 
+    public String stealCooldownActive = "&cYou can't steal hearts from this player for another &e{AMOUNT} seconds&c.";
+
     public String pluginOutdated = "&eYou are using an outdated version of the plugin - please consider updating it on https://www.spigotmc.org/resources/greatlifesteal.102206/.";
 
 }
