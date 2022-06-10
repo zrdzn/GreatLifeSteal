@@ -9,8 +9,10 @@ import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig.RecipeIt
 import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
+import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
+import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
@@ -45,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GreatLifeStealPlugin extends JavaPlugin {
@@ -73,6 +76,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         new Metrics(this, 15277);
 
+        this.spigotAdapter = this.prepareSpigotAdapter();
+        this.logger.info("Using {} version of the adapter.", this.spigotAdapter.getVersion());
+
         try {
             this.config = ConfigManager.create(PluginConfig.class, (it) -> {
                 it.withConfigurer(new OkaeriValidator(new YamlBukkitConfigurer()));
@@ -87,19 +93,49 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             return;
         }
 
-        this.spigotAdapter = this.prepareSpigotAdapter();
-        this.logger.info("Using {} version of the adapter.", this.spigotAdapter.getVersion());
-
         if (!this.loadConfigurations()) {
             this.pluginManager.disablePlugin(this);
             return;
+        }
+
+        HealthCache healthCache = new HealthCache(this.logger);
+        if (this.pluginManager.getPlugin("PlaceholderAPI") == null) {
+            this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
+        } else {
+            /* (PAPI) Until .dat files are parsed correctly depending on the version, we cannot support offline players in placeholders.
+
+            Optional<File> playerDataMaybe = this.server.getWorlds().stream()
+
+                .map(world -> new File(this.server.getWorldContainer() + "/" + world.getName() + "/playerdata"))
+                .filter(File::exists)
+                .filter(File::isDirectory)
+                .findAny();
+
+            if (!playerDataMaybe.isPresent()) {
+                this.logger.error("Could not find the world that stores 'playerdata' directory.");
+                this.pluginManager.disablePlugin(this);
+                return;
+            }
+
+            if (healthCache.loadFromFiles(playerDataMaybe.get())) {
+                if (new GreatLifeStealExpansion(this.config.baseSettings, this.spigotAdapter.getDamageableAdapter(),
+                    this.server, healthCache).register()) {
+                    this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
+                }
+            }
+            */
+            if (new GreatLifeStealExpansion(this.config.baseSettings, this.spigotAdapter.getDamageableAdapter(),
+                this.server, healthCache).register()) {
+                this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
+            }
         }
 
         DamageableAdapter damageableAdapter = this.spigotAdapter.getDamageableAdapter();
 
         boolean latestVersion = this.checkLatestVersion();
 
-        UserListener userListener = new UserListener(this.config, damageableAdapter, this.heartItem, latestVersion);
+        UserListener userListener = new UserListener(this.config, damageableAdapter, healthCache, this.heartItem,
+            latestVersion);
 
         this.pluginManager.registerEvents(userListener, this);
 

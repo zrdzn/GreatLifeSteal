@@ -4,6 +4,7 @@ main: io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin
 api-version: 1.13
 authors: [zrdzn, some0ne3]
 description: A recently popular Minecraft plugin for life stealing system in SMP servers.
+softdepend: [PlaceholderAPI]
 permissions:
   greatlifesteal.command.set:
     default: op
