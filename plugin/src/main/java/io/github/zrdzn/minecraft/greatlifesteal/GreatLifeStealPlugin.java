@@ -194,7 +194,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         return true;
     }
 
-    public SpigotAdapter prepareSpigotAdapter() {
+    private SpigotAdapter prepareSpigotAdapter() {
         try {
             Class.forName("org.bukkit.attribute.Attributable");
         } catch (ClassNotFoundException exception) {
