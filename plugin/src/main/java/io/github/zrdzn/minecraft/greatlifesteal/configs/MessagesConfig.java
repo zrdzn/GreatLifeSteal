@@ -26,6 +26,6 @@ public class MessagesConfig extends OkaeriConfig {
 
     public String stealCooldownActive = "&cYou can't steal hearts from this player for another &e{AMOUNT} seconds&c.";
 
-    public String pluginOutdated = "&eYou are using an outdated version of the plugin - please consider updating it on https://www.spigotmc.org/resources/greatlifesteal.102206/.";
+    public String pluginOutdated = "&7(&eGLifeSteal&7) &aNew update came out! https://www.spigotmc.org/resources/greatlifesteal.102206/.";
 
 }
