@@ -24,10 +24,11 @@ public class LifeStealTabCompleter implements TabCompleter {
         if (args.length == 1) {
             return new ArrayList<String>() {{
                 if (eliminationEnabled) {
-                    add("lives");
+                    this.add("lives");
                 }
-                add("set");
-                add("reload");
+
+                this.add("set");
+                this.add("reload");
             }};
         }
 
