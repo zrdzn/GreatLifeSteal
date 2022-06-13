@@ -4,7 +4,7 @@ import static eu.okaeri.configs.migrate.ConfigMigrationDsl.move;
 import static eu.okaeri.configs.migrate.ConfigMigrationDsl.when;
 import static eu.okaeri.configs.migrate.ConfigMigrationDsl.match;
 import static eu.okaeri.configs.migrate.ConfigMigrationDsl.update;
-import static eu.okaeri.configs.migrate.ConfigMigrationDsl.all;
+import static eu.okaeri.configs.migrate.ConfigMigrationDsl.multi;
 import static eu.okaeri.configs.migrate.ConfigMigrationDsl.delete;
 
 import eu.okaeri.configs.migrate.builtin.NamedMigration;
