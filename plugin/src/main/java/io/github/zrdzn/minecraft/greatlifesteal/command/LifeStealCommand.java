@@ -117,7 +117,7 @@ public class LifeStealCommand implements CommandExecutor {
                     }
                 }
 
-                int requiredHealth = action.requiredHealth;
+                int requiredHealth = action.activateAtHealth;
                 double playerHealth = this.adapter.getMaxHealth(target);
                 int lives = 0;
 

@@ -80,8 +80,8 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
                 }
 
                 int lives = 0;
-                if (maxHealth > action.requiredHealth) {
-                    lives = (int) Math.ceil((maxHealth - action.requiredHealth) / this.config.healthChange);
+                if (maxHealth > action.activateAtHealth) {
+                    lives = (int) Math.ceil((maxHealth - action.activateAtHealth) / this.config.healthChange);
                 }
 
                 return String.valueOf(lives);
@@ -95,8 +95,8 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
                 }
 
                 double heartsLeft = 0.0D;
-                if (maxHealth > action.requiredHealth) {
-                    heartsLeft = (maxHealth - action.requiredHealth) / 2;
+                if (maxHealth > action.activateAtHealth) {
+                    heartsLeft = (maxHealth - action.activateAtHealth) / 2;
                 }
 
                 return decimalFormat.format(heartsLeft);
@@ -106,8 +106,8 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
                 }
 
                 double healthLeft = 0.0D;
-                if (maxHealth > action.requiredHealth) {
-                    healthLeft = (maxHealth - action.requiredHealth);
+                if (maxHealth > action.activateAtHealth) {
+                    healthLeft = (maxHealth - action.activateAtHealth);
                 }
 
                 return decimalFormat.format(healthLeft);

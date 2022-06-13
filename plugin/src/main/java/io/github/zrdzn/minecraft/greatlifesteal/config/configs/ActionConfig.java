@@ -26,7 +26,7 @@ public class ActionConfig extends OkaeriConfig {
     @Positive
     @Comment("")
     @Comment("Amount of health points that are needed to execute the action.")
-    public int requiredHealth = 4;
+    public int activateAtHealth = 4;
 
     @Comment("")
     @Comment("List of parameters that are adequate to the chosen action.")

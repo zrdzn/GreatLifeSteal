@@ -129,7 +129,7 @@ public class UserListener implements Listener {
         }
 
         this.config.baseSettings.customActions.forEach((actionKey, action) -> {
-            if (victimMaxHealth - healthChange > action.requiredHealth) {
+            if (victimMaxHealth - healthChange > action.activateAtHealth) {
                 return;
             }
 
