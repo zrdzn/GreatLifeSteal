@@ -1,6 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
-import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.Material;

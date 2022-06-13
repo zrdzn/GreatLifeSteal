@@ -4,11 +4,12 @@ import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.exception.OkaeriException;
 import eu.okaeri.configs.validator.okaeri.OkaeriValidator;
 import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
-import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig.RecipeItemConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HeartItemConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HeartItemConfig.RecipeItemConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
+import io.github.zrdzn.minecraft.greatlifesteal.config.migrations.P0001_Migrate_old_elimination_configuration;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
@@ -47,7 +48,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class GreatLifeStealPlugin extends JavaPlugin {
@@ -83,9 +83,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             this.config = ConfigManager.create(PluginConfig.class, (it) -> {
                 it.withConfigurer(new OkaeriValidator(new YamlBukkitConfigurer()));
                 it.withBindFile(new File(this.getDataFolder(), "config.yml"));
+                it.setLogger(this.server.getLogger());
                 it.withRemoveOrphans(true);
                 it.saveDefaults();
                 it.load(true);
+                it.migrate(new P0001_Migrate_old_elimination_configuration());
             });
         } catch (OkaeriException exception) {
             this.logger.error("Could not load the plugin configuration.", exception);

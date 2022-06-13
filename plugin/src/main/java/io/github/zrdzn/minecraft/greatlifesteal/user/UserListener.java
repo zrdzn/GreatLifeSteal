@@ -1,8 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import io.github.zrdzn.minecraft.greatlifesteal.configs.EliminationConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
@@ -125,30 +124,34 @@ public class UserListener implements Listener {
             this.adapter.setMaxHealth(victim, victimNewHealth);
         }
 
-        EliminationConfig elimination = this.config.baseSettings.eliminationMode;
-        if (!elimination.enabled) {
+        if (this.config.baseSettings.customActions.isEmpty()) {
             return;
         }
 
-        if (victimMaxHealth - healthChange <= elimination.requiredHealth) {
-            switch (elimination.action) {
+        this.config.baseSettings.customActions.forEach((actionKey, action) -> {
+            if (victimMaxHealth - healthChange > action.requiredHealth) {
+                return;
+            }
+
+            switch (action.type) {
                 case SPECTATOR_MODE:
                     victim.setGameMode(GameMode.SPECTATOR);
                     break;
                 case DISPATCH_COMMANDS:
-                    for (String command : elimination.commands) {
+                    action.parameters.forEach(command -> {
                         command = this.formatPlaceholders(command, victim, killer);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                    }
+                    });
+
                     break;
                 case BROADCAST:
-                    elimination.broadcastMessages.stream()
+                    action.parameters.stream()
                         .map(message -> this.formatPlaceholders(message, victim, killer))
                         .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
                         .map(GreatLifeStealPlugin::formatColor)
                         .forEach(Bukkit::broadcastMessage);
             }
-        }
+        });
     }
 
     private String formatPlaceholders(String string, Player victim, Player killer) {

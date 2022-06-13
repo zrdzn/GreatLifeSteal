@@ -1,14 +1,16 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
-import io.github.zrdzn.minecraft.greatlifesteal.configs.BaseSettingsConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseSettingsConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LifeStealTabCompleter implements TabCompleter {
 
@@ -20,13 +22,9 @@ public class LifeStealTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        boolean eliminationEnabled = this.config.eliminationMode.enabled;
         if (args.length == 1) {
             return new ArrayList<String>() {{
-                if (eliminationEnabled) {
-                    this.add("lives");
-                }
-
+                this.add("lives");
                 this.add("set");
                 this.add("reload");
             }};
@@ -43,10 +41,16 @@ public class LifeStealTabCompleter implements TabCompleter {
                 }
                 break;
             case "lives":
-                if (args.length == 2 && eliminationEnabled) {
-                    List<String> players = new ArrayList<>();
-                    Bukkit.getServer().getOnlinePlayers().forEach(player -> players.add(player.getName()));
-                    return players;
+                if (args.length == 2) {
+                    return new ArrayList<>(this.config.customActions.keySet());
+                }
+
+                if (args.length == 3) {
+                    if (this.config.customActions.get(args[2]) != null) {
+                        return Bukkit.getServer().getOnlinePlayers().stream()
+                            .map(Player::getName)
+                            .collect(Collectors.toList());
+                    }
                 }
                 break;
             case "reload":

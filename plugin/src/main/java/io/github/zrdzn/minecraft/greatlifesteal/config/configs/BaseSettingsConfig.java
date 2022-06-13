@@ -1,9 +1,14 @@
-package io.github.zrdzn.minecraft.greatlifesteal.configs;
+package io.github.zrdzn.minecraft.greatlifesteal.config.configs;
 
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.validator.annotation.Positive;
 import eu.okaeri.validator.annotation.PositiveOrZero;
+import io.github.zrdzn.minecraft.greatlifesteal.action.Action;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BaseSettingsConfig extends OkaeriConfig {
 
@@ -53,8 +58,20 @@ public class BaseSettingsConfig extends OkaeriConfig {
     public HeartItemConfig heartItem = new HeartItemConfig();
 
     @Comment("")
-    @Comment("Define what will happen if a player reaches specific amount of maximum health points.")
-    public EliminationConfig eliminationMode = new EliminationConfig();
+    @Comment("Define what list of actions should happen if a player reaches specific amount of maximum health points.")
+    public Map<String, ActionConfig> customActions = new HashMap<String, ActionConfig>() {{
+        ActionConfig announce = new ActionConfig();
+        announce.enabled = true;
+        announce.type = Action.BROADCAST;
+        announce.parameters = Collections.singletonList("&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a.");
+
+        ActionConfig eliminate = new ActionConfig();
+        eliminate.type = Action.DISPATCH_COMMANDS;
+        announce.parameters = Collections.singletonList("tempban {victim} 7d");
+
+        this.put("announce", announce);
+        this.put("eliminate", eliminate);
+    }};
 
     public class StealCooldownConfig extends OkaeriConfig {
 

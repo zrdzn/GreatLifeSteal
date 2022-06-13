@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.configs;
+package io.github.zrdzn.minecraft.greatlifesteal.config.configs;
 
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;

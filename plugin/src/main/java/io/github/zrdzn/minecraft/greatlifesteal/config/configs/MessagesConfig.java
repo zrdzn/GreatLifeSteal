@@ -1,10 +1,13 @@
-package io.github.zrdzn.minecraft.greatlifesteal.configs;
+package io.github.zrdzn.minecraft.greatlifesteal.config.configs;
 
 import eu.okaeri.configs.OkaeriConfig;
 
 public class MessagesConfig extends OkaeriConfig {
 
-    public String commandUsage = "&aType /lifesteal set/reload/lives [player] [health_points]";
+    public String commandUsage = "&a&lAvailable commands:\n" +
+        "&7/&alifesteal reload\n" +
+        "&7/&alifesteal set <player> [health_points]\n" +
+        "&7/&alifesteal lives <action> [player]";
 
     public String noPermissions = "&cYou don't have enough permissions.";
 
@@ -17,6 +20,8 @@ public class MessagesConfig extends OkaeriConfig {
     public String successfulCommandReload = "&aPlugin has been successfully reloaded.";
 
     public String failCommandReload = "&cCould not reload the plugin.";
+
+    public String noActionSpecified = "&cYou need to specify a type of an action.";
 
     public String invalidPlayerProvided = "&cYou have provided invalid player.";
 
