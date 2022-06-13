@@ -16,7 +16,7 @@ public class P0001_Migrate_old_elimination_configuration extends NamedMigration 
 
     public P0001_Migrate_old_elimination_configuration() {
         super(
-            "Migrate old tyop-level keys from eliminationMode to customActions subconfig",
+            "Migrate old top-level keys from eliminationMode to customActions subconfig",
             move("eliminationMode", "customActions"),
             when(
                 match("customActions.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("SPECTATOR_MODE")),
