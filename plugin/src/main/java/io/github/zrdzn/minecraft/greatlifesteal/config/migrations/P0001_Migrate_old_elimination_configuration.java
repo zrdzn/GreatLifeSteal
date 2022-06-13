@@ -20,7 +20,7 @@ public class P0001_Migrate_old_elimination_configuration extends NamedMigration 
             move("eliminationMode", "customActions"),
             when(
                 match("customActions.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("SPECTATOR_MODE")),
-                all(
+                multi(
                     move("customActions.enabled", "customActions.spectate.enabled"),
                     move("customActions.action", "customActions.spectate.type"),
                     move("customActions.requiredHealth", "customActions.spectate.activateAtHealth"),
@@ -39,7 +39,7 @@ public class P0001_Migrate_old_elimination_configuration extends NamedMigration 
             ),
             when(
                 match("customActions.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("BROADCAST")),
-                all(
+                multi(
                     move("customActions.enabled", "customActions.announce.enabled"),
                     move("customActions.action", "customActions.announce.type"),
                     move("customActions.requiredHealth", "customActions.announce.activateAtHealth"),
@@ -49,7 +49,7 @@ public class P0001_Migrate_old_elimination_configuration extends NamedMigration 
             ),
             when(
                 match("customActions.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("DISPATCH_COMMANDS")),
-                all(
+                multi(
                     move("customActions.enabled", "customActions.commands.enabled"),
                     move("customActions.action", "customActions.commands.type"),
                     move("customActions.requiredHealth", "customActions.commands.activateAtHealth"),
