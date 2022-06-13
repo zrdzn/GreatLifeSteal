@@ -27,7 +27,7 @@ dependencies {
     compileOnly "org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT"
     compileOnly "me.clip:placeholderapi:2.11.1"
 
-    implementation "eu.okaeri:okaeri-configs-yaml-bukkit:4.0.1"
+    implementation "eu.okaeri:okaeri-configs-yaml-bukkit:4.0.4"
     implementation "eu.okaeri:okaeri-configs-validator-okaeri:4.0.4"
     implementation "com.github.Querz:NBT:6.1"
     implementation "org.slf4j:slf4j-reload4j:1.7.36"
