@@ -67,7 +67,7 @@ public class BaseSettingsConfig extends OkaeriConfig {
 
         ActionConfig eliminate = new ActionConfig();
         eliminate.type = Action.DISPATCH_COMMANDS;
-        announce.parameters = Collections.singletonList("tempban {victim} 7d");
+        eliminate.parameters = Collections.singletonList("tempban {victim} 7d");
 
         this.put("announce", announce);
         this.put("eliminate", eliminate);
