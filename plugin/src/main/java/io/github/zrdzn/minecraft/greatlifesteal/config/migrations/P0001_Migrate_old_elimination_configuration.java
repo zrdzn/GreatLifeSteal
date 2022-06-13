@@ -25,15 +25,14 @@ public class P0001_Migrate_old_elimination_configuration extends NamedMigration 
                     move("customActions.action", "customActions.spectate.type"),
                     move("customActions.requiredHealth", "customActions.spectate.activateAtHealth"),
                     move("customActions.commands", "customActions.spectate.parameters"),
-                    update("customActions.spectate.parameters", oldList -> {
-                        List<String> newList = new ArrayList<>();
-                        if (oldList instanceof List) {
-                            newList.addAll((List<? extends String>) oldList);
-                            newList.clear();
+                    when(
+                        match("customActions.spectate.parameters", v -> v instanceof List),
+                        update("customActions.spectate.parameters", oldList -> {
+                            List<String> newList = new ArrayList<>();
                             newList.add("gamemode spectator {victim}");
-                        }
-                        return newList;
-                    }),
+                            return newList;
+                        })
+                    ),
                     delete("customActions.broadcastMessages")
                 )
             ),
