@@ -17,14 +17,13 @@ public class P0001_Migrate_old_elimination_configuration extends NamedMigration 
     public P0001_Migrate_old_elimination_configuration() {
         super(
             "Migrate old top-level keys from eliminationMode to customActions subconfig",
-            move("eliminationMode", "customActions"),
             when(
-                match("customActions.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("SPECTATOR_MODE")),
+                match("eliminationMode.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("SPECTATOR_MODE")),
                 multi(
-                    move("customActions.enabled", "customActions.spectate.enabled"),
-                    move("customActions.action", "customActions.spectate.type"),
-                    move("customActions.requiredHealth", "customActions.spectate.activateAtHealth"),
-                    move("customActions.commands", "customActions.spectate.parameters"),
+                    move("eliminationMode.enabled", "customActions.spectate.enabled"),
+                    move("eliminationMode.action", "customActions.spectate.type"),
+                    move("eliminationMode.requiredHealth", "customActions.spectate.activateAtHealth"),
+                    move("eliminationMode.commands", "customActions.spectate.parameters"),
                     when(
                         match("customActions.spectate.parameters", v -> v instanceof List),
                         update("customActions.spectate.parameters", oldList -> {
@@ -33,27 +32,27 @@ public class P0001_Migrate_old_elimination_configuration extends NamedMigration 
                             return newList;
                         })
                     ),
-                    delete("customActions.broadcastMessages")
+                    delete("eliminationMode.broadcastMessages")
                 )
             ),
             when(
-                match("customActions.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("BROADCAST")),
+                match("eliminationMode.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("BROADCAST")),
                 multi(
-                    move("customActions.enabled", "customActions.announce.enabled"),
-                    move("customActions.action", "customActions.announce.type"),
-                    move("customActions.requiredHealth", "customActions.announce.activateAtHealth"),
-                    move("customActions.broadcastMessages", "customActions.announce.parameters"),
-                    delete("customActions.commands")
+                    move("eliminationMode.enabled", "customActions.announce.enabled"),
+                    move("eliminationMode.action", "customActions.announce.type"),
+                    move("eliminationMode.requiredHealth", "customActions.announce.activateAtHealth"),
+                    move("eliminationMode.broadcastMessages", "customActions.announce.parameters"),
+                    delete("eliminationMode.commands")
                 )
             ),
             when(
-                match("customActions.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("DISPATCH_COMMANDS")),
+                match("eliminationMode.action", v -> v instanceof String && ((String) v).equalsIgnoreCase("DISPATCH_COMMANDS")),
                 multi(
-                    move("customActions.enabled", "customActions.commands.enabled"),
-                    move("customActions.action", "customActions.commands.type"),
-                    move("customActions.requiredHealth", "customActions.commands.activateAtHealth"),
-                    move("customActions.commands", "customActions.commands.parameters"),
-                    delete("customActions.broadcastMessages")
+                    move("eliminationMode.enabled", "customActions.commands.enabled"),
+                    move("eliminationMode.action", "customActions.commands.type"),
+                    move("eliminationMode.requiredHealth", "customActions.commands.activateAtHealth"),
+                    move("eliminationMode.commands", "customActions.commands.parameters"),
+                    delete("eliminationMode.broadcastMessages")
                 )
             )
         );
