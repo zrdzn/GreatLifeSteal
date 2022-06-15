@@ -14,6 +14,8 @@ import java.util.Arrays;
 
 public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
+    private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
+
     private final BaseSettingsConfig config;
     private final DamageableAdapter adapter;
     private final Server server;
@@ -47,6 +49,53 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
     }
 
     @Override
+    public String onPlaceholderRequest(Player player, String parameters) {
+        double maxHealth = player.getMaxHealth();
+
+        switch (parameters) {
+            case "lives":
+                if (!this.config.eliminationMode.enabled) {
+                    return null;
+                }
+
+                int lives = 0;
+                if (maxHealth > this.config.eliminationMode.requiredHealth) {
+                    lives = (int) Math.ceil((maxHealth - this.config.eliminationMode.requiredHealth) / this.config.healthChange);
+                }
+
+                return String.valueOf(lives);
+            case "hearts":
+                return this.decimalFormat.format(maxHealth / 2.0D);
+            case "health":
+                return this.decimalFormat.format(maxHealth);
+            case "hearts_left":
+                if (!this.config.eliminationMode.enabled) {
+                    return null;
+                }
+
+                double heartsLeft = 0.0D;
+                if (maxHealth > this.config.eliminationMode.requiredHealth) {
+                    heartsLeft = (maxHealth - this.config.eliminationMode.requiredHealth) / 2;
+                }
+
+                return this.decimalFormat.format(heartsLeft);
+            case "health_left":
+                if (!this.config.eliminationMode.enabled) {
+                    return null;
+                }
+
+                double healthLeft = 0.0D;
+                if (maxHealth > this.config.eliminationMode.requiredHealth) {
+                    healthLeft = (maxHealth - this.config.eliminationMode.requiredHealth);
+                }
+
+                return this.decimalFormat.format(healthLeft);
+            default:
+                return null;
+        }
+    }
+
+    @Override
     public String onRequest(OfflinePlayer player, String parameters) {
         String[] parametersSplitted = parameters.split("_");
         String targetName = parametersSplitted[parametersSplitted.length - 1];
@@ -67,8 +116,6 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
             maxHealth = this.adapter.getMaxHealth(target);
         }
 
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-
         String placeholderKey = String.join("_", Arrays.copyOf(parametersSplitted, parametersSplitted.length - 1));
         switch (placeholderKey.toLowerCase()) {
             case "lives":
@@ -83,9 +130,9 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
                 return String.valueOf(lives);
             case "hearts":
-                return decimalFormat.format(maxHealth / 2.0D);
+                return this.decimalFormat.format(maxHealth / 2.0D);
             case "health":
-                return decimalFormat.format(maxHealth);
+                return this.decimalFormat.format(maxHealth);
             case "hearts_left":
                 if (!this.config.eliminationMode.enabled) {
                     return null;
@@ -96,7 +143,7 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
                     heartsLeft = (maxHealth - this.config.eliminationMode.requiredHealth) / 2;
                 }
 
-                return decimalFormat.format(heartsLeft);
+                return this.decimalFormat.format(heartsLeft);
             case "health_left":
                 if (!this.config.eliminationMode.enabled) {
                     return null;
@@ -107,7 +154,7 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
                     healthLeft = (maxHealth - this.config.eliminationMode.requiredHealth);
                 }
 
-                return decimalFormat.format(healthLeft);
+                return this.decimalFormat.format(healthLeft);
             default:
                 return null;
         }
