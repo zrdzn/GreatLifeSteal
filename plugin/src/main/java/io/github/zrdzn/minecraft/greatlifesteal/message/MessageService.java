@@ -10,7 +10,9 @@ public class MessageService {
 
     public static CompletableFuture<Void> send(CommandSender receiver, final String message, String... placeholders) {
         return CompletableFuture.runAsync(() -> {
-            receiver.sendMessage(GreatLifeStealPlugin.formatColor(formatPlaceholders(message, placeholders)));
+            if (!message.isEmpty()) {
+                receiver.sendMessage(GreatLifeStealPlugin.formatColor(formatPlaceholders(message, placeholders)));
+            }
         });
     }
 
