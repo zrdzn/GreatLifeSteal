@@ -11,6 +11,7 @@ public class PluginConfig extends OkaeriConfig {
 
     @Comment("")
     @Comment("All messages that can be sent by the plugin to players.")
+    @Comment("If you want to prevent from displaying a specific message, just replace the value with ''.")
     public MessagesConfig messages = new MessagesConfig();
 
 }
