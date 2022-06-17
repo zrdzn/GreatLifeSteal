@@ -7,6 +7,12 @@ import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -17,16 +23,9 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 public class UserListener implements Listener {
 
-    private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
+    private final Map<Player, Map.Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
     private final PluginConfig config;
     private final DamageableAdapter adapter;
@@ -146,19 +145,22 @@ public class UserListener implements Listener {
                         .map(message -> this.formatPlaceholders(message, victim, killer))
                         .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
                         .map(GreatLifeStealPlugin::formatColor)
-                        .forEach(Bukkit::broadcastMessage);
+                            .forEach(Bukkit::broadcastMessage);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Case for the specified action does not exist.");
             }
         }
     }
 
     private String formatPlaceholders(String string, Player victim, Player killer) {
         string = StringUtils.replaceEach(string,
-            new String[] { "{victim}", "{victim_max_health}" },
-            new String[] { victim.getName(), String.valueOf((int) victim.getMaxHealth()) });
+            new String[]{ "{victim}", "{victim_max_health}" },
+            new String[]{ victim.getName(), String.valueOf((int) victim.getMaxHealth()) });
         if (killer != null) {
             string = StringUtils.replaceEach(string,
-                new String[] { "{killer}", "{killer_max_health}" },
-                new String[] { killer.getName(), String.valueOf((int) killer.getMaxHealth()) });
+                new String[]{ "{killer}", "{killer_max_health}" },
+                new String[]{ killer.getName(), String.valueOf((int) killer.getMaxHealth()) });
         }
 
         return string;

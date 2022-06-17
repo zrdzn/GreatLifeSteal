@@ -4,11 +4,11 @@ import eu.okaeri.configs.ConfigManager;
 import eu.okaeri.configs.exception.OkaeriException;
 import eu.okaeri.configs.validator.okaeri.OkaeriValidator;
 import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
+import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
+import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.HeartItemConfig.RecipeItemConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
-import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
@@ -19,6 +19,19 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
@@ -34,21 +47,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Constructor;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class GreatLifeStealPlugin extends JavaPlugin {
 
@@ -125,7 +123,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             }
             */
             if (new GreatLifeStealExpansion(this.config.baseSettings, this.spigotAdapter.getDamageableAdapter(),
-                this.server, healthCache).register()) {
+                    this.server, healthCache).register()) {
                 this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
             }
         }
@@ -135,7 +133,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         boolean latestVersion = this.checkLatestVersion();
 
         UserListener userListener = new UserListener(this.config, damageableAdapter, healthCache, this.heartItem,
-            latestVersion);
+                    latestVersion);
 
         this.pluginManager.registerEvents(userListener, this);
 

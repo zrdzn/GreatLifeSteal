@@ -20,7 +20,8 @@ public class LifeStealCommand implements CommandExecutor {
     private final DamageableAdapter adapter;
     private final Server server;
 
-    public LifeStealCommand(GreatLifeStealPlugin plugin, PluginConfig config, DamageableAdapter adapter, Server server) {
+    public LifeStealCommand(GreatLifeStealPlugin plugin, PluginConfig config, DamageableAdapter adapter,
+                            Server server) {
         this.plugin = plugin;
         this.config = config.baseSettings;
         this.messages = config.messages;
@@ -91,7 +92,7 @@ public class LifeStealCommand implements CommandExecutor {
                 Player target;
                 if (args.length == 1) {
                     if (!sender.hasPermission("greatlifesteal.command.lives.self") &&
-                        !sender.hasPermission("greatlifesteal.command.lives")) {
+                            !sender.hasPermission("greatlifesteal.command.lives")) {
                         MessageService.send(sender, this.messages.noPermissions);
                         return true;
                     }

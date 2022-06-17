@@ -4,12 +4,11 @@ import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.validator.annotation.PositiveOrZero;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import org.bukkit.Material;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.bukkit.Material;
 
 public class HeartItemConfig extends OkaeriConfig {
 
@@ -35,11 +34,13 @@ public class HeartItemConfig extends OkaeriConfig {
 
     @Comment("")
     @Comment("Recipe for the heart item creation. Each number is an ordered slot in the workbench (1-9).")
-    public Map<String, RecipeItemConfig> crafting = new HashMap<String, RecipeItemConfig>() {{
-        for (int i = 1; i < 10; i++) {
-            this.put(String.valueOf(i), new RecipeItemConfig());
+    public Map<String, RecipeItemConfig> crafting = new HashMap<String, RecipeItemConfig>() {
+        {
+            for (int i = 1; i < 10; i++) {
+                this.put(String.valueOf(i), new RecipeItemConfig());
+            }
         }
-    }};
+    };
 
     public class HeartMetaConfig extends OkaeriConfig {
 

@@ -1,14 +1,13 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
 import io.github.zrdzn.minecraft.greatlifesteal.configs.BaseSettingsConfig;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class LifeStealTabCompleter implements TabCompleter {
 
@@ -22,14 +21,16 @@ public class LifeStealTabCompleter implements TabCompleter {
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         boolean eliminationEnabled = this.config.eliminationMode.enabled;
         if (args.length == 1) {
-            return new ArrayList<String>() {{
-                if (eliminationEnabled) {
-                    this.add("lives");
-                }
+            return new ArrayList<String>() {
+                {
+                    if (eliminationEnabled) {
+                        this.add("lives");
+                    }
 
-                this.add("set");
-                this.add("reload");
-            }};
+                    this.add("set");
+                    this.add("reload");
+                }
+            };
         }
 
         switch (args[0].toLowerCase()) {
@@ -49,7 +50,7 @@ public class LifeStealTabCompleter implements TabCompleter {
                     return players;
                 }
                 break;
-            case "reload":
+            default:
                 return Collections.emptyList();
         }
 
