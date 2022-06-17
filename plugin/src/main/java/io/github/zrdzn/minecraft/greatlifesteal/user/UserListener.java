@@ -3,7 +3,6 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
@@ -135,27 +134,27 @@ public class UserListener implements Listener {
             this.adapter.setMaxHealth(victim, victimNewHealth);
         }
 
-        if (this.config.baseSettings.customActions.isEmpty()) {
+        if (this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).isEmpty()) {
             return;
         }
 
-        this.config.baseSettings.customActions.forEach((actionKey, action) -> {
-            if (victimMaxHealth - healthChange > action.activateAtHealth) {
+        this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).forEach((actionKey, action) -> {
+            if (victimMaxHealth - healthChange > action.getActivateAtHealth()) {
                 return;
             }
 
-            switch (action.type) {
+            switch (action.getType()) {
                 case SPECTATOR_MODE:
                     victim.setGameMode(GameMode.SPECTATOR);
                     break;
                 case DISPATCH_COMMANDS:
-                    action.parameters.forEach(command -> {
+                    action.getParameters().forEach(command -> {
                         command = this.formatPlaceholders(command, victim, killer);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                    }
+                    });
                     break;
                 case BROADCAST:
-                    action.parameters.stream()
+                    action.getParameters().stream()
                         .map(message -> this.formatPlaceholders(message, victim, killer))
                         .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
                         .map(GreatLifeStealPlugin::formatColor)
@@ -164,7 +163,7 @@ public class UserListener implements Listener {
                 default:
                     throw new IllegalArgumentException("Case for the specified action does not exist.");
             }
-        }
+        });
     }
 
     private String formatPlaceholders(String string, Player victim, Player killer) {

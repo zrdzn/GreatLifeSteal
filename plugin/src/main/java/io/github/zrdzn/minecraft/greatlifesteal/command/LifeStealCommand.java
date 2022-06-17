@@ -2,13 +2,9 @@ package io.github.zrdzn.minecraft.greatlifesteal.command;
 
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
+import io.github.zrdzn.minecraft.greatlifesteal.config.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.ActionConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseSettingsConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.Server;
@@ -88,13 +84,13 @@ public class LifeStealCommand implements CommandExecutor {
                 break;
             case "lives": {
                 if (args.length == 1) {
-                    MessageService.send(sender, this.messages.noActionSpecified);
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
                     return true;
                 }
 
-                ActionConfig action = this.config.customActions.get(args[1]);
+                ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
                 if (action == null) {
-                    MessageService.send(sender, this.messages.eliminationNotEnabled);
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_NOT_ENABLED));
                     return true;
                 }
 
@@ -120,7 +116,7 @@ public class LifeStealCommand implements CommandExecutor {
                     }
                 }
 
-                int requiredHealth = action.activateAtHealth;
+                int requiredHealth = action.getActivateAtHealth();
                 double playerHealth = this.adapter.getMaxHealth(target);
                 int lives = 0;
 

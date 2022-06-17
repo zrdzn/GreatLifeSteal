@@ -2,11 +2,10 @@ package io.github.zrdzn.minecraft.greatlifesteal.command;
 
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseSettingsConfig;
+import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,7 +22,6 @@ public class LifeStealTabCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        boolean eliminationEnabled = this.config.eliminationMode.enabled;
         if (args.length == 1) {
             return new ArrayList<String>() {
                 {
@@ -48,11 +46,11 @@ public class LifeStealTabCompleter implements TabCompleter {
                 break;
             case "lives":
                 if (args.length == 2) {
-                    return new ArrayList<>(this.config.customActions.keySet());
+                    return new ArrayList<>(this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).keySet());
                 }
 
                 if (args.length == 3) {
-                    if (this.config.customActions.get(args[2]) != null) {
+                    if (this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[2]) != null) {
                         return Bukkit.getServer().getOnlinePlayers().stream()
                             .map(Player::getName)
                             .collect(Collectors.toList());

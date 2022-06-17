@@ -8,7 +8,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigurationDataBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.beans.BasicItemBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.migrations.P0001_Migrate_old_elimination_configuration;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
