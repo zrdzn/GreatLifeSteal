@@ -1,8 +1,12 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
+import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import io.github.zrdzn.minecraft.greatlifesteal.configs.EliminationConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.configs.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
@@ -28,13 +32,13 @@ public class UserListener implements Listener {
 
     private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
-    private final PluginConfig config;
+    private final SettingsManager config;
     private final DamageableAdapter adapter;
     private final HealthCache cache;
     private final HeartItem heartItem;
     private final boolean latestVersion;
 
-    public UserListener(PluginConfig config, DamageableAdapter adapter, HealthCache cache, HeartItem heartItem,
+    public UserListener(SettingsManager config, DamageableAdapter adapter, HealthCache cache, HeartItem heartItem,
                         boolean latestVersion) {
         this.config = config;
         this.adapter = adapter;
@@ -51,7 +55,7 @@ public class UserListener implements Listener {
 
         Player player = event.getPlayer();
         if (player.hasPermission("greatlifesteal.notify.update")) {
-            MessageService.send(player, this.config.messages.pluginOutdated);
+            MessageService.send(player, this.config.getProperty(MessagesConfig.PLUGIN_OUTDATED));
         }
     }
 
@@ -59,7 +63,7 @@ public class UserListener implements Listener {
     public void setDefaultHearts(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (!player.hasPlayedBefore()) {
-            this.adapter.setMaxHealth(player, this.config.baseSettings.defaultHealth);
+            this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
         }
 
         // (PAPI) this.cache.removeHealth(player.getName());
@@ -76,28 +80,31 @@ public class UserListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
-        int healthChange = this.config.baseSettings.healthChange;
+        boolean giveHealthToKiller = this.config.getProperty(BaseConfig.GIVE_HEALTH_TO_KILLER);
+        boolean killByPlayerOnly = this.config.getProperty(BaseConfig.KILL_BY_PLAYER_ONLY);
 
-        if (this.config.baseSettings.giveHealthToKiller && this.config.baseSettings.killByPlayerOnly) {
+        int healthChange = this.config.getProperty(BaseConfig.HEALTH_CHANGE);
+
+        if (giveHealthToKiller && killByPlayerOnly) {
             if (killer == null) {
                 return;
             }
 
-            if (this.config.baseSettings.ignoreSameIp) {
+            if (this.config.getProperty(BaseConfig.IGNORE_SAME_IP)) {
                 if (victim.getAddress().getAddress().equals(killer.getAddress().getAddress())) {
                     return;
                 }
             }
 
             // Checks if there is any cooldown active on the killer.
-            if (this.config.baseSettings.stealCooldown.enabled) {
+            if (this.config.getProperty(StealCooldownConfig.ENABLED)) {
                 Entry<Player, Instant> cooldownEntry = this.stealCooldowns.get(killer);
                 if (cooldownEntry != null && victim.equals(cooldownEntry.getKey())) {
                     Duration difference = Duration.between(cooldownEntry.getValue(), Instant.now());
-                    Duration limit = Duration.ofSeconds(this.config.baseSettings.stealCooldown.cooldown);
+                    Duration limit = Duration.ofSeconds(this.config.getProperty(StealCooldownConfig.COOLDOWN));
                     if (difference.compareTo(limit) < 0) {
                         String[] placeholders = { "{AMOUNT}", String.valueOf(limit.getSeconds() - difference.getSeconds()) };
-                        MessageService.send(killer, this.config.messages.stealCooldownActive, placeholders);
+                        MessageService.send(killer, this.config.getProperty(MessagesConfig.STEAL_COOLDOWN_ACTIVE), placeholders);
                         return;
                     }
                 }
@@ -106,43 +113,46 @@ public class UserListener implements Listener {
             }
 
             double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
-            if (killerNewHealth <= this.config.baseSettings.maximumHealth) {
+            if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
             } else {
-                MessageService.send(killer, this.config.messages.maxHealthReached);
+                MessageService.send(killer, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
 
                 HeartItem heartItem = this.heartItem;
-                if (heartItem != null && this.config.baseSettings.heartItem.rewardHeartOnOverlimit) {
+                if (heartItem != null && this.config.getProperty(HeartConfig.REWARD_HEART_ON_OVERLIMIT)) {
                     killer.getInventory().addItem(heartItem.getResult());
                 }
             }
         }
 
-        double victimMaxHealth = this.adapter.getMaxHealth(victim);
+        boolean takeHealthFromVictim = this.config.getProperty(BaseConfig.TAKE_HEALTH_FROM_VICTIM);
 
+        double victimMaxHealth = this.adapter.getMaxHealth(victim);
         double victimNewHealth = victimMaxHealth - healthChange;
-        if (this.config.baseSettings.takeHealthFromVictim && victimNewHealth >= this.config.baseSettings.minimumHealth) {
+
+        int minimumHealth = this.config.getProperty(BaseConfig.MINIMUM_HEALTH);
+
+        if (takeHealthFromVictim && victimNewHealth >= minimumHealth) {
             this.adapter.setMaxHealth(victim, victimNewHealth);
         }
 
-        EliminationConfig elimination = this.config.baseSettings.eliminationMode;
-        if (!elimination.enabled) {
+        if (!this.config.getProperty(EliminationConfig.ENABLED)) {
             return;
         }
 
-        if (victimMaxHealth - healthChange <= elimination.requiredHealth) {
-            switch (elimination.action) {
+        if (victimNewHealth <= this.config.getProperty(EliminationConfig.REQUIRED_HEALTH)) {
+            switch (this.config.getProperty(EliminationConfig.ACTION)) {
                 case SPECTATOR_MODE:
                     victim.setGameMode(GameMode.SPECTATOR);
                     break;
                 case DISPATCH_COMMANDS:
-                    for (String command : elimination.commands) {
+                    for (String command : this.config.getProperty(EliminationConfig.COMMANDS)) {
                         command = this.formatPlaceholders(command, victim, killer);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     }
                     break;
                 case BROADCAST:
-                    elimination.broadcastMessages.stream()
+                    this.config.getProperty(EliminationConfig.BROADCAST_MESSAGES).stream()
                         .map(message -> this.formatPlaceholders(message, victim, killer))
                         .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
                         .map(GreatLifeStealPlugin::formatColor)

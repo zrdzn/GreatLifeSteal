@@ -1,10 +1,11 @@
 package io.github.zrdzn.minecraft.greatlifesteal.placeholderapi;
 
-import io.github.zrdzn.minecraft.greatlifesteal.configs.BaseSettingsConfig;
+import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -16,12 +17,12 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
     private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-    private final BaseSettingsConfig config;
+    private final SettingsManager config;
     private final DamageableAdapter adapter;
     private final Server server;
     private final HealthCache cache;
 
-    public GreatLifeStealExpansion(BaseSettingsConfig config, DamageableAdapter adapter, Server server, HealthCache cache) {
+    public GreatLifeStealExpansion(SettingsManager config, DamageableAdapter adapter, Server server, HealthCache cache) {
         this.config = config;
         this.adapter = adapter;
         this.server = server;
@@ -52,15 +53,19 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
     public String onPlaceholderRequest(Player player, String parameters) {
         double maxHealth = player.getMaxHealth();
 
+        boolean eliminationEnabled = this.config.getProperty(EliminationConfig.ENABLED);
+        int requiredHealth = this.config.getProperty(EliminationConfig.REQUIRED_HEALTH);
+
         switch (parameters) {
             case "lives":
-                if (!this.config.eliminationMode.enabled) {
+                if (!eliminationEnabled) {
                     return null;
                 }
 
                 int lives = 0;
-                if (maxHealth > this.config.eliminationMode.requiredHealth) {
-                    lives = (int) Math.ceil((maxHealth - this.config.eliminationMode.requiredHealth) / this.config.healthChange);
+                if (maxHealth > requiredHealth) {
+                    int healthChange = this.config.getProperty(BaseConfig.HEALTH_CHANGE);
+                    lives = (int) Math.ceil((maxHealth - requiredHealth) / healthChange);
                 }
 
                 return String.valueOf(lives);
@@ -69,24 +74,24 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
             case "health":
                 return this.decimalFormat.format(maxHealth);
             case "hearts_left":
-                if (!this.config.eliminationMode.enabled) {
+                if (!eliminationEnabled) {
                     return null;
                 }
 
                 double heartsLeft = 0.0D;
-                if (maxHealth > this.config.eliminationMode.requiredHealth) {
-                    heartsLeft = (maxHealth - this.config.eliminationMode.requiredHealth) / 2;
+                if (maxHealth > requiredHealth) {
+                    heartsLeft = (maxHealth - requiredHealth) / 2;
                 }
 
                 return this.decimalFormat.format(heartsLeft);
             case "health_left":
-                if (!this.config.eliminationMode.enabled) {
+                if (!eliminationEnabled) {
                     return null;
                 }
 
                 double healthLeft = 0.0D;
-                if (maxHealth > this.config.eliminationMode.requiredHealth) {
-                    healthLeft = (maxHealth - this.config.eliminationMode.requiredHealth);
+                if (maxHealth > requiredHealth) {
+                    healthLeft = (maxHealth - requiredHealth);
                 }
 
                 return this.decimalFormat.format(healthLeft);
@@ -116,16 +121,20 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
             maxHealth = this.adapter.getMaxHealth(target);
         }
 
+        boolean eliminationEnabled = this.config.getProperty(EliminationConfig.ENABLED);
+        int requiredHealth = this.config.getProperty(EliminationConfig.REQUIRED_HEALTH);
+
         String placeholderKey = String.join("_", Arrays.copyOf(parametersSplitted, parametersSplitted.length - 1));
         switch (placeholderKey.toLowerCase()) {
             case "lives":
-                if (!this.config.eliminationMode.enabled) {
+                if (!eliminationEnabled) {
                     return null;
                 }
 
                 int lives = 0;
-                if (maxHealth > this.config.eliminationMode.requiredHealth) {
-                    lives = (int) Math.ceil((maxHealth - this.config.eliminationMode.requiredHealth) / this.config.healthChange);
+                if (maxHealth > requiredHealth) {
+                    int healthChange = this.config.getProperty(BaseConfig.HEALTH_CHANGE);
+                    lives = (int) Math.ceil((maxHealth - requiredHealth) / healthChange);
                 }
 
                 return String.valueOf(lives);
@@ -134,24 +143,24 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
             case "health":
                 return this.decimalFormat.format(maxHealth);
             case "hearts_left":
-                if (!this.config.eliminationMode.enabled) {
+                if (!eliminationEnabled) {
                     return null;
                 }
 
                 double heartsLeft = 0.0D;
-                if (maxHealth > this.config.eliminationMode.requiredHealth) {
-                    heartsLeft = (maxHealth - this.config.eliminationMode.requiredHealth) / 2;
+                if (maxHealth > requiredHealth) {
+                    heartsLeft = (maxHealth - requiredHealth) / 2;
                 }
 
                 return this.decimalFormat.format(heartsLeft);
             case "health_left":
-                if (!this.config.eliminationMode.enabled) {
+                if (!eliminationEnabled) {
                     return null;
                 }
 
                 double healthLeft = 0.0D;
-                if (maxHealth > this.config.eliminationMode.requiredHealth) {
-                    healthLeft = (maxHealth - this.config.eliminationMode.requiredHealth);
+                if (maxHealth > requiredHealth) {
+                    healthLeft = (maxHealth - requiredHealth);
                 }
 
                 return this.decimalFormat.format(healthLeft);
