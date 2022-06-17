@@ -36,7 +36,7 @@ public class MessagesConfig implements SettingsHolder {
     );
 
     public static final Property<String> NO_ACTION_SPECIFIED = new StringProperty(
-            "noActionSpecified",
+            "messages.noActionSpecified",
             "&cYou need to specify a type of an action."
     );
 
