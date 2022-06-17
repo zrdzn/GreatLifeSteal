@@ -4,7 +4,6 @@ import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
 import eu.okaeri.validator.annotation.Positive;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationModeAction;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -44,6 +43,6 @@ public class EliminationConfig extends OkaeriConfig {
     @Comment(" {killer_max_health} - represents killer's max health")
     @Comment(" {victim_max_health} - represents victim's max health")
     public List<String> broadcastMessages = Collections.singletonList(
-        "&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a.");
+            "&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a.");
 
 }

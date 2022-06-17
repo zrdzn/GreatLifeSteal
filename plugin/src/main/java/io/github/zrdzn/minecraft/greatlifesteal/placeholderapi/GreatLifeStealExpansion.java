@@ -3,14 +3,12 @@ package io.github.zrdzn.minecraft.greatlifesteal.placeholderapi;
 import io.github.zrdzn.minecraft.greatlifesteal.configs.BaseSettingsConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-
-import java.text.DecimalFormat;
-import java.util.Arrays;
 
 public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
@@ -21,7 +19,8 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
     private final Server server;
     private final HealthCache cache;
 
-    public GreatLifeStealExpansion(BaseSettingsConfig config, DamageableAdapter adapter, Server server, HealthCache cache) {
+    public GreatLifeStealExpansion(BaseSettingsConfig config, DamageableAdapter adapter, Server server,
+                                   HealthCache cache) {
         this.config = config;
         this.adapter = adapter;
         this.server = server;
