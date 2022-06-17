@@ -80,7 +80,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         this.config = SettingsManagerBuilder
             .withYamlFile(new File(this.getDataFolder(), "config.yml"))
-            .configurationData(ConfigurationDataBuilder.buildConfigurationData())
+            .configurationData(ConfigurationDataBuilder.build())
             .useDefaultMigrationService()
             .create();
         this.config.save();

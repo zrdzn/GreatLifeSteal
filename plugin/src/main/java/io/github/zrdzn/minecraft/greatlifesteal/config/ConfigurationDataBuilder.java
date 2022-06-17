@@ -10,7 +10,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaCo
 
 public class ConfigurationDataBuilder {
 
-    public static ConfigurationData buildConfigurationData() {
+    public static ConfigurationData build() {
         return ch.jalu.configme.configurationdata.ConfigurationDataBuilder.createConfiguration(
                      BaseConfig.class, MessagesConfig.class, EliminationConfig.class,
             StealCooldownConfig.class,    HeartConfig.class,    HeartMetaConfig.class
