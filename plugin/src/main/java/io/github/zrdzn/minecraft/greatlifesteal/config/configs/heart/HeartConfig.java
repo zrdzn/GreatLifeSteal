@@ -52,6 +52,9 @@ public class HeartConfig implements SettingsHolder {
         .defaultEntry("9", new BasicItemBean())
         .build();
 
+    private HeartConfig() {
+    }
+
     @Override
     public void registerComments(CommentsConfiguration config) {
         config.setComment(

@@ -24,6 +24,9 @@ public class StealCooldownConfig implements SettingsHolder {
         30
     );
 
+    private StealCooldownConfig() {
+    }
+
     @Override
     public void registerComments(CommentsConfiguration config) {
         config.setComment(

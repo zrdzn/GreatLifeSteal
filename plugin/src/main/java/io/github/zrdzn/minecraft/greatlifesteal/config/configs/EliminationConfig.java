@@ -59,6 +59,9 @@ public class EliminationConfig implements SettingsHolder {
         "&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a."
     );
 
+    private EliminationConfig() {
+    }
+
     @Override
     public void registerComments(CommentsConfiguration config) {
         config.setComment(

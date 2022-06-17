@@ -61,6 +61,9 @@ public class BaseConfig implements SettingsHolder {
         true
     );
 
+    private BaseConfig() {
+    }
+
     @Override
     public void registerComments(CommentsConfiguration config) {
         config.setComment(

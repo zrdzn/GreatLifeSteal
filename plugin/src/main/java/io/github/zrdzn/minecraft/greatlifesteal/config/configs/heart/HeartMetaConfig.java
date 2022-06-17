@@ -26,6 +26,9 @@ public class HeartMetaConfig implements SettingsHolder {
         "&aUse this item to give yourself health points."
     );
 
+    private HeartMetaConfig() {
+    }
+
     @Override
     public void registerComments(CommentsConfiguration config) {
         config.setComment(

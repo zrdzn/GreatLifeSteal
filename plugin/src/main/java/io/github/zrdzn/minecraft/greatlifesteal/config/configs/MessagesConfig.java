@@ -70,6 +70,9 @@ public class MessagesConfig implements SettingsHolder {
         "&7(&eGLifeSteal&7) &aNew update came out! https://www.spigotmc.org/resources/greatlifesteal.102206/."
     );
 
+    private MessagesConfig() {
+    }
+
     @Override
     public void registerComments(CommentsConfiguration config) {
         config.setComment(
