@@ -1,5 +1,11 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
+import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseSettingsConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -7,28 +13,28 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public class LifeStealTabCompleter implements TabCompleter {
 
-    private final BaseSettingsConfig config;
+    private final SettingsManager config;
 
-    public LifeStealTabCompleter(BaseSettingsConfig config) {
+    public LifeStealTabCompleter(SettingsManager config) {
         this.config = config;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        boolean eliminationEnabled = this.config.eliminationMode.enabled;
         if (args.length == 1) {
-            return new ArrayList<String>() {{
-                this.add("lives");
-                this.add("set");
-                this.add("reload");
-            }};
+            return new ArrayList<String>() {
+                {
+                    this.add("lives");
+                    this.add("set");
+                    this.add("reload");
+                }
+            };
         }
+
+        int defaultHealth = this.config.getProperty(BaseConfig.DEFAULT_HEALTH);
 
         switch (args[0].toLowerCase()) {
             case "set":
@@ -37,7 +43,7 @@ public class LifeStealTabCompleter implements TabCompleter {
                     Bukkit.getServer().getOnlinePlayers().forEach(player -> players.add(player.getName()));
                     return players;
                 } else if (args.length == 3) {
-                    return Collections.singletonList(String.valueOf(this.config.defaultHealth));
+                    return Collections.singletonList(String.valueOf(defaultHealth));
                 }
                 break;
             case "lives":
@@ -53,7 +59,7 @@ public class LifeStealTabCompleter implements TabCompleter {
                     }
                 }
                 break;
-            case "reload":
+            default:
                 return Collections.emptyList();
         }
 

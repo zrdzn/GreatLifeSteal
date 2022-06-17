@@ -8,11 +8,6 @@ repositories {
     }
 
     maven {
-        name "okaeri-repository"
-        url "https://storehouse.okaeri.eu/repository/maven-public/"
-    }
-
-    maven {
         name "placeholderapi-repository"
         url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
     }
@@ -27,8 +22,7 @@ dependencies {
     compileOnly "org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT"
     compileOnly "me.clip:placeholderapi:2.11.1"
 
-    implementation "eu.okaeri:okaeri-configs-yaml-bukkit:4.0.4"
-    implementation "eu.okaeri:okaeri-configs-validator-okaeri:4.0.4"
+    implementation "ch.jalu:configme:1.3.0"
     implementation "com.github.Querz:NBT:6.1"
     implementation "org.slf4j:slf4j-reload4j:1.7.36"
     implementation "org.apache.commons:commons-lang3:3.12.0"
@@ -36,6 +30,7 @@ dependencies {
 
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.8.2"
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+    testImplementation "org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT"
 }
 
 test {

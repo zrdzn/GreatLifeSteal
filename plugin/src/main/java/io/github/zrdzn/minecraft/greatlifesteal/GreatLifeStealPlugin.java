@@ -1,14 +1,13 @@
 package io.github.zrdzn.minecraft.greatlifesteal;
 
-import eu.okaeri.configs.ConfigManager;
-import eu.okaeri.configs.exception.OkaeriException;
-import eu.okaeri.configs.validator.okaeri.OkaeriValidator;
-import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HeartItemConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HeartItemConfig.RecipeItemConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.PluginConfig;
+import ch.jalu.configme.SettingsManager;
+import ch.jalu.configme.SettingsManagerBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
+import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigurationDataBuilder;
+import io.github.zrdzn.minecraft.greatlifesteal.config.beans.BasicItemBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.migrations.P0001_Migrate_old_elimination_configuration;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
@@ -20,22 +19,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
-import org.apache.log4j.BasicConfigurator;
-import org.bstats.bukkit.Metrics;
-import org.bukkit.ChatColor;
-import org.bukkit.Server;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +32,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import org.apache.log4j.BasicConfigurator;
+import org.bstats.bukkit.Metrics;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GreatLifeStealPlugin extends JavaPlugin {
 
@@ -56,7 +55,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
     private final Server server = this.getServer();
     private final PluginManager pluginManager = this.server.getPluginManager();
 
-    private PluginConfig config;
+    private SettingsManager config;
     private HeartItem heartItem;
     private SpigotAdapter spigotAdapter;
 
@@ -79,20 +78,12 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         this.spigotAdapter = this.prepareSpigotAdapter();
         this.logger.info("Using {} version of the adapter.", this.spigotAdapter.getVersion());
 
-        try {
-            this.config = ConfigManager.create(PluginConfig.class, (it) -> {
-                it.withConfigurer(new OkaeriValidator(new YamlBukkitConfigurer()));
-                it.withBindFile(new File(this.getDataFolder(), "config.yml"));
-                it.setLogger(this.server.getLogger());
-                it.saveDefaults();
-                it.migrate(new P0001_Migrate_old_elimination_configuration());
-                it.load(true);
-            });
-        } catch (OkaeriException exception) {
-            this.logger.error("Could not load the plugin configuration.", exception);
-            this.pluginManager.disablePlugin(this);
-            return;
-        }
+        this.config = SettingsManagerBuilder
+            .withYamlFile(new File(this.getDataFolder(), "config.yml"))
+            .configurationData(ConfigurationDataBuilder.build())
+            .useDefaultMigrationService()
+            .create();
+        this.config.save();
 
         if (!this.loadConfigurations()) {
             this.pluginManager.disablePlugin(this);
@@ -125,8 +116,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 }
             }
             */
-            if (new GreatLifeStealExpansion(this.config.baseSettings, this.spigotAdapter.getDamageableAdapter(),
-                this.server, healthCache).register()) {
+            if (new GreatLifeStealExpansion(this.config, this.spigotAdapter.getDamageableAdapter(),
+                    this.server, healthCache).register()) {
                 this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
             }
         }
@@ -136,35 +127,34 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         boolean latestVersion = this.checkLatestVersion();
 
         UserListener userListener = new UserListener(this.config, damageableAdapter, healthCache, this.heartItem,
-            latestVersion);
+                latestVersion);
 
         this.pluginManager.registerEvents(userListener, this);
 
         PluginCommand lifeStealCommand = this.getCommand("lifesteal");
         lifeStealCommand.setExecutor(new LifeStealCommand(this, this.config, damageableAdapter, this.server));
-        lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.config.baseSettings));
+        lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.config));
     }
 
     public boolean loadConfigurations() {
         this.saveDefaultConfig();
         this.reloadConfig();
 
-        this.config.load();
+        this.config.reload();
 
-        HeartItemConfig heartItemConfig = this.config.baseSettings.heartItem;
-        if (heartItemConfig.enabled) {
-            ItemStack heartItemStack = new ItemStack(heartItemConfig.type);
+        if (this.config.getProperty(HeartConfig.ENABLED)) {
+            ItemStack heartItemStack = new ItemStack(this.config.getProperty(HeartConfig.TYPE));
 
             ItemMeta heartItemMeta = heartItemStack.getItemMeta();
-            heartItemMeta.setDisplayName(heartItemConfig.meta.getDisplayName());
-            heartItemMeta.setLore(heartItemConfig.meta.getLore());
+            heartItemMeta.setDisplayName(formatColor(this.config.getProperty(HeartMetaConfig.DISPLAY_NAME)));
+            heartItemMeta.setLore(formatColor(this.config.getProperty(HeartMetaConfig.LORE)));
             heartItemStack.setItemMeta(heartItemMeta);
 
             ShapedRecipe recipe = this.spigotAdapter.getShapedRecipeAdapter().createRecipe(heartItemStack);
             recipe.shape("123", "456", "789");
 
             Map<Integer, ItemStack> ingredients = new HashMap<>();
-            for (Entry<String, RecipeItemConfig> item : heartItemConfig.crafting.entrySet()) {
+            for (Entry<String, BasicItemBean> item : this.config.getProperty(HeartConfig.CRAFTING).entrySet()) {
                 String slotRaw = item.getKey();
                 int slot;
                 try {
@@ -174,10 +164,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                     continue;
                 }
 
-                RecipeItemConfig recipeItem = item.getValue();
+                BasicItemBean recipeItem = item.getValue();
+                Material recipeItemType = recipeItem.getType();
 
-                recipe.setIngredient(slotRaw.charAt(0), recipeItem.type);
-                ingredients.put(slot, new ItemStack(recipeItem.type, recipeItem.amount));
+                recipe.setIngredient(slotRaw.charAt(0), recipeItemType);
+                ingredients.put(slot, new ItemStack(recipeItemType, recipeItem.getAmount()));
             }
 
             try {
@@ -187,7 +178,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             } catch (Exception ignored) {
             }
 
-            this.heartItem = new HeartItem(heartItemConfig.healthAmount, heartItemStack, ingredients);
+            this.heartItem = new HeartItem(this.config.getProperty(HeartConfig.HEALTH_AMOUNT), heartItemStack, ingredients);
 
             DamageableAdapter adapter = this.spigotAdapter.getDamageableAdapter();
 

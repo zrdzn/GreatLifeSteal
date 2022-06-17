@@ -1,8 +1,12 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
+import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,15 +18,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
-
 public class HeartListener implements Listener {
 
-    private final PluginConfig config;
+    private final SettingsManager config;
     private final DamageableAdapter adapter;
     private final HeartItem heartItem;
 
-    public HeartListener(PluginConfig config, DamageableAdapter adapter, HeartItem heartItem) {
+    public HeartListener(SettingsManager config, DamageableAdapter adapter, HeartItem heartItem) {
         this.config = config;
         this.adapter = adapter;
         this.heartItem = heartItem;
@@ -139,14 +141,15 @@ public class HeartListener implements Listener {
         Player player = event.getPlayer();
 
         double playerNewHealth = this.adapter.getMaxHealth(player) + this.heartItem.getHealthAmount();
-        if (playerNewHealth <= this.config.baseSettings.maximumHealth) {
+        if (playerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
             this.adapter.setMaxHealth(player, playerNewHealth);
             player.getInventory().removeItem(heartItemStack);
         } else {
-            MessageService.send(player, this.config.messages.maxHealthReached);
+            MessageService.send(player, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
         }
 
         event.setCancelled(true);
 
     }
+
 }
