@@ -10,7 +10,7 @@ import ch.jalu.configme.properties.PropertyBuilder;
 import ch.jalu.configme.properties.types.BeanPropertyType;
 import io.github.zrdzn.minecraft.greatlifesteal.action.Action;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BeanBuilder;
-import io.github.zrdzn.minecraft.greatlifesteal.config.beans.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

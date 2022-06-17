@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.config.beans;
+package io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans;
 
 import io.github.zrdzn.minecraft.greatlifesteal.action.Action;
 import java.util.Collections;

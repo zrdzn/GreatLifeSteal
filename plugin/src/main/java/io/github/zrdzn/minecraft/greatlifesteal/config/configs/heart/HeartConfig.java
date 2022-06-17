@@ -9,7 +9,7 @@ import ch.jalu.configme.properties.IntegerProperty;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.PropertyBuilder;
 import ch.jalu.configme.properties.types.BeanPropertyType;
-import io.github.zrdzn.minecraft.greatlifesteal.config.beans.BasicItemBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
 import java.util.Map;
 import org.bukkit.Material;
 

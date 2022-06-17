@@ -5,7 +5,7 @@ import ch.jalu.configme.SettingsManagerBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigurationDataBuilder;
-import io.github.zrdzn.minecraft.greatlifesteal.config.beans.BasicItemBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
