@@ -14,14 +14,14 @@ public class StealCooldownConfig implements SettingsHolder {
 
     @Comment("If the life steal cooldown should be enabled on the server.")
     public static final Property<Boolean> ENABLED = new BooleanProperty(
-        "baseSettings.stealCooldown.enabled",
-        true
+            "baseSettings.stealCooldown.enabled",
+            true
     );
 
     @Comment("Cooldown time in seconds.")
     public static final Property<Integer> COOLDOWN = new IntegerProperty(
-        "baseSettings.stealCooldown.cooldown",
-        30
+            "baseSettings.stealCooldown.cooldown",
+            30
     );
 
     private StealCooldownConfig() {
@@ -30,9 +30,9 @@ public class StealCooldownConfig implements SettingsHolder {
     @Override
     public void registerComments(CommentsConfiguration config) {
         config.setComment(
-            "baseSettings.stealCooldown",
-            "Specify if life steal cooldown should be enabled and how long should it last.",
-            "Killers will not be able to take hearts from victims unless a cooldown time expires."
+                "baseSettings.stealCooldown",
+                "Specify if life steal cooldown should be enabled and how long should it last.",
+                "Killers will not be able to take hearts from victims unless a cooldown time expires."
         );
     }
 

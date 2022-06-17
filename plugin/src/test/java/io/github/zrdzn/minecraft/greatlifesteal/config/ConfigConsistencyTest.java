@@ -1,13 +1,12 @@
 package io.github.zrdzn.minecraft.greatlifesteal.config;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.properties.Property;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ConfigConsistencyTest {
 

@@ -5,6 +5,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,8 +16,6 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.Map;
 
 public class HeartListener implements Listener {
 
@@ -151,4 +150,5 @@ public class HeartListener implements Listener {
         event.setCancelled(true);
 
     }
+
 }

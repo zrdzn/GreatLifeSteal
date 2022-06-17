@@ -10,9 +10,8 @@ import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.PropertyBuilder;
 import ch.jalu.configme.properties.types.BeanPropertyType;
 import io.github.zrdzn.minecraft.greatlifesteal.config.beans.BasicItemBean;
-import org.bukkit.Material;
-
 import java.util.Map;
+import org.bukkit.Material;
 
 /**
  * Represents 'baseSettings.heartItem' section.
@@ -24,8 +23,8 @@ public class HeartConfig implements SettingsHolder {
 
     @Comment("If the heart item should be given to killer, when he reaches maximumHealth.")
     public static final Property<Boolean> REWARD_HEART_ON_OVERLIMIT = new BooleanProperty(
-        "baseSettings.heartItem.rewardHeartOnOverlimit",
-        false
+            "baseSettings.heartItem.rewardHeartOnOverlimit",
+            false
     );
 
     @Comment("Amount of health points that should be given to a player on item consume.")
@@ -33,24 +32,24 @@ public class HeartConfig implements SettingsHolder {
 
     @Comment("Type of the item that the heart item should be.")
     public static final Property<Material> TYPE = new EnumProperty<>(
-        Material.class, "baseSettings.heartItem.type",
-        Material.APPLE
+            Material.class, "baseSettings.heartItem.type",
+            Material.APPLE
     );
 
     @Comment("Recipe for the heart item creation. Each number is an ordered slot in the workbench (1-9).")
     public static final Property<Map<String, BasicItemBean>> CRAFTING = new PropertyBuilder
-        .MapPropertyBuilder<>(BeanPropertyType.of(BasicItemBean.class))
-        .path("baseSettings.heartItem.crafting")
-        .defaultEntry("1", new BasicItemBean())
-        .defaultEntry("2", new BasicItemBean())
-        .defaultEntry("3", new BasicItemBean())
-        .defaultEntry("4", new BasicItemBean())
-        .defaultEntry("5", new BasicItemBean())
-        .defaultEntry("6", new BasicItemBean())
-        .defaultEntry("7", new BasicItemBean())
-        .defaultEntry("8", new BasicItemBean())
-        .defaultEntry("9", new BasicItemBean())
-        .build();
+            .MapPropertyBuilder<>(BeanPropertyType.of(BasicItemBean.class))
+            .path("baseSettings.heartItem.crafting")
+            .defaultEntry("1", new BasicItemBean())
+            .defaultEntry("2", new BasicItemBean())
+            .defaultEntry("3", new BasicItemBean())
+            .defaultEntry("4", new BasicItemBean())
+            .defaultEntry("5", new BasicItemBean())
+            .defaultEntry("6", new BasicItemBean())
+            .defaultEntry("7", new BasicItemBean())
+            .defaultEntry("8", new BasicItemBean())
+            .defaultEntry("9", new BasicItemBean())
+            .build();
 
     private HeartConfig() {
     }
@@ -58,8 +57,9 @@ public class HeartConfig implements SettingsHolder {
     @Override
     public void registerComments(CommentsConfiguration config) {
         config.setComment(
-            "baseSettings.heartItem",
-            "Item that can be used by a player to give him a specified amount of health points.");
+                "baseSettings.heartItem",
+                "Item that can be used by a player to give him a specified amount of health points."
+        );
     }
 
 }

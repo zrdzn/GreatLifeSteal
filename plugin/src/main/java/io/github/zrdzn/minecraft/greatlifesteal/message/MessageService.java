@@ -1,10 +1,9 @@
 package io.github.zrdzn.minecraft.greatlifesteal.message;
 
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
+import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.CommandSender;
-
-import java.util.concurrent.CompletableFuture;
 
 public class MessageService {
 

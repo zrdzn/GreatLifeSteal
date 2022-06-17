@@ -1,9 +1,8 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
-import org.bukkit.inventory.ItemStack;
-
 import java.util.Collections;
 import java.util.Map;
+import org.bukkit.inventory.ItemStack;
 
 public class HeartItem {
 

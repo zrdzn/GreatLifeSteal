@@ -5,13 +5,12 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-
-import java.text.DecimalFormat;
-import java.util.Arrays;
 
 public class GreatLifeStealExpansion extends PlaceholderExpansion {
 

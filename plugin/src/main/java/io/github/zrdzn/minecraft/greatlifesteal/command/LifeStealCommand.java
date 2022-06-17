@@ -91,7 +91,7 @@ public class LifeStealCommand implements CommandExecutor {
                 Player target;
                 if (args.length == 1) {
                     if (!sender.hasPermission("greatlifesteal.command.lives.self") &&
-                        !sender.hasPermission("greatlifesteal.command.lives")) {
+                            !sender.hasPermission("greatlifesteal.command.lives")) {
                         MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                         return true;
                     }
