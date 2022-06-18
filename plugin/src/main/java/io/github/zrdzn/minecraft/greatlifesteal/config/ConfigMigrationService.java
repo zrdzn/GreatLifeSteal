@@ -119,7 +119,7 @@ public class ConfigMigrationService extends PlainMigrationService {
     private static boolean hasDeprecatedKeys(PropertyReader reader) {
         List<String> deprecatedKeys = new ArrayList<String>() {
             {
-                this.add("baseSettings.heartItem.crafting");
+                this.add("baseSettings.heartItem.craftingRecipe");
                 this.add("baseSettings.eliminationMode");
             }
         };
