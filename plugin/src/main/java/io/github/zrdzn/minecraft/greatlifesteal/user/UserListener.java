@@ -22,6 +22,8 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -77,6 +79,8 @@ public class UserListener implements Listener {
     public void changePlayerHearts(PlayerDeathEvent event) {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
+
+        EntityDamageEvent lastDamageCause = victim.getLastDamageCause();
 
         boolean giveHealthToKiller = this.config.getProperty(BaseConfig.GIVE_HEALTH_TO_KILLER);
         boolean killByPlayerOnly = this.config.getProperty(BaseConfig.KILL_BY_PLAYER_ONLY);
@@ -153,13 +157,13 @@ public class UserListener implements Listener {
                     break;
                 case DISPATCH_COMMANDS:
                     action.getParameters().forEach(command -> {
-                        command = this.formatPlaceholders(command, victim, killer);
+                        command = this.formatPlaceholders(command, victim, killer, lastDamageCause);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     });
                     break;
                 case BROADCAST:
                     action.getParameters().stream()
-                        .map(message -> this.formatPlaceholders(message, victim, killer))
+                        .map(message -> this.formatPlaceholders(message, victim, killer, lastDamageCause))
                         .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
                         .map(GreatLifeStealPlugin::formatColor)
                         .forEach(Bukkit::broadcastMessage);
@@ -170,7 +174,7 @@ public class UserListener implements Listener {
         });
     }
 
-    private String formatPlaceholders(String string, Player victim, Player killer) {
+    private String formatPlaceholders(String string, Player victim, Player killer, EntityDamageEvent lastDamage) {
         string = StringUtils.replaceEach(string,
             new String[] { "{victim}", "{victim_max_health}" },
             new String[] { victim.getName(), String.valueOf((int) victim.getMaxHealth()) });
@@ -178,6 +182,19 @@ public class UserListener implements Listener {
             string = StringUtils.replaceEach(string,
                 new String[] { "{killer}", "{killer_max_health}" },
                 new String[] { killer.getName(), String.valueOf((int) killer.getMaxHealth()) });
+        } else if (lastDamage != null) {
+            String cause;
+
+            if (lastDamage instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent damage = (EntityDamageByEntityEvent) lastDamage;
+                cause = damage.getDamager().getName();
+            } else {
+                cause = lastDamage.getCause().name();
+            }
+
+            string = StringUtils.replaceEach(string,
+                    new String[] { "{killer}", "{killer_max_health}" },
+                    new String[] { cause, "N/A" });
         }
 
         return string;
