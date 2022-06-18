@@ -139,6 +139,10 @@ public class UserListener implements Listener {
         }
 
         this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).forEach((actionKey, action) -> {
+            if (!action.isEnabled()) {
+                return;
+            }
+
             if (victimMaxHealth - healthChange > action.getActivateAtHealth()) {
                 return;
             }

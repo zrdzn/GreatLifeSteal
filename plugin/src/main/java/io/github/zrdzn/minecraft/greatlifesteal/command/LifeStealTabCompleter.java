@@ -1,6 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
 import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,11 +51,14 @@ public class LifeStealTabCompleter implements TabCompleter {
                 }
 
                 if (args.length == 3) {
-                    if (this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[2]) != null) {
-                        return Bukkit.getServer().getOnlinePlayers().stream()
+                    ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[2]);
+                    if (action == null || !action.isEnabled()) {
+                        return Collections.emptyList();
+                    }
+
+                    return Bukkit.getServer().getOnlinePlayers().stream()
                             .map(Player::getName)
                             .collect(Collectors.toList());
-                    }
                 }
                 break;
             default:

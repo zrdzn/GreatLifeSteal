@@ -76,7 +76,7 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
         String placeholderKey = String.join("_", Arrays.copyOf(parametersSplitted, parametersSplitted.length - 1));
         switch (placeholderKey.toLowerCase()) {
             case "lives":
-                if (action == null) {
+                if (action == null || !action.isEnabled()) {
                     return null;
                 }
 
@@ -92,7 +92,7 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
             case "health":
                 return this.decimalFormat.format(maxHealth);
             case "hearts_left":
-                if (action == null) {
+                if (action == null || !action.isEnabled()) {
                     return null;
                 }
 
@@ -103,7 +103,7 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
                 return this.decimalFormat.format(heartsLeft);
             case "health_left":
-                if (action == null) {
+                if (action == null || !action.isEnabled()) {
                     return null;
                 }
 

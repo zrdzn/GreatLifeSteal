@@ -89,7 +89,7 @@ public class LifeStealCommand implements CommandExecutor {
                 }
 
                 ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
-                if (action == null) {
+                if (action == null || !action.isEnabled()) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_NOT_ENABLED));
                     return true;
                 }
