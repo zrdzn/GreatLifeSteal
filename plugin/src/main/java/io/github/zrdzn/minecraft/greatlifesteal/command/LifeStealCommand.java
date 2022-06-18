@@ -2,8 +2,8 @@ package io.github.zrdzn.minecraft.greatlifesteal.command;
 
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
@@ -83,13 +83,19 @@ public class LifeStealCommand implements CommandExecutor {
 
                 break;
             case "lives": {
-                if (!this.config.getProperty(EliminationConfig.ENABLED)) {
+                if (args.length == 1) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
+                    return true;
+                }
+
+                ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
+                if (action == null || !action.isEnabled()) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_NOT_ENABLED));
                     return true;
                 }
 
                 Player target;
-                if (args.length == 1) {
+                if (args.length == 2) {
                     if (!sender.hasPermission("greatlifesteal.command.lives.self") &&
                             !sender.hasPermission("greatlifesteal.command.lives")) {
                         MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
@@ -103,14 +109,14 @@ public class LifeStealCommand implements CommandExecutor {
                         return true;
                     }
 
-                    target = this.server.getPlayer(args[1]);
+                    target = this.server.getPlayer(args[2]);
                     if (target == null) {
                         MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                         return true;
                     }
                 }
 
-                int requiredHealth = this.config.getProperty(EliminationConfig.REQUIRED_HEALTH);
+                int requiredHealth = action.getActivateAtHealth();
                 double playerHealth = this.adapter.getMaxHealth(target);
                 int lives = 0;
 

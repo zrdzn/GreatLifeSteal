@@ -1,8 +1,8 @@
 package io.github.zrdzn.minecraft.greatlifesteal.placeholderapi;
 
 import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.text.DecimalFormat;
@@ -49,59 +49,12 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String parameters) {
-        double maxHealth = player.getMaxHealth();
-
-        boolean eliminationEnabled = this.config.getProperty(EliminationConfig.ENABLED);
-        int requiredHealth = this.config.getProperty(EliminationConfig.REQUIRED_HEALTH);
-
-        switch (parameters) {
-            case "lives":
-                if (!eliminationEnabled) {
-                    return null;
-                }
-
-                int lives = 0;
-                if (maxHealth > requiredHealth) {
-                    int healthChange = this.config.getProperty(BaseConfig.HEALTH_CHANGE);
-                    lives = (int) Math.ceil((maxHealth - requiredHealth) / healthChange);
-                }
-
-                return String.valueOf(lives);
-            case "hearts":
-                return this.decimalFormat.format(maxHealth / 2.0D);
-            case "health":
-                return this.decimalFormat.format(maxHealth);
-            case "hearts_left":
-                if (!eliminationEnabled) {
-                    return null;
-                }
-
-                double heartsLeft = 0.0D;
-                if (maxHealth > requiredHealth) {
-                    heartsLeft = (maxHealth - requiredHealth) / 2;
-                }
-
-                return this.decimalFormat.format(heartsLeft);
-            case "health_left":
-                if (!eliminationEnabled) {
-                    return null;
-                }
-
-                double healthLeft = 0.0D;
-                if (maxHealth > requiredHealth) {
-                    healthLeft = (maxHealth - requiredHealth);
-                }
-
-                return this.decimalFormat.format(healthLeft);
-            default:
-                return null;
-        }
-    }
-
-    @Override
     public String onRequest(OfflinePlayer player, String parameters) {
         String[] parametersSplitted = parameters.split("_");
+
+        ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS)
+                .get(parametersSplitted[parametersSplitted.length - 2]);
+
         String targetName = parametersSplitted[parametersSplitted.length - 1];
 
         double maxHealth;
@@ -120,20 +73,17 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
             maxHealth = this.adapter.getMaxHealth(target);
         }
 
-        boolean eliminationEnabled = this.config.getProperty(EliminationConfig.ENABLED);
-        int requiredHealth = this.config.getProperty(EliminationConfig.REQUIRED_HEALTH);
-
         String placeholderKey = String.join("_", Arrays.copyOf(parametersSplitted, parametersSplitted.length - 1));
         switch (placeholderKey.toLowerCase()) {
             case "lives":
-                if (!eliminationEnabled) {
+                if (action == null || !action.isEnabled()) {
                     return null;
                 }
 
                 int lives = 0;
-                if (maxHealth > requiredHealth) {
+                if (maxHealth > action.getActivateAtHealth()) {
                     int healthChange = this.config.getProperty(BaseConfig.HEALTH_CHANGE);
-                    lives = (int) Math.ceil((maxHealth - requiredHealth) / healthChange);
+                    lives = (int) Math.ceil((maxHealth - action.getActivateAtHealth()) / healthChange);
                 }
 
                 return String.valueOf(lives);
@@ -142,24 +92,24 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
             case "health":
                 return this.decimalFormat.format(maxHealth);
             case "hearts_left":
-                if (!eliminationEnabled) {
+                if (action == null || !action.isEnabled()) {
                     return null;
                 }
 
                 double heartsLeft = 0.0D;
-                if (maxHealth > requiredHealth) {
-                    heartsLeft = (maxHealth - requiredHealth) / 2;
+                if (maxHealth > action.getActivateAtHealth()) {
+                    heartsLeft = (maxHealth - action.getActivateAtHealth()) / 2;
                 }
 
                 return this.decimalFormat.format(heartsLeft);
             case "health_left":
-                if (!eliminationEnabled) {
+                if (action == null || !action.isEnabled()) {
                     return null;
                 }
 
                 double healthLeft = 0.0D;
-                if (maxHealth > requiredHealth) {
-                    healthLeft = (maxHealth - requiredHealth);
+                if (maxHealth > action.getActivateAtHealth()) {
+                    healthLeft = (maxHealth - action.getActivateAtHealth());
                 }
 
                 return this.decimalFormat.format(healthLeft);

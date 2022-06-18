@@ -3,7 +3,6 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
@@ -29,7 +28,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class UserListener implements Listener {
 
-    private final Map<Player, Map.Entry<Player, Instant>> stealCooldowns = new HashMap<>();
+    private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
     private final SettingsManager config;
     private final DamageableAdapter adapter;
@@ -135,42 +134,50 @@ public class UserListener implements Listener {
             this.adapter.setMaxHealth(victim, victimNewHealth);
         }
 
-        if (!this.config.getProperty(EliminationConfig.ENABLED)) {
+        if (this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).isEmpty()) {
             return;
         }
 
-        if (victimNewHealth <= this.config.getProperty(EliminationConfig.REQUIRED_HEALTH)) {
-            switch (this.config.getProperty(EliminationConfig.ACTION)) {
+        this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).forEach((actionKey, action) -> {
+            if (!action.isEnabled()) {
+                return;
+            }
+
+            if (victimMaxHealth - healthChange > action.getActivateAtHealth()) {
+                return;
+            }
+
+            switch (action.getType()) {
                 case SPECTATOR_MODE:
                     victim.setGameMode(GameMode.SPECTATOR);
                     break;
                 case DISPATCH_COMMANDS:
-                    for (String command : this.config.getProperty(EliminationConfig.COMMANDS)) {
+                    action.getParameters().forEach(command -> {
                         command = this.formatPlaceholders(command, victim, killer);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                    }
+                    });
                     break;
                 case BROADCAST:
-                    this.config.getProperty(EliminationConfig.BROADCAST_MESSAGES).stream()
-                            .map(message -> this.formatPlaceholders(message, victim, killer))
-                            .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
-                            .map(GreatLifeStealPlugin::formatColor)
-                            .forEach(Bukkit::broadcastMessage);
+                    action.getParameters().stream()
+                        .map(message -> this.formatPlaceholders(message, victim, killer))
+                        .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
+                        .map(GreatLifeStealPlugin::formatColor)
+                        .forEach(Bukkit::broadcastMessage);
                     break;
                 default:
                     throw new IllegalArgumentException("Case for the specified action does not exist.");
             }
-        }
+        });
     }
 
     private String formatPlaceholders(String string, Player victim, Player killer) {
         string = StringUtils.replaceEach(string,
-                new String[]{"{victim}", "{victim_max_health}"},
-                new String[]{victim.getName(), String.valueOf((int) victim.getMaxHealth())});
+            new String[] { "{victim}", "{victim_max_health}" },
+            new String[] { victim.getName(), String.valueOf((int) victim.getMaxHealth()) });
         if (killer != null) {
             string = StringUtils.replaceEach(string,
-                    new String[]{"{killer}", "{killer_max_health}"},
-                    new String[]{killer.getName(), String.valueOf((int) killer.getMaxHealth())});
+                new String[] { "{killer}", "{killer_max_health}" },
+                new String[] { killer.getName(), String.valueOf((int) killer.getMaxHealth()) });
         }
 
         return string;

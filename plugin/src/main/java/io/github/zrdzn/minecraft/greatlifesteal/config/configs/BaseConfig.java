@@ -6,6 +6,14 @@ import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.BooleanProperty;
 import ch.jalu.configme.properties.IntegerProperty;
 import ch.jalu.configme.properties.Property;
+import ch.jalu.configme.properties.PropertyBuilder;
+import ch.jalu.configme.properties.types.BeanPropertyType;
+import io.github.zrdzn.minecraft.greatlifesteal.action.Action;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BeanBuilder;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Represents 'baseSettings' section.
@@ -62,6 +70,54 @@ public class BaseConfig implements SettingsHolder {
             "baseSettings.ignoreSameIp",
             true
     );
+
+    public static final List<String> DEFAULT_BROADCAST_MESSAGE = Collections.singletonList(
+            "&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a."
+    );
+    public static final List<String> DEFAULT_DISPATCH_COMMANDS = Collections.singletonList("tempban {victim} 7d");
+
+    @Comment({
+            "Define what list of actions should happen if a player reaches specific amount of maximum health points.",
+            "",
+            "If the action should be enabled.",
+            "enabled: false",
+            "",
+            "Action type that should be done on reaching health points goal.",
+            "If you are using SPECTATOR_MODE, switch to DISPATCH_COMMANDS instead because the previous action is",
+            "deprecated and will be removed in the future.",
+            " DISPATCH_COMMANDS - execute a list of commands as a console.",
+            " BROADCAST - broadcast a message that is specified in the parameters list.",
+            "type: DISPATCH_COMMANDS",
+            "",
+            "Amount of health points that are needed to execute the action.",
+            "activateAtHealth: 4",
+            "",
+            "List of parameters that are adequate to the chosen action.",
+            " DISPATCH_COMMANDS - list of commands.",
+            " BROADCAST - list of messages.",
+            "Placeholders:",
+            " {killer} - represents killer username",
+            " {victim} - represents victim username",
+            " {killer_max_health} - represents killer's max health",
+            " {victim_max_health} - represents victim's max health",
+            "parameters:",
+            "- gamemode spectator {victim}"
+    })
+    public static final Property<Map<String, ActionBean>> CUSTOM_ACTIONS = new PropertyBuilder
+            .MapPropertyBuilder<>(BeanPropertyType.of(ActionBean.class))
+            .path("baseSettings.customActions")
+            .defaultEntry("announce", BeanBuilder
+                    .from(ActionBean.class)
+                    .with(announce -> announce.setEnabled(true))
+                    .with(announce -> announce.setType(Action.BROADCAST))
+                    .with(announce -> announce.setParameters(DEFAULT_BROADCAST_MESSAGE))
+                    .build())
+            .defaultEntry("eliminate", BeanBuilder
+                    .from(ActionBean.class)
+                    .with(eliminate -> eliminate.setType(Action.DISPATCH_COMMANDS))
+                    .with(eliminate -> eliminate.setParameters(DEFAULT_DISPATCH_COMMANDS))
+                    .build())
+            .build();
 
     private BaseConfig() {
     }

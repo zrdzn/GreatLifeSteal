@@ -35,6 +35,11 @@ public class MessagesConfig implements SettingsHolder {
             "&cEnable the &eeliminationMode &csetting in order to use this command."
     );
 
+    public static final Property<String> NO_ACTION_SPECIFIED = new StringProperty(
+            "messages.noActionSpecified",
+            "&cYou need to specify a type of an action."
+    );
+
     public static final Property<String> SUCCESSFUL_COMMAND_RELOAD = new StringProperty(
             "messages.successfulCommandReload",
             "&aPlugin has been successfully reloaded."

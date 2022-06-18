@@ -4,8 +4,9 @@ import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.SettingsManagerBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
-import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigurationDataBuilder;
-import io.github.zrdzn.minecraft.greatlifesteal.config.beans.BasicItemBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigDataBuilder;
+import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigMigrationService;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
@@ -78,10 +79,10 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         this.logger.info("Using {} version of the adapter.", this.spigotAdapter.getVersion());
 
         this.config = SettingsManagerBuilder
-            .withYamlFile(new File(this.getDataFolder(), "config.yml"))
-            .configurationData(ConfigurationDataBuilder.build())
-            .useDefaultMigrationService()
-            .create();
+                .withYamlFile(new File(this.getDataFolder(), "config.yml"))
+                .configurationData(ConfigDataBuilder.build())
+                .migrationService(new ConfigMigrationService())
+                .create();
         this.config.save();
 
         if (!this.loadConfigurations()) {
