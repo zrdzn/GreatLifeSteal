@@ -96,7 +96,7 @@ public class BaseConfig implements SettingsHolder {
             " DISPATCH_COMMANDS - list of commands.",
             " BROADCAST - list of messages.",
             "Placeholders:",
-            " {killer} - represents killer username",
+            " {killer} - represents killer username, or last damage cause (if killByPlayerOnly not active)",
             " {victim} - represents victim username",
             " {killer_max_health} - represents killer's max health",
             " {victim_max_health} - represents victim's max health",
