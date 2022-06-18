@@ -71,9 +71,10 @@ public class BaseConfig implements SettingsHolder {
             true
     );
 
-    private static final List<String> defaultBroadcastMessage = Collections.singletonList(
+    public static final List<String> DEFAULT_BROADCAST_MESSAGE = Collections.singletonList(
             "&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a."
     );
+    public static final List<String> DEFAULT_DISPATCH_COMMANDS = Collections.singletonList("tempban {victim} 7d");
 
     @Comment({
             "Define what list of actions should happen if a player reaches specific amount of maximum health points.",
@@ -109,12 +110,12 @@ public class BaseConfig implements SettingsHolder {
                     .from(ActionBean.class)
                     .with(announce -> announce.setEnabled(true))
                     .with(announce -> announce.setType(Action.BROADCAST))
-                    .with(announce -> announce.setParameters(defaultBroadcastMessage))
+                    .with(announce -> announce.setParameters(DEFAULT_BROADCAST_MESSAGE))
                     .build())
             .defaultEntry("eliminate", BeanBuilder
                     .from(ActionBean.class)
                     .with(eliminate -> eliminate.setType(Action.DISPATCH_COMMANDS))
-                    .with(eliminate -> eliminate.setParameters(Collections.singletonList("tempban {victim} 7d")))
+                    .with(eliminate -> eliminate.setParameters(DEFAULT_DISPATCH_COMMANDS))
                     .build())
             .build();
 

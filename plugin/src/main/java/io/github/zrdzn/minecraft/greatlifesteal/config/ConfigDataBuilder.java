@@ -7,7 +7,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConf
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
 
-public class ConfigurationDataBuilder {
+public class ConfigDataBuilder {
 
     public static ConfigurationData build() {
         return ch.jalu.configme.configurationdata.ConfigurationDataBuilder.createConfiguration(

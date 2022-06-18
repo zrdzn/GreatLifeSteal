@@ -14,7 +14,7 @@ public class ConfigConsistencyTest {
 
     @BeforeAll
     public static void buildConfigurationData() {
-        configurationData = ConfigurationDataBuilder.build();
+        configurationData = ConfigDataBuilder.build();
     }
 
     @Test
