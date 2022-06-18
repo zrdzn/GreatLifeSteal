@@ -25,12 +25,23 @@ public class ConfigMigrationService extends PlainMigrationService {
         return migrateEliminationModeToCustomActions(reader, configData) || hasDeprecatedKeys(reader);
     }
 
+    /**
+     * Migrates the old elimination mode section to the new custom actions one.
+     * Entries in custom actions depend on the old elimination's action.
+     *
+     * @since 1.5.2
+     *
+     * @param reader the config reader
+     * @param configData the config inmemory
+     *
+     * @return the state whether migration is required
+     */
     private static boolean migrateEliminationModeToCustomActions(PropertyReader reader, ConfigurationData configData) {
         String oldKey = "baseSettings.eliminationMode";
 
         Property<Action> oldActionProperty = new EnumProperty<>(Action.class, oldKey + ".action", Action.DISPATCH_COMMANDS);
         if (!oldActionProperty.isValidInResource(reader)) {
-            return false;
+            return NO_MIGRATION_NEEDED;
         }
 
         Action oldAction = oldActionProperty.determineValue(reader).getValue();
@@ -70,7 +81,7 @@ public class ConfigMigrationService extends PlainMigrationService {
 
         configData.setValue(BaseConfig.CUSTOM_ACTIONS, newActions);
 
-        return true;
+        return MIGRATION_REQUIRED;
     }
 
     private static boolean hasDeprecatedKeys(PropertyReader reader) {
