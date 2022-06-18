@@ -11,7 +11,7 @@ import ch.jalu.configme.properties.StringListProperty;
 import ch.jalu.configme.properties.types.EnumPropertyType;
 import ch.jalu.configme.properties.types.PropertyType;
 import ch.jalu.configme.resource.PropertyReader;
-import io.github.zrdzn.minecraft.greatlifesteal.action.Action;
+import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BeanBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
@@ -82,12 +82,12 @@ public class ConfigMigrationService extends PlainMigrationService {
     private static boolean migrateEliminationModeToCustomActions(PropertyReader reader, ConfigurationData configData) {
         String oldKey = "baseSettings.eliminationMode";
 
-        Property<Action> oldActionProperty = new EnumProperty<>(Action.class, oldKey + ".action", Action.DISPATCH_COMMANDS);
+        Property<ActionType> oldActionProperty = new EnumProperty<>(ActionType.class, oldKey + ".action", ActionType.DISPATCH_COMMANDS);
         if (!oldActionProperty.isValidInResource(reader)) {
             return NO_MIGRATION_NEEDED;
         }
 
-        Action oldAction = oldActionProperty.determineValue(reader).getValue();
+        ActionType oldActionType = oldActionProperty.determineValue(reader).getValue();
 
         boolean oldEnabled = new BooleanProperty(oldKey + ".enabled", false).determineValue(reader).getValue();
 
@@ -105,19 +105,19 @@ public class ConfigMigrationService extends PlainMigrationService {
                 .with(bean -> bean.setActivateAtHealth(oldRequiredHealth));
 
         // Initiate map with an entry that is based on the provided action.
-        if (oldAction == Action.SPECTATOR_MODE) {
+        if (oldActionType == ActionType.SPECTATOR_MODE) {
             newActions.put("spectate", beanBuilder
-                    .with(spectate -> spectate.setType(Action.DISPATCH_COMMANDS))
+                    .with(spectate -> spectate.setType(ActionType.DISPATCH_COMMANDS))
                     .with(spectate -> spectate.setParameters(Collections.singletonList("gamemode spectator {victim}")))
                     .build());
-        } else if (oldAction == Action.BROADCAST) {
+        } else if (oldActionType == ActionType.BROADCAST) {
             newActions.put("announce", beanBuilder
-                    .with(spectate -> spectate.setType(oldAction))
+                    .with(spectate -> spectate.setType(oldActionType))
                     .with(spectate -> spectate.setParameters(oldMessages))
                     .build());
-        } else if (oldAction == Action.DISPATCH_COMMANDS) {
+        } else if (oldActionType == ActionType.DISPATCH_COMMANDS) {
             newActions.put("eliminate", beanBuilder
-                    .with(eliminate -> eliminate.setType(oldAction))
+                    .with(eliminate -> eliminate.setType(oldActionType))
                     .with(eliminate -> eliminate.setParameters(oldCommands))
                     .build());
         }

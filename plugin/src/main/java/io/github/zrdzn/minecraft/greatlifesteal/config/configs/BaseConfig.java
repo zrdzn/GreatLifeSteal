@@ -8,7 +8,7 @@ import ch.jalu.configme.properties.IntegerProperty;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.PropertyBuilder;
 import ch.jalu.configme.properties.types.BeanPropertyType;
-import io.github.zrdzn.minecraft.greatlifesteal.action.Action;
+import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BeanBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import java.util.Collections;
@@ -109,12 +109,12 @@ public class BaseConfig implements SettingsHolder {
             .defaultEntry("announce", BeanBuilder
                     .from(ActionBean.class)
                     .with(announce -> announce.setEnabled(true))
-                    .with(announce -> announce.setType(Action.BROADCAST))
+                    .with(announce -> announce.setType(ActionType.BROADCAST))
                     .with(announce -> announce.setParameters(DEFAULT_BROADCAST_MESSAGE))
                     .build())
             .defaultEntry("eliminate", BeanBuilder
                     .from(ActionBean.class)
-                    .with(eliminate -> eliminate.setType(Action.DISPATCH_COMMANDS))
+                    .with(eliminate -> eliminate.setType(ActionType.DISPATCH_COMMANDS))
                     .with(eliminate -> eliminate.setParameters(DEFAULT_DISPATCH_COMMANDS))
                     .build())
             .build();

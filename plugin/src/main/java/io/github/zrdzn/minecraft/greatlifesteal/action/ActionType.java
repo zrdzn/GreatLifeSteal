@@ -1,6 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.action;
 
-public enum Action {
+public enum ActionType {
 
     /**
      * @deprecated in favour of {@link #DISPATCH_COMMANDS}
