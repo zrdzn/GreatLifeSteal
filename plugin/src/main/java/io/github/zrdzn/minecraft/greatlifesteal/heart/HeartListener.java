@@ -38,11 +38,11 @@ public class HeartListener implements Listener {
             return;
         }
 
-        if (!eventResult.isSimilar(this.heartItem.getResult())) {
+        if (!eventResult.isSimilar(this.heartItem.result)) {
             return;
         }
 
-        Map<Integer, ItemStack> ingredients = this.heartItem.getIngredients();
+        Map<Integer, ItemStack> ingredients = this.heartItem.ingredients;
 
         ItemStack air = new ItemStack(Material.AIR);
 
@@ -83,7 +83,7 @@ public class HeartListener implements Listener {
             return;
         }
 
-        ItemStack result = this.heartItem.getResult();
+        ItemStack result = this.heartItem.result;
 
         ItemStack eventResult = inventory.getResult();
         if (eventResult == null) {
@@ -104,7 +104,7 @@ public class HeartListener implements Listener {
                 continue;
             }
 
-            ItemStack ingredient = this.heartItem.getIngredients().get(slotIndex);
+            ItemStack ingredient = this.heartItem.ingredients.get(slotIndex);
             int ingredientAmount = ingredient.getAmount();
 
             int slotItemAmount = slotItem.getAmount();
@@ -121,7 +121,7 @@ public class HeartListener implements Listener {
 
     @EventHandler
     public void addHealth(PlayerInteractEvent event) {
-        ItemStack heartItemStack = this.heartItem.getResult();
+        ItemStack heartItemStack = this.heartItem.result;
         ItemStack item = event.getItem();
         Action action = event.getAction();
 
@@ -139,7 +139,7 @@ public class HeartListener implements Listener {
 
         Player player = event.getPlayer();
 
-        double playerNewHealth = this.adapter.getMaxHealth(player) + this.heartItem.getHealthAmount();
+        double playerNewHealth = this.adapter.getMaxHealth(player) + this.heartItem.healthAmount;
         if (playerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
             this.adapter.setMaxHealth(player, playerNewHealth);
             player.getInventory().removeItem(heartItemStack);

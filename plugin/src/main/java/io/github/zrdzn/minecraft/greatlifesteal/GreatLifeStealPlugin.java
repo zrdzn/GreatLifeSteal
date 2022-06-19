@@ -54,9 +54,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
     private final Logger logger = LoggerFactory.getLogger("GreatLifeSteal");
     private final Server server = this.getServer();
     private final PluginManager pluginManager = this.server.getPluginManager();
+    private final HeartItem heartItem = new HeartItem();
 
     private SettingsManager config;
-    private HeartItem heartItem;
     private SpigotAdapter spigotAdapter;
 
     public static String formatColor(String string) {
@@ -124,6 +124,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         DamageableAdapter damageableAdapter = this.spigotAdapter.getDamageableAdapter();
 
+        HeartListener heartListener = new HeartListener(this.config, damageableAdapter, this.heartItem);
+        this.pluginManager.registerEvents(heartListener, this);
+
         boolean latestVersion = this.checkLatestVersion();
 
         UserListener userListener = new UserListener(this.config, damageableAdapter, healthCache, this.heartItem,
@@ -178,12 +181,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             } catch (Exception ignored) {
             }
 
-            this.heartItem = new HeartItem(this.config.getProperty(HeartConfig.HEALTH_AMOUNT), heartItemStack, ingredients);
-
-            DamageableAdapter adapter = this.spigotAdapter.getDamageableAdapter();
-
-            HeartListener heartListener = new HeartListener(this.config, adapter, this.heartItem);
-            this.pluginManager.registerEvents(heartListener, this);
+            this.heartItem.healthAmount = this.config.getProperty(HeartConfig.HEALTH_AMOUNT);
+            this.heartItem.result = heartItemStack.clone();
+            this.heartItem.ingredients = ingredients;
         }
 
         return true;

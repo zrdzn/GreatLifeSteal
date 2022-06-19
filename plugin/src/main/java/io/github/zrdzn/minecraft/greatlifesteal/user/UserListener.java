@@ -122,7 +122,7 @@ public class UserListener implements Listener {
 
                 HeartItem heartItem = this.heartItem;
                 if (heartItem != null && this.config.getProperty(HeartConfig.REWARD_HEART_ON_OVERLIMIT)) {
-                    killer.getInventory().addItem(heartItem.getResult());
+                    killer.getInventory().addItem(heartItem.result);
                 }
             }
         }
