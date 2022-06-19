@@ -61,6 +61,13 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
+                if (health < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
+                        health > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                    return true;
+                }
+
+
                 this.adapter.setMaxHealth(target, health);
 
                 String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
