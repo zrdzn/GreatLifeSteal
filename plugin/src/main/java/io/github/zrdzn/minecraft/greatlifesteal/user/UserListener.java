@@ -87,11 +87,11 @@ public class UserListener implements Listener {
 
         int healthChange = this.config.getProperty(BaseConfig.HEALTH_CHANGE);
 
-        if (giveHealthToKiller && killByPlayerOnly) {
-            if (killer == null) {
-                return;
-            }
+        if (killByPlayerOnly && killer == null) {
+            return;
+        }
 
+        if (giveHealthToKiller && killer != null) {
             if (this.config.getProperty(BaseConfig.IGNORE_SAME_IP)) {
                 if (victim.getAddress().getAddress().equals(killer.getAddress().getAddress())) {
                     return;
