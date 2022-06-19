@@ -67,7 +67,6 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-
                 this.adapter.setMaxHealth(target, health);
 
                 String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
