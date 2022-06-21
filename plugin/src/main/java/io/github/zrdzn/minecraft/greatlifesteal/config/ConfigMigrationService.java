@@ -141,7 +141,7 @@ public class ConfigMigrationService extends PlainMigrationService {
      *
      * @return the state whether migration is required
      */
-    private static boolean migratesHealthChangeToHealthChangeSection(PropertyReader reader, ConfigurationData configData) {
+    private static boolean migrateHealthChangeToHealthChangeSection(PropertyReader reader, ConfigurationData configData) {
         String oldKey = "baseSettings.healthChange";
         PropertyValue<Integer> healthProperty = new IntegerProperty(oldKey, 0).determineValue(reader);
         if (!healthProperty.isValidInResource()) {
