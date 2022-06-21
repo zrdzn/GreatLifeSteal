@@ -191,7 +191,7 @@ public class LifeStealCommand implements CommandExecutor {
 
                 int minimumHealth = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).values().stream()
                         .map(ActionBean::getActivateAtHealth)
-                        .min(Integer::compareTo)
+                        .max(Integer::compareTo)
                         .orElse(this.config.getProperty(BaseConfig.MINIMUM_HEALTH));
 
                 double victimMaxHealth = this.adapter.getMaxHealth(target);
