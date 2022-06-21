@@ -44,8 +44,6 @@ public class HeartListener implements Listener {
 
         Map<Integer, ItemStack> ingredients = this.heartItem.ingredients;
 
-        ItemStack air = new ItemStack(Material.AIR);
-
         for (int matrixIndex = 0; matrixIndex < 9; matrixIndex++) {
             ItemStack slotItem = inventory.getMatrix()[matrixIndex];
             if (slotItem == null) {
@@ -62,12 +60,12 @@ public class HeartListener implements Listener {
 
             if (ingredient != null) {
                 if (slotItem.getType() != ingredient.getType()) {
-                    inventory.setResult(air);
+                    inventory.setResult(null);
                     break;
                 }
 
                 if (slotItem.getAmount() < ingredient.getAmount()) {
-                    inventory.setResult(air);
+                    inventory.setResult(null);
                     break;
                 }
             }
