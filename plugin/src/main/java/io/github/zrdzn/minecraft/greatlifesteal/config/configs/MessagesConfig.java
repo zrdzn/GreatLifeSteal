@@ -30,6 +30,21 @@ public class MessagesConfig implements SettingsHolder {
             "&aPlayer &e{PLAYER} &ahas &e{LIVES} lives &aleft."
     );
 
+    public static final Property<String> SUCCESSFUL_COMMAND_WITHDRAW = new StringProperty(
+            "messages.successfulCommandWithdraw",
+            "&aPlayer &e{PLAYER} &ahas been given &e{HEARTS}&ax hearts."
+    );
+
+    public static final Property<String> NOT_ENOUGH_HEALTH_WITHDRAW = new StringProperty(
+            "messages.notEnoughHealthWithdraw",
+            "&cYou cannot withdraw more hearts than you already have."
+    );
+
+    public static final Property<String> NOT_ENOUGH_PLACE_INVENTORY = new StringProperty(
+            "messages.notEnoughPlaceInventory",
+            "&cYou do not have enough place in the inventory."
+    );
+
     public static final Property<String> ELIMINATION_NOT_ENABLED = new StringProperty(
             "messages.eliminationNotEnabled",
             "&cEnable the &eeliminationMode &csetting in order to use this command."
@@ -58,6 +73,21 @@ public class MessagesConfig implements SettingsHolder {
     public static final Property<String> INVALID_HEALTH_PROVIDED = new StringProperty(
             "messages.invalidHealthProvided",
             "&cYou have provided invalid health number."
+    );
+
+    public static final Property<String> NO_NUMBER_SPECIFIED = new StringProperty(
+            "messages.noNumberSpecified",
+            "&cYou need to specify a number."
+    );
+
+    public static final Property<String> INVALID_NUMBER_PROVIDED = new StringProperty(
+            "messages.invalidNumberProvided",
+            "&cYou have provided an invalid number."
+    );
+
+    public static final Property<String> POSITIVE_NUMBER_REQUIRED = new StringProperty(
+            "messages.positiveNumberRequired",
+            "&cYou need to provide a number higher than 0."
     );
 
     public static final Property<String> MAX_HEALTH_REACHED = new StringProperty(

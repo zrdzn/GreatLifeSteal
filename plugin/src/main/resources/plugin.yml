@@ -13,6 +13,11 @@ permissions:
     children:
       greatlifesteal.command.lives.self:
         default: op
+  greatlifesteal.command.withdraw:
+    default: op
+    children:
+      greatlifesteal.command.withdraw.self:
+        default: op
   greatlifesteal.command.reload:
     default: op
   greatlifesteal.notify.update:

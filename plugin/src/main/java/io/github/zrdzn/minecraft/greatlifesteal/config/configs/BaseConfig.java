@@ -20,18 +20,6 @@ import java.util.Map;
  */
 public class BaseConfig implements SettingsHolder {
 
-    @Comment("If health points should be decreased from a player who is killed.")
-    public static final Property<Boolean> TAKE_HEALTH_FROM_VICTIM = new BooleanProperty(
-            "baseSettings.takeHealthFromVictim",
-            true
-    );
-
-    @Comment("If health points should be increased for a player who killed somebody.")
-    public static final Property<Boolean> GIVE_HEALTH_TO_KILLER = new BooleanProperty(
-            "baseSettings.giveHealthToKiller",
-            true
-    );
-
     @Comment("Amount of maximum health points that will be given to the new player that did not play before.")
     public static final Property<Integer> DEFAULT_HEALTH = new IntegerProperty(
             "baseSettings.defaultHealth",

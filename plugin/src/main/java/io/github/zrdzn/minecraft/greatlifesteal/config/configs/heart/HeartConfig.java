@@ -36,6 +36,12 @@ public class HeartConfig implements SettingsHolder {
             Material.APPLE
     );
 
+    @Comment("If heart items should be dropped on a ground if they did not fit in the inventory.")
+    public static final Property<Boolean> DROP_ON_GROUND = new BooleanProperty(
+            "baseSettings.heartItem.dropOnGround",
+            true
+    );
+
     @Comment("Recipe for the heart item creation. Each number is an ordered slot in the workbench (1-9).")
     public static final Property<Map<String, BasicItemBean>> CRAFTING = new PropertyBuilder
             .MapPropertyBuilder<>(BeanPropertyType.of(BasicItemBean.class))
