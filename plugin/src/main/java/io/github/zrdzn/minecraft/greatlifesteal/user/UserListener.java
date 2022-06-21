@@ -14,9 +14,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.BanList;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -167,6 +170,16 @@ public class UserListener implements Listener {
                         .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
                         .map(GreatLifeStealPlugin::formatColor)
                         .forEach(Bukkit::broadcastMessage);
+                    break;
+                case BAN:
+                    List<String> reason = action.getParameters().stream()
+                            .map(line -> this.formatPlaceholders(line, victim, killer, lastDamageCause))
+                            .map(GreatLifeStealPlugin::formatColor)
+                            .collect(Collectors.toList());
+                    String formattedReason = String.join("\n", reason);
+                    Bukkit.getBanList(BanList.Type.NAME).addBan(victim.getName(), formattedReason, null, null);
+                    victim.kickPlayer(formattedReason);
+
                     break;
                 default:
                     throw new IllegalArgumentException("Case for the specified action does not exist.");

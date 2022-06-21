@@ -10,6 +10,8 @@ public enum ActionType {
 
     DISPATCH_COMMANDS,
 
-    BROADCAST
+    BROADCAST,
+
+    BAN
 
 }
