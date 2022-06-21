@@ -135,12 +135,12 @@ public class LifeStealCommand implements CommandExecutor {
                     }
                 }
 
-                int requiredHealth = action.getActivateAtHealth();
+                double requiredHealth = action.getActivateAtHealth();
                 double playerHealth = this.adapter.getMaxHealth(target);
                 int lives = 0;
 
                 if (playerHealth > requiredHealth) {
-                    int healthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
+                    double healthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
                     lives = (int) Math.ceil((playerHealth - requiredHealth) / healthChange);
                 }
 
@@ -190,9 +190,9 @@ public class LifeStealCommand implements CommandExecutor {
                     }
                 }
 
-                int minimumHealth = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).values().stream()
+                double minimumHealth = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).values().stream()
                         .map(ActionBean::getActivateAtHealth)
-                        .max(Integer::compareTo)
+                        .max(Double::compareTo)
                         .orElse(this.config.getProperty(BaseConfig.MINIMUM_HEALTH));
 
                 double victimMaxHealth = this.adapter.getMaxHealth(target);

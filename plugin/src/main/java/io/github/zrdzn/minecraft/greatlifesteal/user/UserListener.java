@@ -91,8 +91,8 @@ public class UserListener implements Listener {
         String killerName = null;
         String formattedKillerMaxHealth = null;
 
-        int killerHealthChange = this.config.getProperty(HealthChangeConfig.KILLER);
-        if (killerHealthChange > 0 && killer != null) {
+        double killerHealthChange = this.config.getProperty(HealthChangeConfig.KILLER);
+        if (killerHealthChange > 0.0D && killer != null) {
             killerName = killer.getName();
 
             if (this.config.getProperty(BaseConfig.IGNORE_SAME_IP)) {
@@ -133,15 +133,15 @@ public class UserListener implements Listener {
             }
         }
 
-        int victimHealthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
-        if (victimHealthChange <= 0) {
+        double victimHealthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
+        if (victimHealthChange <= 0.0D) {
             return;
         }
 
         double victimMaxHealth = this.adapter.getMaxHealth(victim);
         double victimNewHealth = victimMaxHealth - victimHealthChange;
 
-        int minimumHealth = this.config.getProperty(BaseConfig.MINIMUM_HEALTH);
+        double minimumHealth = this.config.getProperty(BaseConfig.MINIMUM_HEALTH);
 
         if (victimNewHealth >= minimumHealth) {
             this.adapter.setMaxHealth(victim, victimNewHealth);

@@ -4,7 +4,7 @@ import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.BooleanProperty;
-import ch.jalu.configme.properties.IntegerProperty;
+import ch.jalu.configme.properties.DoubleProperty;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.PropertyBuilder;
 import ch.jalu.configme.properties.types.BeanPropertyType;
@@ -21,21 +21,21 @@ import java.util.Map;
 public class BaseConfig implements SettingsHolder {
 
     @Comment("Amount of maximum health points that will be given to the new player that did not play before.")
-    public static final Property<Integer> DEFAULT_HEALTH = new IntegerProperty(
+    public static final Property<Double> DEFAULT_HEALTH = new DoubleProperty(
             "baseSettings.defaultHealth",
-            20
+            20.0D
     );
 
     @Comment("Minimum amount of health points a player can have.")
-    public static final Property<Integer> MINIMUM_HEALTH = new IntegerProperty(
+    public static final Property<Double> MINIMUM_HEALTH = new DoubleProperty(
             "baseSettings.minimumHealth",
-            2
+            2.0D
     );
 
     @Comment("Maximum amount of health points a player can have.")
-    public static final Property<Integer> MAXIMUM_HEALTH = new IntegerProperty(
+    public static final Property<Double> MAXIMUM_HEALTH = new DoubleProperty(
             "baseSettings.maximumHealth",
-            40
+            40.0D
     );
 
     @Comment("Health points will be changed only if the player was killed by the other player.")

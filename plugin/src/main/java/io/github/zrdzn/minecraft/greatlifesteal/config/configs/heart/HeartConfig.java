@@ -4,8 +4,8 @@ import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.BooleanProperty;
+import ch.jalu.configme.properties.DoubleProperty;
 import ch.jalu.configme.properties.EnumProperty;
-import ch.jalu.configme.properties.IntegerProperty;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.PropertyBuilder;
 import ch.jalu.configme.properties.types.BeanPropertyType;
@@ -28,7 +28,7 @@ public class HeartConfig implements SettingsHolder {
     );
 
     @Comment("Amount of health points that should be given to a player on item consume.")
-    public static final Property<Integer> HEALTH_AMOUNT = new IntegerProperty("baseSettings.heartItem.healthAmount", 2);
+    public static final Property<Double> HEALTH_AMOUNT = new DoubleProperty("baseSettings.heartItem.healthAmount", 2.0D);
 
     @Comment("Type of the item that the heart item should be.")
     public static final Property<Material> TYPE = new EnumProperty<>(
