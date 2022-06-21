@@ -17,7 +17,6 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -90,7 +89,12 @@ public class UserListener implements Listener {
             return;
         }
 
+        String killerName = null;
+        String formattedKillerMaxHealth = null;
+
         if (giveHealthToKiller && killer != null) {
+            killerName = killer.getName();
+
             if (this.config.getProperty(BaseConfig.IGNORE_SAME_IP)) {
                 if (victim.getAddress().getAddress().equals(killer.getAddress().getAddress())) {
                     return;
@@ -113,7 +117,10 @@ public class UserListener implements Listener {
                 this.stealCooldowns.put(killer, new SimpleImmutableEntry<>(victim, Instant.now()));
             }
 
-            double killerNewHealth = this.adapter.getMaxHealth(killer) + this.config.getProperty(HealthChangeConfig.KILLER);
+            double killerMaxHealth = this.adapter.getMaxHealth(killer);
+            formattedKillerMaxHealth = String.valueOf((int) killerMaxHealth);
+
+            double killerNewHealth = killerMaxHealth + this.config.getProperty(HealthChangeConfig.KILLER);
             if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
             } else {
@@ -141,6 +148,27 @@ public class UserListener implements Listener {
             return;
         }
 
+        if (killerName == null && lastDamageCause != null) {
+            if (lastDamageCause instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent damage = (EntityDamageByEntityEvent) lastDamageCause;
+                killerName = damage.getDamager().getName();
+            } else {
+                killerName = lastDamageCause.getCause().name();
+            }
+
+            formattedKillerMaxHealth = "N/A";
+        }
+
+        String victimName = victim.getName();
+
+        String[] placeholders = {
+                "{player}", victimName,
+                "{victim}", victimName,
+                "{killer}", killerName,
+                "{victim_max_health}", String.valueOf((int) victim.getMaxHealth()),
+                "{killer_max_health}", formattedKillerMaxHealth,
+        };
+
         this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).forEach((actionKey, action) -> {
             if (!action.isEnabled()) {
                 return;
@@ -156,14 +184,13 @@ public class UserListener implements Listener {
                     break;
                 case DISPATCH_COMMANDS:
                     action.getParameters().forEach(command -> {
-                        command = this.formatPlaceholders(command, victim, killer, lastDamageCause);
+                        command = MessageService.formatPlaceholders(command, placeholders);
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                     });
                     break;
                 case BROADCAST:
                     action.getParameters().stream()
-                        .map(message -> this.formatPlaceholders(message, victim, killer, lastDamageCause))
-                        .map(message -> StringUtils.replace(message, "{player}", victim.getName()))
+                        .map(message -> MessageService.formatPlaceholders(message, placeholders))
                         .map(GreatLifeStealPlugin::formatColor)
                         .forEach(Bukkit::broadcastMessage);
                     break;
@@ -171,32 +198,6 @@ public class UserListener implements Listener {
                     throw new IllegalArgumentException("Case for the specified action does not exist.");
             }
         });
-    }
-
-    private String formatPlaceholders(String string, Player victim, Player killer, EntityDamageEvent lastDamage) {
-        string = StringUtils.replaceEach(string,
-            new String[] { "{victim}", "{victim_max_health}" },
-            new String[] { victim.getName(), String.valueOf((int) victim.getMaxHealth()) });
-        if (killer != null) {
-            string = StringUtils.replaceEach(string,
-                new String[] { "{killer}", "{killer_max_health}" },
-                new String[] { killer.getName(), String.valueOf((int) killer.getMaxHealth()) });
-        } else if (lastDamage != null) {
-            String cause;
-
-            if (lastDamage instanceof EntityDamageByEntityEvent) {
-                EntityDamageByEntityEvent damage = (EntityDamageByEntityEvent) lastDamage;
-                cause = damage.getDamager().getName();
-            } else {
-                cause = lastDamage.getCause().name();
-            }
-
-            string = StringUtils.replaceEach(string,
-                    new String[] { "{killer}", "{killer_max_health}" },
-                    new String[] { cause, "N/A" });
-        }
-
-        return string;
     }
 
 }
