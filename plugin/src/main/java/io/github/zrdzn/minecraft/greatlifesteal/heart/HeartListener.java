@@ -81,14 +81,14 @@ public class HeartListener implements Listener {
             return;
         }
 
-        ItemStack result = this.heartItem.result;
+        ItemStack heart = this.heartItem.result;
 
         ItemStack eventResult = inventory.getResult();
         if (eventResult == null) {
             return;
         }
 
-        if (!eventResult.isSimilar(result)) {
+        if (!eventResult.isSimilar(heart)) {
             return;
         }
 
@@ -111,7 +111,7 @@ public class HeartListener implements Listener {
 
             slotItem.setAmount(slotItemAmount - ingredientAmount);
             inventory.setResult(null);
-            event.getWhoClicked().setItemOnCursor(result);
+            event.getWhoClicked().setItemOnCursor(heart);
         }
     }
 
