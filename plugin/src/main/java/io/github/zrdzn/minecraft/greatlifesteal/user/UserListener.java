@@ -83,14 +83,14 @@ public class UserListener implements Listener {
 
         EntityDamageEvent lastDamageCause = victim.getLastDamageCause();
 
-        boolean giveHealthToKiller = this.config.getProperty(BaseConfig.GIVE_HEALTH_TO_KILLER);
         boolean killByPlayerOnly = this.config.getProperty(BaseConfig.KILL_BY_PLAYER_ONLY);
 
         if (killByPlayerOnly && killer == null) {
             return;
         }
 
-        if (giveHealthToKiller && killer != null) {
+        int killerHealthChange = this.config.getProperty(HealthChangeConfig.KILLER);
+        if (killerHealthChange > 0 && killer != null) {
             if (this.config.getProperty(BaseConfig.IGNORE_SAME_IP)) {
                 if (victim.getAddress().getAddress().equals(killer.getAddress().getAddress())) {
                     return;
@@ -113,7 +113,7 @@ public class UserListener implements Listener {
                 this.stealCooldowns.put(killer, new SimpleImmutableEntry<>(victim, Instant.now()));
             }
 
-            double killerNewHealth = this.adapter.getMaxHealth(killer) + this.config.getProperty(HealthChangeConfig.KILLER);
+            double killerNewHealth = this.adapter.getMaxHealth(killer) + killerHealthChange;
             if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
             } else {
@@ -126,14 +126,17 @@ public class UserListener implements Listener {
             }
         }
 
-        boolean takeHealthFromVictim = this.config.getProperty(BaseConfig.TAKE_HEALTH_FROM_VICTIM);
+        int victimHealthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
+        if (victimHealthChange <= 0) {
+            return;
+        }
 
         double victimMaxHealth = this.adapter.getMaxHealth(victim);
-        double victimNewHealth = victimMaxHealth - this.config.getProperty(HealthChangeConfig.VICTIM);
+        double victimNewHealth = victimMaxHealth - victimHealthChange;
 
         int minimumHealth = this.config.getProperty(BaseConfig.MINIMUM_HEALTH);
 
-        if (takeHealthFromVictim && victimNewHealth >= minimumHealth) {
+        if (victimNewHealth >= minimumHealth) {
             this.adapter.setMaxHealth(victim, victimNewHealth);
         }
 

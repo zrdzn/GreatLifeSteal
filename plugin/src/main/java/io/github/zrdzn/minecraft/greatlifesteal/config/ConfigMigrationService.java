@@ -32,7 +32,8 @@ public class ConfigMigrationService extends PlainMigrationService {
     protected boolean performMigrations(PropertyReader reader, ConfigurationData configData) {
         return migrateCraftingRecipeToCrafting(reader, configData) |
                 migrateEliminationModeToCustomActions(reader, configData) |
-                migratesHealthChangeToHealthChangeSection(reader, configData) ||
+                migrateHealthChangeToHealthChangeSection(reader, configData) |
+                removeTakeGiveHeartsFromPlayers(reader, configData) ||
                 hasDeprecatedKeys(reader);
     }
 
@@ -156,12 +157,47 @@ public class ConfigMigrationService extends PlainMigrationService {
         return MIGRATION_REQUIRED;
     }
 
+    /**
+     * Removes the old take/give hearts from a victim/killer and
+     * replaces it with their healthChange set to 0.
+     *
+     * @since 1.6
+     *
+     * @param reader the config reader
+     * @param configData the config inmemory
+     *
+     * @return the state whether migration is required
+     */
+    private static boolean removeTakeGiveHeartsFromPlayers(PropertyReader reader, ConfigurationData configData) {
+        String oldVictimKey = "baseSettings.takeHealthFromVictim";
+        String oldKillerKey = "baseSettings.giveHealthToKiller";
+
+        PropertyValue<Boolean> oldVictimProperty = new BooleanProperty(oldVictimKey, true).determineValue(reader);
+        PropertyValue<Boolean> oldKillerProperty = new BooleanProperty(oldKillerKey, true).determineValue(reader);
+
+        if (!oldVictimProperty.isValidInResource() && !oldKillerProperty.isValidInResource()) {
+            return NO_MIGRATION_NEEDED;
+        }
+
+        if (oldVictimProperty.getValue()) {
+            configData.setValue(HealthChangeConfig.VICTIM, 0);
+        }
+
+        if (oldKillerProperty.getValue()) {
+            configData.setValue(HealthChangeConfig.KILLER, 0);
+        }
+
+        return MIGRATION_REQUIRED;
+    }
+
     private static boolean hasDeprecatedKeys(PropertyReader reader) {
         List<String> deprecatedKeys = new ArrayList<String>() {
             {
                 this.add("baseSettings.heartItem.craftingRecipe");
                 this.add("baseSettings.eliminationMode");
                 this.add("baseSettings.healthChange");
+                this.add("baseSettings.takeHealthFromVictim");
+                this.add("baseSettings.giveHealthToKiller");
             }
         };
 

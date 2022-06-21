@@ -27,7 +27,8 @@ public class HealthChangeConfig implements SettingsHolder {
     public void registerComments(CommentsConfiguration config) {
         config.setComment(
                 "baseSettings.healthChange",
-                "Amount of health points revoked when a player was killed or awarded when a kill was scored."
+                "Amount of health points revoked when a player was killed or awarded when a kill was scored.",
+                "If you want to disable the life steal system for a killer or a victim just set their health change to 0."
         );
     }
 }
