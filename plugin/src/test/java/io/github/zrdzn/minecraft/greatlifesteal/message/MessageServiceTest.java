@@ -11,8 +11,8 @@ public class MessageServiceTest {
         String message = "Hello! My name is {name} and I am {age} years old!";
 
         String[] placeholders = {
-            "{name}", "John",
-            "{age}", "20"
+                "{name}", "John",
+                "{age}", "20"
         };
 
         String expectedMessage = "Hello! My name is John and I am 20 years old!";
