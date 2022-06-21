@@ -94,8 +94,6 @@ public class HeartListener implements Listener {
 
         event.setCancelled(true);
 
-        ItemStack air = new ItemStack(Material.AIR);
-
         for (int slotIndex = 1; slotIndex < 10; slotIndex++) {
             ItemStack slotItem = inventory.getItem(slotIndex);
             if (slotItem == null) {
@@ -112,7 +110,7 @@ public class HeartListener implements Listener {
             }
 
             slotItem.setAmount(slotItemAmount - ingredientAmount);
-            inventory.setResult(air);
+            inventory.setResult(null);
             event.getWhoClicked().setItemOnCursor(result);
         }
     }
