@@ -33,7 +33,7 @@ public class LifeStealTabCompleter implements TabCompleter {
             };
         }
 
-        int defaultHealth = this.config.getProperty(BaseConfig.DEFAULT_HEALTH);
+        double defaultHealth = this.config.getProperty(BaseConfig.DEFAULT_HEALTH);
 
         switch (args[0].toLowerCase()) {
             case "set":
@@ -42,7 +42,7 @@ public class LifeStealTabCompleter implements TabCompleter {
                     Bukkit.getServer().getOnlinePlayers().forEach(player -> players.add(player.getName()));
                     return players;
                 } else if (args.length == 3) {
-                    return Collections.singletonList(String.valueOf(defaultHealth));
+                    return Collections.singletonList(String.valueOf((int) defaultHealth));
                 }
                 break;
             case "lives":

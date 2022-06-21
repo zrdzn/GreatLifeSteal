@@ -151,8 +151,8 @@ public class ConfigMigrationService extends PlainMigrationService {
 
         int health = healthProperty.getValue();
 
-        configData.setValue(HealthChangeConfig.VICTIM, health);
-        configData.setValue(HealthChangeConfig.KILLER, health);
+        configData.setValue(HealthChangeConfig.VICTIM, (double) health);
+        configData.setValue(HealthChangeConfig.KILLER, (double) health);
 
         return MIGRATION_REQUIRED;
     }
@@ -180,11 +180,11 @@ public class ConfigMigrationService extends PlainMigrationService {
         }
 
         if (oldVictimProperty.getValue()) {
-            configData.setValue(HealthChangeConfig.VICTIM, 0);
+            configData.setValue(HealthChangeConfig.VICTIM, 0.0D);
         }
 
         if (oldKillerProperty.getValue()) {
-            configData.setValue(HealthChangeConfig.KILLER, 0);
+            configData.setValue(HealthChangeConfig.KILLER, 0.0D);
         }
 
         return MIGRATION_REQUIRED;

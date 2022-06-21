@@ -8,7 +8,7 @@ public class ActionBean {
 
     private boolean enabled = false;
     private ActionType type = ActionType.DISPATCH_COMMANDS;
-    private int activateAtHealth = 4;
+    private double activateAtHealth = 4;
     private List<String> parameters = Collections.singletonList("gamemode spectator {victim}");
 
     public boolean isEnabled() {
@@ -27,7 +27,7 @@ public class ActionBean {
         this.type = type;
     }
 
-    public int getActivateAtHealth() {
+    public double getActivateAtHealth() {
         return this.activateAtHealth;
     }
 

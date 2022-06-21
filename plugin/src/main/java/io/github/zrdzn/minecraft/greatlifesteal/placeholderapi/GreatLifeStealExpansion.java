@@ -83,7 +83,7 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
                 int lives = 0;
                 if (maxHealth > action.getActivateAtHealth()) {
-                    int healthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
+                    double healthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
                     lives = (int) Math.ceil((maxHealth - action.getActivateAtHealth()) / healthChange);
                 }
 
