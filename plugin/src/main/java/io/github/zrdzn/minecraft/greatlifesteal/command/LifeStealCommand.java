@@ -4,6 +4,7 @@ import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
@@ -127,7 +128,7 @@ public class LifeStealCommand implements CommandExecutor {
                 int lives = 0;
 
                 if (playerHealth > requiredHealth) {
-                    int healthChange = this.config.getProperty(BaseConfig.HEALTH_CHANGE);
+                    int healthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
                     lives = (int) Math.ceil((playerHealth - requiredHealth) / healthChange);
                 }
 

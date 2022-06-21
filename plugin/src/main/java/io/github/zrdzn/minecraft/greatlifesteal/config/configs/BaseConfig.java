@@ -38,12 +38,6 @@ public class BaseConfig implements SettingsHolder {
             20
     );
 
-    @Comment("Amount of health points revoked when a player was killed or awarded when a kill was scored.")
-    public static final Property<Integer> HEALTH_CHANGE = new IntegerProperty(
-            "baseSettings.healthChange",
-            2
-    );
-
     @Comment("Minimum amount of health points a player can have.")
     public static final Property<Integer> MINIMUM_HEALTH = new IntegerProperty(
             "baseSettings.minimumHealth",

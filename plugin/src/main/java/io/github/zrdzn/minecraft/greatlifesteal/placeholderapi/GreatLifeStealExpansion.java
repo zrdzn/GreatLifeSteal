@@ -3,6 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.placeholderapi;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.text.DecimalFormat;
@@ -82,7 +83,7 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
                 int lives = 0;
                 if (maxHealth > action.getActivateAtHealth()) {
-                    int healthChange = this.config.getProperty(BaseConfig.HEALTH_CHANGE);
+                    int healthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
                     lives = (int) Math.ceil((maxHealth - action.getActivateAtHealth()) / healthChange);
                 }
 

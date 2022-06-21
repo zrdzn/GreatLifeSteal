@@ -3,6 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
@@ -85,8 +86,6 @@ public class UserListener implements Listener {
         boolean giveHealthToKiller = this.config.getProperty(BaseConfig.GIVE_HEALTH_TO_KILLER);
         boolean killByPlayerOnly = this.config.getProperty(BaseConfig.KILL_BY_PLAYER_ONLY);
 
-        int healthChange = this.config.getProperty(BaseConfig.HEALTH_CHANGE);
-
         if (killByPlayerOnly && killer == null) {
             return;
         }
@@ -114,7 +113,7 @@ public class UserListener implements Listener {
                 this.stealCooldowns.put(killer, new SimpleImmutableEntry<>(victim, Instant.now()));
             }
 
-            double killerNewHealth = this.adapter.getMaxHealth(killer) + healthChange;
+            double killerNewHealth = this.adapter.getMaxHealth(killer) + this.config.getProperty(HealthChangeConfig.KILLER);
             if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                 this.adapter.setMaxHealth(killer, killerNewHealth);
             } else {
@@ -130,7 +129,7 @@ public class UserListener implements Listener {
         boolean takeHealthFromVictim = this.config.getProperty(BaseConfig.TAKE_HEALTH_FROM_VICTIM);
 
         double victimMaxHealth = this.adapter.getMaxHealth(victim);
-        double victimNewHealth = victimMaxHealth - healthChange;
+        double victimNewHealth = victimMaxHealth - this.config.getProperty(HealthChangeConfig.VICTIM);
 
         int minimumHealth = this.config.getProperty(BaseConfig.MINIMUM_HEALTH);
 
@@ -147,7 +146,7 @@ public class UserListener implements Listener {
                 return;
             }
 
-            if (victimMaxHealth - healthChange > action.getActivateAtHealth()) {
+            if (victimNewHealth > action.getActivateAtHealth()) {
                 return;
             }
 

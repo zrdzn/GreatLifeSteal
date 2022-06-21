@@ -8,6 +8,7 @@ import ch.jalu.configme.properties.IntegerProperty;
 import ch.jalu.configme.properties.MapProperty;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringListProperty;
+import ch.jalu.configme.properties.convertresult.PropertyValue;
 import ch.jalu.configme.properties.types.EnumPropertyType;
 import ch.jalu.configme.properties.types.PropertyType;
 import ch.jalu.configme.resource.PropertyReader;
@@ -16,6 +17,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BeanBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +31,8 @@ public class ConfigMigrationService extends PlainMigrationService {
     @Override
     protected boolean performMigrations(PropertyReader reader, ConfigurationData configData) {
         return migrateCraftingRecipeToCrafting(reader, configData) |
-                migrateEliminationModeToCustomActions(reader, configData) ||
+                migrateEliminationModeToCustomActions(reader, configData) |
+                migratesHealthChangeToHealthChangeSection(reader, configData) ||
                 hasDeprecatedKeys(reader);
     }
 
@@ -127,11 +130,38 @@ public class ConfigMigrationService extends PlainMigrationService {
         return MIGRATION_REQUIRED;
     }
 
+    /**
+     * Migrates the old health change integer to section and splits its
+     * value to victim's health change and killer's health change.
+     *
+     * @since 1.6
+     *
+     * @param reader the config reader
+     * @param configData the config inmemory
+     *
+     * @return the state whether migration is required
+     */
+    private static boolean migratesHealthChangeToHealthChangeSection(PropertyReader reader, ConfigurationData configData) {
+        String oldKey = "baseSettings.healthChange";
+        PropertyValue<Integer> healthProperty = new IntegerProperty(oldKey, 0).determineValue(reader);
+        if (!healthProperty.isValidInResource()) {
+            return NO_MIGRATION_NEEDED;
+        }
+
+        int health = healthProperty.getValue();
+
+        configData.setValue(HealthChangeConfig.VICTIM, health);
+        configData.setValue(HealthChangeConfig.KILLER, health);
+
+        return MIGRATION_REQUIRED;
+    }
+
     private static boolean hasDeprecatedKeys(PropertyReader reader) {
         List<String> deprecatedKeys = new ArrayList<String>() {
             {
                 this.add("baseSettings.heartItem.craftingRecipe");
                 this.add("baseSettings.eliminationMode");
+                this.add("baseSettings.healthChange");
             }
         };
 
