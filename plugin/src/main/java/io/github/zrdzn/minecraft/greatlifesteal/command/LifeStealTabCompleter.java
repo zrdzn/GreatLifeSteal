@@ -26,9 +26,20 @@ public class LifeStealTabCompleter implements TabCompleter {
         if (args.length == 1) {
             return new ArrayList<String>() {
                 {
-                    this.add("lives");
-                    this.add("set");
-                    this.add("reload");
+                    if (sender.hasPermission("greatlifesteal.command.set")) {
+                        this.add("set");
+                    }
+                    if (sender.hasPermission("greatlifesteal.command.reload")) {
+                        this.add("reload");
+                    }
+                    if (sender.hasPermission("greatlifesteal.command.lives.self") ||
+                            sender.hasPermission("greatlifesteal.command.lives")) {
+                        this.add("lives");
+                    }
+                    if (sender.hasPermission("greatlifesteal.command.withdraw.self") ||
+                            sender.hasPermission("greatlifesteal.command.withdraw")) {
+                        this.add("withdraw");
+                    }
                 }
             };
         }
@@ -38,9 +49,9 @@ public class LifeStealTabCompleter implements TabCompleter {
         switch (args[0].toLowerCase()) {
             case "set":
                 if (args.length == 2) {
-                    List<String> players = new ArrayList<>();
-                    Bukkit.getServer().getOnlinePlayers().forEach(player -> players.add(player.getName()));
-                    return players;
+                    return Bukkit.getServer().getOnlinePlayers().stream()
+                            .map(Player::getName)
+                            .collect(Collectors.toList());
                 } else if (args.length == 3) {
                     return Collections.singletonList(String.valueOf((int) defaultHealth));
                 }
@@ -48,14 +59,21 @@ public class LifeStealTabCompleter implements TabCompleter {
             case "lives":
                 if (args.length == 2) {
                     return new ArrayList<>(this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).keySet());
-                }
-
-                if (args.length == 3) {
-                    ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[2]);
+                } else if (args.length == 3) {
+                    ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
                     if (action == null || !action.isEnabled()) {
                         return Collections.emptyList();
                     }
 
+                    return Bukkit.getServer().getOnlinePlayers().stream()
+                            .map(Player::getName)
+                            .collect(Collectors.toList());
+                }
+                break;
+            case "withdraw":
+                if (args.length == 2) {
+                    return Collections.singletonList("1");
+                } else if (args.length == 3) {
                     return Bukkit.getServer().getOnlinePlayers().stream()
                             .map(Player::getName)
                             .collect(Collectors.toList());
