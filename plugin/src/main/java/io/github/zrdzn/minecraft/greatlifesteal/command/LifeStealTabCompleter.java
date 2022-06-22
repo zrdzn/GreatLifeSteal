@@ -6,7 +6,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -30,13 +30,16 @@ public class LifeStealTabCompleter implements TabCompleter {
                     if (sender.hasPermission("greatlifesteal.command.set")) {
                         this.add("set");
                     }
+
                     if (sender.hasPermission("greatlifesteal.command.reload")) {
                         this.add("reload");
                     }
+
                     if (sender.hasPermission("greatlifesteal.command.lives.self") ||
                             sender.hasPermission("greatlifesteal.command.lives")) {
                         this.add("lives");
                     }
+
                     if (sender.hasPermission("greatlifesteal.command.withdraw.self") ||
                             sender.hasPermission("greatlifesteal.command.withdraw")) {
                         this.add("withdraw");
@@ -59,10 +62,10 @@ public class LifeStealTabCompleter implements TabCompleter {
                 break;
             case "lives":
                 if (args.length == 2) {
-                    return this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).entrySet()
-                            .stream()
-                            .filter(beanEntry -> beanEntry.getValue().isEnabled())
-                            .map(Map.Entry::getKey).collect(Collectors.toList());
+                    return this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).entrySet().stream()
+                            .filter(action -> action.getValue().isEnabled())
+                            .map(Entry::getKey)
+                            .collect(Collectors.toList());
                 } else if (args.length == 3) {
                     ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
                     if (action == null || !action.isEnabled()) {
