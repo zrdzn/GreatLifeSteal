@@ -6,6 +6,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -58,7 +59,10 @@ public class LifeStealTabCompleter implements TabCompleter {
                 break;
             case "lives":
                 if (args.length == 2) {
-                    return new ArrayList<>(this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).keySet());
+                    return this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).entrySet()
+                            .stream()
+                            .filter(beanEntry -> beanEntry.getValue().isEnabled())
+                            .map(Map.Entry::getKey).collect(Collectors.toList());
                 } else if (args.length == 3) {
                     ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
                     if (action == null || !action.isEnabled()) {
