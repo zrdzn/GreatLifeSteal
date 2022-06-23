@@ -19,7 +19,7 @@ public class V1_9R2SpigotAdapter implements SpigotAdapter {
 
     @Override
     public RecipeManagerAdapter getRecipeManagerAdapter() {
-        return new V1_8R3RecipeManagerAdapter();
+        return new V1_9R2RecipeManagerAdapter();
     }
 
 }
