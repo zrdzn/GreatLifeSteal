@@ -8,4 +8,6 @@ public interface SpigotAdapter {
 
     ShapedRecipeAdapter getShapedRecipeAdapter();
 
+    RecipeManagerAdapter getRecipeManagerAdapter();
+
 }

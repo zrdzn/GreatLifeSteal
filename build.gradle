@@ -20,6 +20,7 @@ subprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
 
         maven {
             name "spigot-repository"
@@ -29,6 +30,11 @@ subprojects {
         maven {
             name "sonatype-repository"
             url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+
+        maven {
+            name "panda-repository"
+            url "https://repo.panda-lang.org/releases"
         }
     }
 }

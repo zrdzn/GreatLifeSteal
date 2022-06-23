@@ -15,15 +15,19 @@ import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
 import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_10R1SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_11R1SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12R1SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_13R2SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_14R1SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_15R1SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8R3SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9R2SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Constructor;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -153,7 +157,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             heartItemMeta.setLore(formatColor(this.config.getProperty(HeartMetaConfig.LORE)));
             heartItemStack.setItemMeta(heartItemMeta);
 
-            ShapedRecipe recipe = this.spigotAdapter.getShapedRecipeAdapter().createRecipe(heartItemStack);
+            ShapedRecipe recipe = this.spigotAdapter.getShapedRecipeAdapter().createShapedRecipe(heartItemStack);
             recipe.shape("123", "456", "789");
 
             Map<Integer, ItemStack> ingredients = new HashMap<>();
@@ -174,11 +178,14 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 ingredients.put(slot, new ItemStack(recipeItemType, recipeItem.getAmount()));
             }
 
-            try {
-                if (!this.server.addRecipe(recipe)) {
-                    this.logger.error("Could not add a new recipe for some unknown reason.");
-                }
-            } catch (Exception ignored) {
+            if (this.spigotAdapter.getRecipeManagerAdapter().removeServerShapedRecipe(recipe)) {
+                this.logger.info("Removed the old heart item recipe.");
+            }
+
+            if (this.server.addRecipe(recipe)) {
+                this.logger.info("Added the new heart item recipe.");
+            } else {
+                this.logger.error("Could not add the new heart item recipe for some unknown reason.");
             }
 
             this.heartItem.healthAmount = this.config.getProperty(HeartConfig.HEALTH_AMOUNT);
@@ -190,24 +197,33 @@ public class GreatLifeStealPlugin extends JavaPlugin {
     }
 
     private SpigotAdapter prepareSpigotAdapter() {
-        try {
-            Class.forName("org.bukkit.attribute.Attributable");
-        } catch (ClassNotFoundException exception) {
-            return new V1_8SpigotAdapter();
-        }
-
-        try {
-            for (Constructor<?> constructor : Class.forName("org.bukkit.inventory.ShapedRecipe").getDeclaredConstructors()) {
-                if (constructor.getParameterCount() == 2) {
-                    return new V1_12SpigotAdapter(this);
-                }
-            }
-
-            return new V1_9SpigotAdapter();
-        } catch (ClassNotFoundException exception) {
-            this.logger.error("Could not find the ShapedRecipe class.", exception);
-            this.pluginManager.disablePlugin(this);
-            return null;
+        String version = this.server.getClass().getPackage().getName().split("\\.")[3];
+        switch (version) {
+            case "v1_8_R3":
+                return new V1_8R3SpigotAdapter();
+            case "v1_9_R2":
+                return new V1_9R2SpigotAdapter();
+            case "v1_10_R1":
+                return new V1_10R1SpigotAdapter();
+            case "v1_11_R1":
+                return new V1_11R1SpigotAdapter();
+            case "v1_12_R1":
+                return new V1_12R1SpigotAdapter(this);
+            case "v1_13_R2":
+                return new V1_13R2SpigotAdapter(this);
+            case "v1_14_R1":
+                return new V1_14R1SpigotAdapter(this);
+            case "v1_15_R1":
+            case "v1_16_R3":
+            case "v1_17_R1":
+            case "v1_18_R2":
+            case "v1_19_R1":
+                return new V1_15R1SpigotAdapter(this);
+            default:
+                throw new RuntimeException(
+                        "Could not find an adapter for the version: " + version + "\n" +
+                        "Check supported versions on the resource page."
+                );
         }
     }
 

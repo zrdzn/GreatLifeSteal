@@ -15,11 +15,16 @@ repositories {
 
 dependencies {
     implementation(project(":spigot"))
-    implementation(project(":v1_8"))
-    implementation(project(":v1_9"))
-    implementation(project(":v1_12"))
+    implementation(project(":v1_8R3"))
+    implementation(project(":v1_9R2"))
+    implementation(project(":v1_10R1"))
+    implementation(project(":v1_11R1"))
+    implementation(project(":v1_12R1"))
+    implementation(project(":v1_13R2"))
+    implementation(project(":v1_14R1"))
+    implementation(project(":v1_15R1"))
 
-    compileOnly "org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT"
+    compileOnly "org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT"
     compileOnly "me.clip:placeholderapi:2.11.1"
 
     implementation "ch.jalu:configme:1.3.0"
