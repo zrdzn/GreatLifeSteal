@@ -38,7 +38,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Server;

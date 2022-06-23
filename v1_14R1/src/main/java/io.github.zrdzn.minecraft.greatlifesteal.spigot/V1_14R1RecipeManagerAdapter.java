@@ -1,8 +1,8 @@
 package io.github.zrdzn.minecraft.greatlifesteal.spigot;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import java.lang.reflect.Field;
 import java.util.Map;
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import net.minecraft.server.v1_14_R1.CraftingManager;
 import net.minecraft.server.v1_14_R1.IRecipe;
 import net.minecraft.server.v1_14_R1.MinecraftKey;
