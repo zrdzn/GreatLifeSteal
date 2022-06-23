@@ -1,12 +1,11 @@
 package io.github.zrdzn.minecraft.greatlifesteal.spigot;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import java.lang.reflect.Field;
-import java.util.Map;
 import net.minecraft.server.v1_13_R2.CraftingManager;
 import net.minecraft.server.v1_13_R2.IRecipe;
 import net.minecraft.server.v1_13_R2.MinecraftKey;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.libs.it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.inventory.ShapedRecipe;
 
@@ -17,7 +16,7 @@ public class V1_13R2RecipeManagerAdapter implements RecipeManagerAdapter {
     public boolean removeServerShapedRecipe(ShapedRecipe recipe) {
         try {
             Field field = CraftingManager.class.getDeclaredField("recipes");
-            if (!field.getType().equals(Map.class)) {
+            if (!field.getType().equals(Object2ObjectLinkedOpenHashMap.class)) {
                 return false;
             }
 
