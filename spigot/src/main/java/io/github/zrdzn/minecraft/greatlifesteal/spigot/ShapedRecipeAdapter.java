@@ -5,6 +5,6 @@ import org.bukkit.inventory.ShapedRecipe;
 
 public interface ShapedRecipeAdapter {
 
-    ShapedRecipe createRecipe(ItemStack item);
+    ShapedRecipe createShapedRecipe(ItemStack item);
 
 }
