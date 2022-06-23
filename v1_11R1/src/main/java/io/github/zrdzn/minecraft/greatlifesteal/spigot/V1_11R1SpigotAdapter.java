@@ -4,7 +4,7 @@ public class V1_11R1SpigotAdapter implements SpigotAdapter {
 
     @Override
     public String getVersion() {
-        return "v1.10.2";
+        return "v1.11.2";
     }
 
     @Override
