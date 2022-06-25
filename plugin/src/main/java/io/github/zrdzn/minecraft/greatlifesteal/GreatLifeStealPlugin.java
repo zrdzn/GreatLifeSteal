@@ -133,7 +133,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         boolean latestVersion = this.checkLatestVersion();
 
-        UserListener userListener = new UserListener(this.config, damageableAdapter, healthCache, this.heartItem,
+        UserListener userListener = new UserListener(this, this.config, damageableAdapter, healthCache, this.heartItem,
                 latestVersion);
 
         this.pluginManager.registerEvents(userListener, this);

@@ -9,6 +9,7 @@ public class ActionBean {
     private boolean enabled = false;
     private ActionType type = ActionType.DISPATCH_COMMANDS;
     private double activateAtHealth = 4.0D;
+    private long delay = 5L;
     private List<String> parameters = Collections.singletonList("gamemode spectator {victim}");
 
     public boolean isEnabled() {
@@ -33,6 +34,14 @@ public class ActionBean {
 
     public void setActivateAtHealth(double activateAtHealth) {
         this.activateAtHealth = activateAtHealth;
+    }
+
+    public long getDelay() {
+        return this.delay;
+    }
+
+    public void setDelay(long delay) {
+        this.delay = delay;
     }
 
     public List<String> getParameters() {

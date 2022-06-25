@@ -27,19 +27,22 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class UserListener implements Listener {
 
     private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
+    private final JavaPlugin plugin;
     private final SettingsManager config;
     private final DamageableAdapter adapter;
     private final HealthCache cache;
     private final HeartItem heartItem;
     private final boolean latestVersion;
 
-    public UserListener(SettingsManager config, DamageableAdapter adapter, HealthCache cache, HeartItem heartItem,
-                        boolean latestVersion) {
+    public UserListener(JavaPlugin plugin, SettingsManager config, DamageableAdapter adapter, HealthCache cache,
+                        HeartItem heartItem, boolean latestVersion) {
+        this.plugin = plugin;
         this.config = config;
         this.adapter = adapter;
         this.cache = cache;
@@ -181,25 +184,31 @@ public class UserListener implements Listener {
                 return;
             }
 
-            switch (action.getType()) {
-                case SPECTATOR_MODE:
-                    victim.setGameMode(GameMode.SPECTATOR);
-                    break;
-                case DISPATCH_COMMANDS:
-                    action.getParameters().forEach(command -> {
-                        command = MessageService.formatPlaceholders(command, placeholders);
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                    });
-                    break;
-                case BROADCAST:
-                    action.getParameters().stream()
-                        .map(message -> MessageService.formatPlaceholders(message, placeholders))
-                        .map(GreatLifeStealPlugin::formatColor)
-                        .forEach(Bukkit::broadcastMessage);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Case for the specified action does not exist.");
+            if (action.getDelay() < 0L) {
+                return;
             }
+
+            this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {
+                switch (action.getType()) {
+                    case SPECTATOR_MODE:
+                        victim.setGameMode(GameMode.SPECTATOR);
+                        break;
+                    case DISPATCH_COMMANDS:
+                        action.getParameters().forEach(command -> {
+                            command = MessageService.formatPlaceholders(command, placeholders);
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                        });
+                        break;
+                    case BROADCAST:
+                        action.getParameters().stream()
+                                .map(message -> MessageService.formatPlaceholders(message, placeholders))
+                                .map(GreatLifeStealPlugin::formatColor)
+                                .forEach(Bukkit::broadcastMessage);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Case for the specified action does not exist.");
+                }
+            }, action.getDelay());
         });
     }
 
