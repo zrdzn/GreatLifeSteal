@@ -47,7 +47,7 @@ public class LifeStealCommand implements CommandExecutor {
 
         // /lifesteal hearts add/remove/set
         switch (args[0].toLowerCase()) {
-            case "hearts": {
+            case "health": {
                 if (args.length < 2) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                     return true;
@@ -55,7 +55,7 @@ public class LifeStealCommand implements CommandExecutor {
 
                 switch (args[1].toLowerCase()) {
                     case "add": {
-                        if (!sender.hasPermission("greatlifesteal.command.hearts.add")) {
+                        if (!sender.hasPermission("greatlifesteal.command.health.add")) {
                             MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                             return true;
                         }
@@ -94,7 +94,7 @@ public class LifeStealCommand implements CommandExecutor {
                         break;
                     }
                     case "remove": {
-                        if (!sender.hasPermission("greatlifesteal.command.hearts.remove")) {
+                        if (!sender.hasPermission("greatlifesteal.command.health.remove")) {
                             MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                             return true;
                         }
@@ -133,7 +133,7 @@ public class LifeStealCommand implements CommandExecutor {
                         break;
                     }
                     case "set": {
-                        if (!sender.hasPermission("greatlifesteal.command.hearts.set")) {
+                        if (!sender.hasPermission("greatlifesteal.command.health.set")) {
                             MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                             return true;
                         }
