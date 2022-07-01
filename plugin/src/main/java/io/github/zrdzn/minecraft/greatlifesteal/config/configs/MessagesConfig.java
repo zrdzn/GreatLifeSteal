@@ -21,8 +21,8 @@ public class MessagesConfig implements SettingsHolder {
     );
 
     public static final Property<String> SUCCESSFUL_COMMAND_ADD = new StringProperty(
-        "messages.successfulCommandAdd",
-        "&aYou have successfully added &e{HEALTH} &ahp to &e{PLAYER}&a."
+            "messages.successfulCommandAdd",
+            "&aYou have successfully added &e{HEALTH} &ahp to &e{PLAYER}&a."
     );
 
     public static final Property<String> SUCCESSFUL_COMMAND_REMOVE = new StringProperty(

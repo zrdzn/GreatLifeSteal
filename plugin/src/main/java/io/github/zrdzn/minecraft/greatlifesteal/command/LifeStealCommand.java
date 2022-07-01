@@ -170,6 +170,8 @@ public class LifeStealCommand implements CommandExecutor {
         
                         break;
                     }
+                    default:
+                        MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                 }
 
                 break;
