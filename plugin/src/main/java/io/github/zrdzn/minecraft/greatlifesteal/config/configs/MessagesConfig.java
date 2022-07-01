@@ -20,6 +20,16 @@ public class MessagesConfig implements SettingsHolder {
             "&cYou don't have enough permissions."
     );
 
+    public static final Property<String> SUCCESSFUL_COMMAND_ADD = new StringProperty(
+            "messages.successfulCommandAdd",
+            "&aYou have successfully added &e{HEALTH} &ahp to &e{PLAYER}&a."
+    );
+
+    public static final Property<String> SUCCESSFUL_COMMAND_REMOVE = new StringProperty(
+            "messages.successfulCommandRemove",
+            "&aYou have successfully subtracted &e{HEALTH} &ahp from &e{PLAYER}&a."
+    );
+
     public static final Property<String> SUCCESSFUL_COMMAND_SET = new StringProperty(
             "messages.successfulCommandSet",
             "&aYou have successfully set &e{HEALTH} &ahp for &e{PLAYER}&a."

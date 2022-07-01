@@ -45,42 +45,134 @@ public class LifeStealCommand implements CommandExecutor {
             return true;
         }
 
+        // /lifesteal hearts add/remove/set
         switch (args[0].toLowerCase()) {
-            case "set": {
-                if (!sender.hasPermission("greatlifesteal.command.set")) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
-                    return true;
-                }
-
-                if (args.length < 3) {
+            case "hearts": {
+                if (args.length < 2) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                     return true;
                 }
 
-                Player target = this.server.getPlayer(args[1]);
-                if (target == null) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
-                    return true;
+                switch (args[1].toLowerCase()) {
+                    case "add": {
+                        if (!sender.hasPermission("greatlifesteal.command.hearts.add")) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                            return true;
+                        }
+        
+                        if (args.length < 4) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+                            return true;
+                        }
+        
+                        Player target = this.server.getPlayer(args[2]);
+                        if (target == null) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                            return true;
+                        }
+        
+                        int health;
+                        try {
+                            health = Integer.parseInt(args[3]);
+                        } catch (NumberFormatException exception) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            return true;
+                        }
+        
+                        double newHealth = this.adapter.getMaxHealth(target) + health;
+                        if (newHealth < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
+                                newHealth > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            return true;
+                        }
+        
+                        this.adapter.setMaxHealth(target, newHealth);
+        
+                        String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
+                        MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_ADD), placeholders);
+        
+                        break;
+                    }
+                    case "remove": {
+                        if (!sender.hasPermission("greatlifesteal.command.hearts.remove")) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                            return true;
+                        }
+        
+                        if (args.length < 4) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+                            return true;
+                        }
+        
+                        Player target = this.server.getPlayer(args[2]);
+                        if (target == null) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                            return true;
+                        }
+        
+                        int health;
+                        try {
+                            health = Integer.parseInt(args[3]);
+                        } catch (NumberFormatException exception) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            return true;
+                        }
+        
+                        double newHealth = this.adapter.getMaxHealth(target) - health;
+                        if (newHealth < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
+                                newHealth > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            return true;
+                        }
+        
+                        this.adapter.setMaxHealth(target, newHealth);
+        
+                        String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
+                        MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_REMOVE), placeholders);
+        
+                        break;
+                    }
+                    case "set": {
+                        if (!sender.hasPermission("greatlifesteal.command.hearts.set")) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                            return true;
+                        }
+        
+                        if (args.length < 4) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+                            return true;
+                        }
+        
+                        Player target = this.server.getPlayer(args[2]);
+                        if (target == null) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                            return true;
+                        }
+        
+                        int health;
+                        try {
+                            health = Integer.parseInt(args[3]);
+                        } catch (NumberFormatException exception) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            return true;
+                        }
+        
+                        if (health < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
+                                health > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            return true;
+                        }
+        
+                        this.adapter.setMaxHealth(target, health);
+        
+                        String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
+                        MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_SET), placeholders);
+        
+                        break;
+                    }
+                    default:
+                        MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                 }
-
-                int health;
-                try {
-                    health = Integer.parseInt(args[2]);
-                } catch (NumberFormatException exception) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
-                    return true;
-                }
-
-                if (health < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
-                        health > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
-                    return true;
-                }
-
-                this.adapter.setMaxHealth(target, health);
-
-                String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
-                MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_SET), placeholders);
 
                 break;
             }

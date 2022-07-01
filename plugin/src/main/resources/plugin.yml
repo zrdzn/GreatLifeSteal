@@ -6,7 +6,11 @@ authors: [ zrdzn, some0ne3 ]
 description: A recently popular Minecraft plugin for life stealing system in SMP servers.
 softdepend: [ PlaceholderAPI ]
 permissions:
-  greatlifesteal.command.set:
+  greatlifesteal.command.hearts.set:
+    default: op
+  greatlifesteal.command.hearts.add:
+    default: op
+  greatlifesteal.command.hearts.remove:
     default: op
   greatlifesteal.command.lives:
     default: op
