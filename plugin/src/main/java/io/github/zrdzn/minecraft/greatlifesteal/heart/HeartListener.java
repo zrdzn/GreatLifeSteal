@@ -117,14 +117,17 @@ public class HeartListener implements Listener {
     @EventHandler
     public void addHealth(PlayerInteractEvent event) {
         ItemStack heartItemStack = this.heartItem.result;
-        ItemStack item = event.getItem();
-        Action action = event.getAction();
-
-        if (item == null) {
+        if (heartItemStack == null) {
             return;
         }
 
+        Action action = event.getAction();
         if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+
+        ItemStack item = event.getItem();
+        if (item == null) {
             return;
         }
 
