@@ -12,7 +12,13 @@ public class MessagesConfig implements SettingsHolder {
 
     public static final Property<String> COMMAND_USAGE = new StringProperty(
             "messages.commandUsage",
-            "&aType /lifesteal set/reload/lives [player] [health_points]"
+            "&a&lAvailable commands:\n" +
+                    "&7/&alifesteal reload &8- &eReloads the plugin.\n" +
+                    "&7/&alifesteal lives <action> [player] &8- &eShows the health points for the player.\n" +
+                    "&7/&alifesteal withdraw <hearts> [player] &8- &eWithdraws hearts as items." +
+                    "&7/&alifesteal health add <player> <health_points> &8- &eAdds the health points to the player.\n" +
+                    "&7/&alifesteal health remove <player> <health_points> &8- &eSubtracts the health points from the player.\n" +
+                    "&7/&alifesteal health set <player> <health_points> &8- &eSets the health points for the player."
     );
 
     public static final Property<String> NO_PERMISSIONS = new StringProperty(
