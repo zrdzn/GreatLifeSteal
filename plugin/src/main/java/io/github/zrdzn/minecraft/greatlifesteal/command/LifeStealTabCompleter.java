@@ -27,8 +27,11 @@ public class LifeStealTabCompleter implements TabCompleter {
         if (args.length == 1) {
             return new ArrayList<String>() {
                 {
-                    if (sender.hasPermission("greatlifesteal.command.set")) {
-                        this.add("set");
+                    boolean hasHealthPermission = sender.hasPermission("greatlifesteal.command.health.add") ||
+                            sender.hasPermission("greatlifesteal.command.health.remove") ||
+                            sender.hasPermission("greatlifesteal.command.health.set");
+                    if (hasHealthPermission) {
+                        this.add("health");
                     }
 
                     if (sender.hasPermission("greatlifesteal.command.reload")) {
@@ -51,12 +54,28 @@ public class LifeStealTabCompleter implements TabCompleter {
         double defaultHealth = this.config.getProperty(BaseConfig.DEFAULT_HEALTH);
 
         switch (args[0].toLowerCase()) {
-            case "set":
+            case "health":
                 if (args.length == 2) {
+                    return new ArrayList<String>() {
+                        {
+                            if (sender.hasPermission("greatlifesteal.command.health.add")) {
+                                this.add("add");
+                            }
+
+                            if (sender.hasPermission("greatlifesteal.command.health.remove")) {
+                                this.add("remove");
+                            }
+
+                            if (sender.hasPermission("greatlifesteal.command.health.set")) {
+                                this.add("set");
+                            }
+                        }
+                    };
+                } else if (args.length == 3) {
                     return Bukkit.getServer().getOnlinePlayers().stream()
                             .map(Player::getName)
                             .collect(Collectors.toList());
-                } else if (args.length == 3) {
+                } else if (args.length == 4) {
                     return Collections.singletonList(String.valueOf((int) defaultHealth));
                 }
                 break;
