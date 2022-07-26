@@ -6,7 +6,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
@@ -27,6 +27,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class UserListener implements Listener {
@@ -123,15 +124,23 @@ public class UserListener implements Listener {
             double killerMaxHealth = this.adapter.getMaxHealth(killer);
             formattedKillerMaxHealth = String.valueOf((int) killerMaxHealth);
 
+            Inventory killerInventory = killer.getInventory();
+            HeartItem heartItem = this.heartItem;
+
             double killerNewHealth = killerMaxHealth + killerHealthChange;
             if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
-                this.adapter.setMaxHealth(killer, killerNewHealth);
+                // Increase the killer's maximum health or give him the heart item.
+                if (this.config.getProperty(HeartDropConfig.ON_EVERY_KILL) && heartItem != null) {
+                    killerInventory.addItem(heartItem.result);
+                } else {
+                    this.adapter.setMaxHealth(killer, killerNewHealth);
+                }
             } else {
                 MessageService.send(killer, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
 
-                HeartItem heartItem = this.heartItem;
-                if (heartItem != null && this.config.getProperty(HeartConfig.REWARD_HEART_ON_OVERLIMIT)) {
-                    killer.getInventory().addItem(heartItem.result);
+                // Give the heart item to the killer if it is enabled.
+                if (heartItem != null && this.config.getProperty(HeartDropConfig.ON_LIMIT_EXCEED)) {
+                    killerInventory.addItem(heartItem.result);
                 }
             }
         }

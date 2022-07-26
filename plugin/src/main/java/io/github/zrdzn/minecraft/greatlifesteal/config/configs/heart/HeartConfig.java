@@ -21,12 +21,6 @@ public class HeartConfig implements SettingsHolder {
     @Comment("If any heart item should be enabled on the server.")
     public static final Property<Boolean> ENABLED = new BooleanProperty("baseSettings.heartItem.enabled", true);
 
-    @Comment("If the heart item should be given to killer, when he reaches maximumHealth.")
-    public static final Property<Boolean> REWARD_HEART_ON_OVERLIMIT = new BooleanProperty(
-            "baseSettings.heartItem.rewardHeartOnOverlimit",
-            false
-    );
-
     @Comment("Amount of health points that should be given to a player on item consume.")
     public static final Property<Double> HEALTH_AMOUNT = new DoubleProperty("baseSettings.heartItem.healthAmount", 2.0D);
 

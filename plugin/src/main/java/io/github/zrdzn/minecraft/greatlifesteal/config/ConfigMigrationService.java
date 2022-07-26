@@ -19,6 +19,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class ConfigMigrationService extends PlainMigrationService {
                 migrateEliminationModeToCustomActions(reader, configData) |
                 migrateHealthChangeToHealthChangeSection(reader, configData) |
                 removeTakeGiveHeartsFromPlayers(reader, configData) ||
+                migrateRewardHeartToHeartDropSection(reader, configData) ||
                 hasDeprecatedKeys(reader);
     }
 
@@ -190,10 +192,25 @@ public class ConfigMigrationService extends PlainMigrationService {
         return MIGRATION_REQUIRED;
     }
 
+    private static boolean migrateRewardHeartToHeartDropSection(PropertyReader reader, ConfigurationData configData) {
+        String oldLimitExceedKey = "baseSettings.heartItem.rewardHeartOnOverlimit";
+        PropertyValue<Boolean> oldLimitExceedProperty = new BooleanProperty(oldLimitExceedKey, true).determineValue(reader);
+        if (!oldLimitExceedProperty.isValidInResource()) {
+            return NO_MIGRATION_NEEDED;
+        }
+
+        boolean oldLimitExceed = oldLimitExceedProperty.getValue();
+
+        configData.setValue(HeartDropConfig.ON_LIMIT_EXCEED, oldLimitExceed);
+
+        return MIGRATION_REQUIRED;
+    }
+
     private static boolean hasDeprecatedKeys(PropertyReader reader) {
         List<String> deprecatedKeys = new ArrayList<String>() {
             {
                 this.add("baseSettings.heartItem.craftingRecipe");
+                this.add("baseSettings.heartItem.rewardHeartOnOverlimit");
                 this.add("baseSettings.eliminationMode");
                 this.add("baseSettings.healthChange");
                 this.add("baseSettings.takeHealthFromVictim");
