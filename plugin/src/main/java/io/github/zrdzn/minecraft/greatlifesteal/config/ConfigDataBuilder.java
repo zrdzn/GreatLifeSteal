@@ -6,14 +6,16 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfi
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
 
 public class ConfigDataBuilder {
 
     public static ConfigurationData build() {
         return ch.jalu.configme.configurationdata.ConfigurationDataBuilder.createConfiguration(
-                 BaseConfig.class,  MessagesConfig.class, StealCooldownConfig.class,
-                HeartConfig.class, HeartMetaConfig.class, HealthChangeConfig.class
+                BaseConfig.class,  MessagesConfig.class, StealCooldownConfig.class,
+                HeartConfig.class, HeartMetaConfig.class, HealthChangeConfig.class,
+                HeartDropConfig.class
         );
     }
 
