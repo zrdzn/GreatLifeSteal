@@ -47,9 +47,39 @@ subprojects {
                 if (version.toString().endsWith("-SNAPSHOT")) {
                     name = "snapshots"
                     url = uri("https://repo.titanvale.net/snapshots")
+
+                    def snapshotsUsername = System.getenv("SNAPSHOTS_USERNAME")
+                    def snapshotsPassword = System.getenv("SNAPSHOTS_PASSWORD")
+                    if (snapshotsUsername != null && snapshotsPassword != null) {
+                        credentials {
+                            username = snapshotsUsername
+                            password = snapshotsPassword
+                        }
+                    } else {
+                        credentials(PasswordCredentials)
+                    }
+
+                    authentication {
+                        basic(BasicAuthentication)
+                    }
                 } else {
                     name = "releases"
                     url = uri("https://repo.titanvale.net/releases")
+
+                    def releasesUsername = System.getenv("RELEASES_USERNAME")
+                    def releasesPassword = System.getenv("RELEASES_PASSWORD")
+                    if (releasesUsername != null && releasesPassword != null) {
+                        credentials {
+                            username = releasesUsername
+                            password = releasesPassword
+                        }
+                    } else {
+                        credentials(PasswordCredentials)
+                    }
+
+                    authentication {
+                        basic(BasicAuthentication)
+                    }
                 }
             }
             publications {
