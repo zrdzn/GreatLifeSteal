@@ -1,17 +1,20 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
+    id "maven-publish"
     id "checkstyle"
 }
 
 allprojects {
-    group "io.github.zrdzn.minecraft"
-    version "1.6.3"
+    group "io.github.zrdzn.minecraft.greatlifesteal"
+    version "1.7-SNAPSHOT"
+
+    apply plugin: "maven-publish"
+    apply plugin: "checkstyle"
 }
 
 subprojects {
     apply plugin: "java"
     apply plugin: "com.github.johnrengelman.shadow"
-    apply plugin: "checkstyle"
 
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -35,6 +38,37 @@ subprojects {
         maven {
             name "panda-repository"
             url "https://repo.panda-lang.org/releases"
+        }
+    }
+
+    publishing {
+        repositories {
+            maven {
+                if (version.toString().endsWith("-SNAPSHOT")) {
+                    name = "snapshots"
+                    url = uri("https://repo.titanvale.net/snapshots")
+                } else {
+                    name = "releases"
+                    url = uri("https://repo.titanvale.net/releases")
+                }
+            }
+            publications {
+                libraries(MavenPublication) {
+                    from components.java
+
+                    pom.withXml {
+                        def repositories = asNode().appendNode("repositories")
+
+                        project.getRepositories().findAll { repo ->
+                            if (repo.getUrl().toString().startsWith("http")) {
+                                def repository = repositories.appendNode("repository")
+                                repository.appendNode("id", repo.getDisplayName())
+                                repository.appendNode("url", repo.getUrl().toString())
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
