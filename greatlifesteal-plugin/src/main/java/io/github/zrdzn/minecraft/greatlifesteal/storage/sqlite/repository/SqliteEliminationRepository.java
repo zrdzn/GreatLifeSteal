@@ -3,8 +3,6 @@ package io.github.zrdzn.minecraft.greatlifesteal.storage.sqlite.repository;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.sqlite.SqliteStorage;
-import panda.std.Blank;
-import panda.std.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import panda.std.Blank;
+import panda.std.Result;
 
 public class SqliteEliminationRepository implements EliminationRepository {
 
@@ -33,7 +33,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Elimination, Exception> save(Elimination elimination) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(INSERT)) {
+                    PreparedStatement statement = connection.prepareStatement(INSERT)) {
                 statement.setTimestamp(1, Timestamp.from(elimination.getCreatedAt()));
                 statement.setString(2, elimination.getPlayerUuid().toString());
                 statement.setString(3, elimination.getAction());
@@ -47,7 +47,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<List<Elimination>, Exception> listAll() {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(SELECT_ALL)) {
+                    PreparedStatement statement = connection.prepareStatement(SELECT_ALL)) {
                 List<Elimination> eliminations = new ArrayList<>();
 
                 ResultSet result = statement.executeQuery();
@@ -70,7 +70,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Optional<Elimination>, Exception> findById(int id) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(SELECT_BY_ID)) {
+                    PreparedStatement statement = connection.prepareStatement(SELECT_BY_ID)) {
                 statement.setInt(1, id);
                 ResultSet result = statement.executeQuery();
                 if (!result.next()) {
@@ -92,7 +92,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Optional<Elimination>, Exception> findByPlayerUuid(UUID playerUuid) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(SELECT_BY_UUID)) {
+                    PreparedStatement statement = connection.prepareStatement(SELECT_BY_UUID)) {
                 statement.setString(1, playerUuid.toString());
                 ResultSet result = statement.executeQuery();
                 if (!result.next()) {
@@ -114,7 +114,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Blank, Exception> deleteById(int id) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
+                    PreparedStatement statement = connection.prepareStatement(DELETE_BY_ID)) {
                 statement.setInt(1, id);
                 statement.executeUpdate();
             }
@@ -127,7 +127,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Blank, Exception> deleteByPlayerUuid(UUID playerUuid) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(DELETE_BY_UUID)) {
+                    PreparedStatement statement = connection.prepareStatement(DELETE_BY_UUID)) {
                 statement.setString(1, playerUuid.toString());
                 statement.executeUpdate();
             }

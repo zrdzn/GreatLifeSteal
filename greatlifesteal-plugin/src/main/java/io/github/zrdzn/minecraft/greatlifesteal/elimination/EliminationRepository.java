@@ -1,10 +1,10 @@
 package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
-import panda.std.Blank;
-import panda.std.Result;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import panda.std.Blank;
+import panda.std.Result;
 
 public interface EliminationRepository {
 

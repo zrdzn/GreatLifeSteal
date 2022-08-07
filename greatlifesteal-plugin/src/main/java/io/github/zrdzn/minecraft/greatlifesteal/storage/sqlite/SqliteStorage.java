@@ -5,14 +5,14 @@ import com.google.common.io.Files;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DataSourceConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
-import panda.std.Blank;
-import panda.std.Result;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import panda.std.Blank;
+import panda.std.Result;
 
 public class SqliteStorage implements Storage {
 
@@ -68,7 +68,7 @@ public class SqliteStorage implements Storage {
                 ");";
 
         try (Connection connection = this.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+                PreparedStatement statement = connection.prepareStatement(query)) {
             statement.executeUpdate();
         }
     }
