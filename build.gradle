@@ -58,10 +58,6 @@ subprojects {
                     } else {
                         credentials(PasswordCredentials)
                     }
-
-                    authentication {
-                        basic(BasicAuthentication)
-                    }
                 } else {
                     name = "releases"
                     url = uri("https://repo.titanvale.net/releases")
@@ -76,10 +72,10 @@ subprojects {
                     } else {
                         credentials(PasswordCredentials)
                     }
+                }
 
-                    authentication {
-                        basic(BasicAuthentication)
-                    }
+                authentication {
+                    basic(BasicAuthentication)
                 }
             }
             publications {

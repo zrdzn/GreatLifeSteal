@@ -16,5 +16,7 @@ jobs:
       - name: Publish with Gradle
         run: ./gradlew clean build publish --stacktrace
         env:
-          MAVEN_NAME: ${{ secrets.MAVEN_NAME }}
-          MAVEN_TOKEN: ${{ secrets.MAVEN_TOKEN }}
+          SNAPSHOTS_USERNAME: ${{ secrets.SNAPSHOTS_USERNAME }}
+          SNAPSHOTS_PASSWORD: ${{ secrets.SNAPSHOTS_PASSWORD }}
+          RELEASES_USERNAME: ${{ secrets.RELEASES_USERNAME }}
+          RELEASES_PASSWORD: ${{ secrets.RELEASES_PASSWORD }}
