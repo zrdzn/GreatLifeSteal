@@ -7,8 +7,10 @@ import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigDataBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigMigrationService;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DataSourceConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
@@ -23,6 +25,10 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_14R1SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_15R1SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8R3SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9R2SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.sqlite.SqliteStorage;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.sqlite.repository.SqliteEliminationRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
 import java.io.BufferedReader;
 import java.io.File;
@@ -62,6 +68,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
     private SettingsManager config;
     private SpigotAdapter spigotAdapter;
+
+    private Storage storage;
+    private EliminationService eliminationService;
 
     public static String formatColor(String string) {
         return ChatColor.translateAlternateColorCodes('&', string);
@@ -149,6 +158,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         this.config.reload();
 
+        this.loadDataSource();
+
         if (this.config.getProperty(HeartConfig.ENABLED)) {
             ItemStack heartItemStack = new ItemStack(this.config.getProperty(HeartConfig.TYPE));
 
@@ -194,6 +205,29 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         }
 
         return true;
+    }
+
+    public void loadDataSource() {
+        StorageType type = this.config.getProperty(DataSourceConfig.TYPE);
+        if (type == StorageType.SQLITE) {
+            try {
+                Class.forName("org.sqlite.JDBC");
+            } catch (ClassNotFoundException exception) {
+                this.logger.error("Could not find a driver for the sqlite data source.", exception);
+                this.pluginManager.disablePlugin(this);
+                return;
+            }
+
+            this.storage = new SqliteStorage(this.config, this.getDataFolder());
+            this.storage.init().onError(exception -> this.logger.error("Could not initialize the data source.", exception));
+
+            this.eliminationService = new EliminationService(new SqliteEliminationRepository((SqliteStorage) this.storage));
+        }
+
+        if (this.storage == null) {
+            this.logger.error("Data source cannot be null.");
+            this.pluginManager.disablePlugin(this);
+        }
     }
 
     private SpigotAdapter prepareSpigotAdapter() {
