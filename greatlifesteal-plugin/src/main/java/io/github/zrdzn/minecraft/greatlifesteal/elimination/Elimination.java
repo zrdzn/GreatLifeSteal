@@ -8,6 +8,7 @@ public class Elimination {
     private int id;
     private Instant createdAt;
     private UUID playerUuid;
+    private String playerName;
     private String action;
 
     public Elimination() {
@@ -35,6 +36,14 @@ public class Elimination {
 
     public void setPlayerUuid(UUID playerUuid) {
         this.playerUuid = playerUuid;
+    }
+
+    public String getPlayerName() {
+        return this.playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
     public String getAction() {

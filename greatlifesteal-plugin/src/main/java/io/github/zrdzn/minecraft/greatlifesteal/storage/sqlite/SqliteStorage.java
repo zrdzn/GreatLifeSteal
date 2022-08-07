@@ -64,6 +64,7 @@ public class SqliteStorage implements Storage {
                 "   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
                 "   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_DATE," +
                 "   player_uuid VARCHAR(36) NOT NULL UNIQUE," +
+                "   player_name VARCHAR NOT NULL UNIQUE," +
                 "   action VARCHAR NOT NULL" +
                 ");";
 

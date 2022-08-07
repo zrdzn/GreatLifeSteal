@@ -16,10 +16,10 @@ import panda.std.Result;
 
 public class SqliteEliminationRepository implements EliminationRepository {
 
-    private static final String INSERT = "INSERT INTO gls_eliminations (created_at, player_uuid, action) VALUES (?, ?, ?);";
-    private static final String SELECT_BY_ID = "SELECT created_at, player_uuid, action FROM gls_eliminations WHERE id = ?;";
-    private static final String SELECT_BY_UUID = "SELECT id, created_at, action FROM gls_eliminations WHERE player_uuid = ?;";
-    private static final String SELECT_ALL = "SELECT id, created_at, player_uuid, action FROM gls_eliminations;";
+    private static final String INSERT = "INSERT INTO gls_eliminations (created_at, player_uuid, player_name, action) VALUES (?, ?, ?, ?);";
+    private static final String SELECT_BY_ID = "SELECT created_at, player_uuid, player_name, action FROM gls_eliminations WHERE id = ?;";
+    private static final String SELECT_BY_UUID = "SELECT id, created_at, player_name, action FROM gls_eliminations WHERE player_uuid = ?;";
+    private static final String SELECT_ALL = "SELECT id, created_at, player_uuid, player_name, action FROM gls_eliminations;";
     private static final String DELETE_BY_ID = "DELETE FROM gls_eliminations WHERE id = ?;";
     private static final String DELETE_BY_UUID = "DELETE FROM gls_eliminations WHERE player_uuid = ?;";
 
@@ -36,7 +36,8 @@ public class SqliteEliminationRepository implements EliminationRepository {
                     PreparedStatement statement = connection.prepareStatement(INSERT)) {
                 statement.setTimestamp(1, Timestamp.from(elimination.getCreatedAt()));
                 statement.setString(2, elimination.getPlayerUuid().toString());
-                statement.setString(3, elimination.getAction());
+                statement.setString(3, elimination.getPlayerName());
+                statement.setString(4, elimination.getAction());
 
                 return elimination;
             }
@@ -56,6 +57,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
                     elimination.setId(result.getInt("id"));
                     elimination.setCreatedAt(result.getTimestamp("created_at").toInstant());
                     elimination.setPlayerUuid(UUID.fromString(result.getString("player_uuid")));
+                    elimination.setPlayerName(result.getString("player_name"));
                     elimination.setAction(result.getString("action"));
 
                     eliminations.add(elimination);
@@ -81,6 +83,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
                 elimination.setId(id);
                 elimination.setCreatedAt(result.getTimestamp("created_at").toInstant());
                 elimination.setPlayerUuid(UUID.fromString(result.getString("player_uuid")));
+                elimination.setPlayerName(result.getString("player_name"));
                 elimination.setAction(result.getString("action"));
 
                 return Optional.of(elimination);
@@ -103,6 +106,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
                 elimination.setId(result.getInt("id"));
                 elimination.setCreatedAt(result.getTimestamp("created_at").toInstant());
                 elimination.setPlayerUuid(playerUuid);
+                elimination.setPlayerName(result.getString("player_name"));
                 elimination.setAction(result.getString("action"));
 
                 return Optional.of(elimination);
