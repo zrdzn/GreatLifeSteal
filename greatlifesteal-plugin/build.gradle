@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":spigot"))
+    implementation(project(":greatlifesteal-spigot"))
     implementation(project(":v1_8R3"))
     implementation(project(":v1_9R2"))
     implementation(project(":v1_10R1"))
