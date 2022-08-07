@@ -1,0 +1,22 @@
+name: GreatLifeSteal Publish
+on:
+  push:
+    branches: [master]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Add execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Publish with Gradle
+        run: ./gradlew clean build publish --stacktrace
+        env:
+          SNAPSHOTS_USERNAME: ${{ secrets.SNAPSHOTS_USERNAME }}
+          SNAPSHOTS_PASSWORD: ${{ secrets.SNAPSHOTS_PASSWORD }}
+          RELEASES_USERNAME: ${{ secrets.RELEASES_USERNAME }}
+          RELEASES_PASSWORD: ${{ secrets.RELEASES_PASSWORD }}

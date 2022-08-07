@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly(project(":spigot"))
+    compileOnly(project(":greatlifesteal-spigot"))
     compileOnly(project(":v1_9R2"))
     compileOnly(project(":v1_12R1"))
 
