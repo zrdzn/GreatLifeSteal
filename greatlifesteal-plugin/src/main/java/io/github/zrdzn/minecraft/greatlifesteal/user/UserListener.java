@@ -6,6 +6,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
@@ -131,7 +132,11 @@ public class UserListener implements Listener {
             if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                 // Increase the killer's maximum health or give him the heart item.
                 if (this.config.getProperty(HeartDropConfig.ON_EVERY_KILL) && heartItem != null) {
-                    killerInventory.addItem(heartItem.result);
+                    if (this.config.getProperty(HeartConfig.DROP_ON_GROUND)) {
+                        killer.getWorld().dropItemNaturally(killer.getEyeLocation(), heartItem.result);
+                    } else {
+                        killerInventory.addItem(heartItem.result);
+                    }
                 } else {
                     this.adapter.setMaxHealth(killer, killerNewHealth);
                 }
@@ -140,7 +145,11 @@ public class UserListener implements Listener {
 
                 // Give the heart item to the killer if it is enabled.
                 if (heartItem != null && this.config.getProperty(HeartDropConfig.ON_LIMIT_EXCEED)) {
-                    killerInventory.addItem(heartItem.result);
+                    if (this.config.getProperty(HeartConfig.DROP_ON_GROUND)) {
+                        killer.getWorld().dropItemNaturally(killer.getEyeLocation(), heartItem.result);
+                    } else {
+                        killerInventory.addItem(heartItem.result);
+                    }
                 }
             }
         }
