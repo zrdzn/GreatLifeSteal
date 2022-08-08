@@ -343,6 +343,11 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
+                if (args.length == 2) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                    return true;
+                }
+
                 Player victim = this.server.getPlayer(args[2]);
                 if (victim == null) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
@@ -396,6 +401,11 @@ public class LifeStealCommand implements CommandExecutor {
                 ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
                 if (action == null || !action.isEnabled() || action.getType() != ActionType.DISPATCH_COMMANDS) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
+                    return true;
+                }
+
+                if (args.length == 2) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                     return true;
                 }
 
