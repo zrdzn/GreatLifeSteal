@@ -61,9 +61,9 @@ public class MessagesConfig implements SettingsHolder {
             "&cYou do not have enough place in the inventory."
     );
 
-    public static final Property<String> ELIMINATION_NOT_ENABLED = new StringProperty(
-            "messages.eliminationNotEnabled",
-            "&cEnable the &eeliminationMode &csetting in order to use this command."
+    public static final Property<String> NO_ACTION_ENABLED = new StringProperty(
+            "messages.noActionEnabled",
+            "&cEnable at least one action in the configuration."
     );
 
     public static final Property<String> NO_ACTION_SPECIFIED = new StringProperty(
@@ -79,6 +79,11 @@ public class MessagesConfig implements SettingsHolder {
     public static final Property<String> FAIL_COMMAND_RELOAD = new StringProperty(
             "messages.failCommandReload",
             "&cCould not reload the plugin."
+    );
+
+    public static final Property<String> FAIL_COMMAND_ELIMINATE = new StringProperty(
+            "messages.failCommandEliminate",
+            "&cCould not create the elimination."
     );
 
     public static final Property<String> INVALID_PLAYER_PROVIDED = new StringProperty(

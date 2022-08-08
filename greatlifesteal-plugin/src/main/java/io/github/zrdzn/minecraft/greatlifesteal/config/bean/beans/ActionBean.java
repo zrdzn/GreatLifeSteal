@@ -1,6 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans;
 
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BeanBuilder;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class ActionBean {
     private double activateAtHealth = 4.0D;
     private long delay = 5L;
     private List<String> parameters = Collections.singletonList("gamemode spectator {victim}");
+    private ReviveBean revive = BeanBuilder.from(ReviveBean.class).build();
 
     public boolean isEnabled() {
         return this.enabled;
@@ -50,6 +52,14 @@ public class ActionBean {
 
     public void setParameters(List<String> parameters) {
         this.parameters = parameters;
+    }
+
+    public ReviveBean getRevive() {
+        return this.revive;
+    }
+
+    public void setRevive(ReviveBean revive) {
+        this.revive = revive;
     }
 
 }

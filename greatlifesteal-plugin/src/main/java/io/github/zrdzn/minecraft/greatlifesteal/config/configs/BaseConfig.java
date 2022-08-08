@@ -11,7 +11,7 @@ import ch.jalu.configme.properties.types.BeanPropertyType;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BeanBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.EliminationBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ReviveBean;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +89,21 @@ public class BaseConfig implements SettingsHolder {
             " {killer_max_health} - represents killer's max health",
             " {victim_max_health} - represents victim's max health",
             "parameters:",
-            "- gamemode spectator {victim}"
+            "- gamemode spectator {victim}",
+            "",
+            "Specify whether or not you want to have a revive available for that action.",
+            "If enabled, the commands will be executed after a revive execution.",
+            "For example, if the action is a ban command, you can provide an unban command for the revive.",
+            "Allowed action types that works with the revive system: DISPATCH_COMMANDS",
+            "revive:",
+            "  If the revive for this action should be enabled.",
+            "  enabled: true",
+            "",
+            "  List of commands that should be executed after a revive execution.",
+            "  Placeholders:",
+            "  {victim} - represents victim username",
+            "  commands:",
+            "  - unban {victim}"
     })
     public static final Property<Map<String, ActionBean>> CUSTOM_ACTIONS = new PropertyBuilder
             .MapPropertyBuilder<>(BeanPropertyType.of(ActionBean.class))
@@ -104,51 +118,12 @@ public class BaseConfig implements SettingsHolder {
                     .from(ActionBean.class)
                     .with(eliminate -> eliminate.setType(ActionType.DISPATCH_COMMANDS))
                     .with(eliminate -> eliminate.setParameters(DEFAULT_DISPATCH_COMMANDS))
+                    .with(eliminate -> eliminate.setRevive(BeanBuilder
+                            .from(ReviveBean.class)
+                            .with(revive -> revive.setEnabled(true))
+                            .with(revive -> revive.setCommands(Collections.singletonList("unban {victim}")))
+                            .build()))
                     .build())
-            .build();
-
-
-    /**
-     * eliminations:
-     *   - enabled: true
-     *     action: eliminate
-     *     revive:
-     *       enabled: false
-     *       commands:
-     *       - unban {victim}
-     */
-    @Comment({
-            "Define what list of eliminations should be enabled (saved to the database etc) according to your defined actions.",
-            "If you want to have a working revive system, you need to have an elimination defined below that has an 'action' key",
-            "set to a valid key in the 'customActions' section.",
-            "Even if you do not want to have a revive system, you can enable an elimination and disable the revive one",
-            "so you will be able to list all eliminated players with timestamps and actions that were executed within them",
-            "for example in a website that has some integration with the server's database.",
-            "",
-            "If the elimination should be enabled.",
-            "enabled: true",
-            "",
-            "A corresponding action key that is defined in the 'customActions' section.",
-            "For example if your action 'eliminate' bans a player, you can choose this action as an elimination.",
-            "action: eliminate",
-            "",
-            "Specify whether or not you want to have a revive available for that elimination.",
-            "If enabled, the commands will be executed after a revive execution.",
-            "For example, if the elimination's action is a ban command, you can provide an unban command for the revive.",
-            "revive:",
-            "  If the revive for this elimination should be enabled.",
-            "  enabled: true",
-            "",
-            "  List of commands that should be executed after a revive execution.",
-            "  Placeholders:",
-            "  {victim} - represents victim username",
-            "  commands:",
-            "  - unban {victim}"
-    })
-    public static final Property<List<EliminationBean>> ELIMINATIONS = new PropertyBuilder
-            .ListPropertyBuilder<>(BeanPropertyType.of(EliminationBean.class))
-            .path("baseSettings.eliminations")
-            .defaultValue(BeanBuilder.from(EliminationBean.class).build())
             .build();
 
     private BaseConfig() {

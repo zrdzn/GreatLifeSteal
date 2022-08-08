@@ -24,6 +24,10 @@ permissions:
         default: op
   greatlifesteal.command.reload:
     default: op
+  greatlifesteal.command.eliminate:
+    default: op
+  greatlifesteal.command.revive:
+    default: op
   greatlifesteal.notify.update:
     default: op
 commands:

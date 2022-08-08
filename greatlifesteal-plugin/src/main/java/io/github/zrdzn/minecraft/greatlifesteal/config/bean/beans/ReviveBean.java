@@ -5,8 +5,8 @@ import java.util.List;
 
 public class ReviveBean {
 
-    private boolean enabled = true;
-    private List<String> commands = Collections.singletonList("unban {victim}");
+    private boolean enabled = false;
+    private List<String> commands = Collections.emptyList();
 
     public boolean isEnabled() {
         return this.enabled;
