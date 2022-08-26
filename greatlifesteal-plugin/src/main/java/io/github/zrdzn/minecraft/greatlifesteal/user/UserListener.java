@@ -129,6 +129,16 @@ public class UserListener implements Listener {
             return;
         }
 
+        double victimHealthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
+        if (victimHealthChange <= 0.0D) {
+            return;
+        }
+
+        double victimMaxHealth = this.adapter.getMaxHealth(victim);
+        double victimNewHealth = victimMaxHealth - victimHealthChange;
+
+        double minimumHealth = this.config.getProperty(BaseConfig.MINIMUM_HEALTH);
+
         String killerName = null;
         String formattedKillerMaxHealth = null;
 
@@ -164,41 +174,33 @@ public class UserListener implements Listener {
             Inventory killerInventory = killer.getInventory();
             HeartItem heartItem = this.heartItem;
 
-            double killerNewHealth = killerMaxHealth + killerHealthChange;
-            if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
-                // Increase the killer's maximum health or give him the heart item.
-                if (this.config.getProperty(HeartDropConfig.ON_EVERY_KILL) && heartItem != null) {
-                    if (this.config.getProperty(HeartConfig.DROP_ON_GROUND)) {
-                        killer.getWorld().dropItemNaturally(killer.getEyeLocation(), heartItem.result);
+            if (victimNewHealth >= minimumHealth) {
+                double killerNewHealth = killerMaxHealth + killerHealthChange;
+                if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
+                    // Increase the killer's maximum health or give him the heart item.
+                    if (this.config.getProperty(HeartDropConfig.ON_EVERY_KILL) && heartItem != null) {
+                        if (this.config.getProperty(HeartConfig.DROP_ON_GROUND)) {
+                            killer.getWorld().dropItemNaturally(killer.getEyeLocation(), heartItem.result);
+                        } else {
+                            killerInventory.addItem(heartItem.result);
+                        }
                     } else {
-                        killerInventory.addItem(heartItem.result);
+                        this.adapter.setMaxHealth(killer, killerNewHealth);
                     }
                 } else {
-                    this.adapter.setMaxHealth(killer, killerNewHealth);
-                }
-            } else {
-                MessageService.send(killer, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
+                    MessageService.send(killer, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
 
-                // Give the heart item to the killer if it is enabled.
-                if (heartItem != null && this.config.getProperty(HeartDropConfig.ON_LIMIT_EXCEED)) {
-                    if (this.config.getProperty(HeartConfig.DROP_ON_GROUND)) {
-                        killer.getWorld().dropItemNaturally(killer.getEyeLocation(), heartItem.result);
-                    } else {
-                        killerInventory.addItem(heartItem.result);
+                    // Give the heart item to the killer if it is enabled.
+                    if (heartItem != null && this.config.getProperty(HeartDropConfig.ON_LIMIT_EXCEED)) {
+                        if (this.config.getProperty(HeartConfig.DROP_ON_GROUND)) {
+                            killer.getWorld().dropItemNaturally(killer.getEyeLocation(), heartItem.result);
+                        } else {
+                            killerInventory.addItem(heartItem.result);
+                        }
                     }
                 }
             }
         }
-
-        double victimHealthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
-        if (victimHealthChange <= 0.0D) {
-            return;
-        }
-
-        double victimMaxHealth = this.adapter.getMaxHealth(victim);
-        double victimNewHealth = victimMaxHealth - victimHealthChange;
-
-        double minimumHealth = this.config.getProperty(BaseConfig.MINIMUM_HEALTH);
 
         if (victimNewHealth >= minimumHealth) {
             this.adapter.setMaxHealth(victim, victimNewHealth);
