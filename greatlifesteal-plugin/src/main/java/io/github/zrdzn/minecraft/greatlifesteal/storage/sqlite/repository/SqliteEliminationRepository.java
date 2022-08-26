@@ -129,7 +129,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Optional<Elimination>, Exception> findByPlayerName(String playerName) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(SELECT_BY_NAME)) {
+                    PreparedStatement statement = connection.prepareStatement(SELECT_BY_NAME)) {
                 statement.setString(1, playerName);
                 ResultSet result = statement.executeQuery();
                 if (!result.next()) {
@@ -153,7 +153,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Boolean, Exception> updateReviveById(int id, EliminationReviveStatus status) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(UPDATE_REVIVE_BY_ID)) {
+                    PreparedStatement statement = connection.prepareStatement(UPDATE_REVIVE_BY_ID)) {
                 statement.setString(1, status.toString());
                 statement.setInt(2, id);
 
@@ -166,7 +166,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Boolean, Exception> updateReviveByPlayerUuid(UUID playerUuid, EliminationReviveStatus status) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(UPDATE_REVIVE_BY_UUID)) {
+                    PreparedStatement statement = connection.prepareStatement(UPDATE_REVIVE_BY_UUID)) {
                 statement.setString(1, status.toString());
                 statement.setString(2, playerUuid.toString());
 
@@ -179,7 +179,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Boolean, Exception> updateReviveByPlayerName(String playerName, EliminationReviveStatus status) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(UPDATE_REVIVE_BY_NAME)) {
+                    PreparedStatement statement = connection.prepareStatement(UPDATE_REVIVE_BY_NAME)) {
                 statement.setString(1, status.toString());
                 statement.setString(2, playerName);
 
@@ -218,7 +218,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
     public Result<Blank, Exception> deleteByPlayerName(String playerName) {
         return Result.attempt(() -> {
             try (Connection connection = this.storage.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(DELETE_BY_NAME)) {
+                    PreparedStatement statement = connection.prepareStatement(DELETE_BY_NAME)) {
                 statement.setString(1, playerName);
                 statement.executeUpdate();
             }
