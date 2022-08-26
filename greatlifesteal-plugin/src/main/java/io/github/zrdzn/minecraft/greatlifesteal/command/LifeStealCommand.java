@@ -57,7 +57,6 @@ public class LifeStealCommand implements CommandExecutor {
             return true;
         }
 
-        // /lifesteal hearts add/remove/set
         switch (args[0].toLowerCase()) {
             case "health": {
                 if (args.length < 2) {
