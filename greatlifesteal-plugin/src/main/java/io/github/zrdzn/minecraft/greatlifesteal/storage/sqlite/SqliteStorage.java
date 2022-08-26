@@ -65,7 +65,8 @@ public class SqliteStorage implements Storage {
                 "   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_DATE," +
                 "   player_uuid VARCHAR(36) NOT NULL UNIQUE," +
                 "   player_name VARCHAR NOT NULL UNIQUE," +
-                "   action VARCHAR NOT NULL" +
+                "   action VARCHAR NOT NULL," +
+                "   revive VARCHAR NOT NULL DEFAULT 'PENDING'" +
                 ");";
 
         try (Connection connection = this.getConnection();

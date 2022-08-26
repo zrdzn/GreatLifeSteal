@@ -9,6 +9,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfi
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
@@ -423,29 +424,28 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                Player victim = this.server.getPlayer(args[2]);
-                if (victim == null) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
-                    return true;
-                }
+                String victimName = args[2];
 
-                UUID victimUuid = victim.getUniqueId();
-
-                this.eliminationService.getElimination(victimUuid).thenAccept(result -> result
+                this.eliminationService.getElimination(victimName).thenAccept(result -> result
                         .peek(eliminationMaybe -> {
                             if (!eliminationMaybe.isPresent()) {
                                 MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ELIMINATION_PRESENT),
-                                        "{PLAYER}", victim.getName());
+                                        "{PLAYER}", victimName);
                                 return;
                             }
 
-                            this.eliminationService.removeElimination(victimUuid).join()
-                                    .peek(ignored -> action.getRevive().getCommands().forEach(parameter -> {
-                                        parameter = MessageService.formatPlaceholders(parameter, "{victim}", victim.getName());
-                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
-                                    }))
+                            // Execute all revive-related commands but do not remove the elimination from the database yet.
+                            this.eliminationService.changeReviveStatus(victimName, EliminationReviveStatus.COMPLETED).join()
+                                    .peek(success -> {
+                                        if (success) {
+                                            action.getRevive().getCommands().forEach(parameter -> {
+                                                parameter = MessageService.formatPlaceholders(parameter, "{victim}", victimName);
+                                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
+                                            });
+                                        }
+                                    })
                                     .onError(error -> {
-                                        this.logger.error("Could not revive a player via command.", error);
+                                        this.logger.error("Could not change a revive status.", error);
                                         MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
                                     });
                         })

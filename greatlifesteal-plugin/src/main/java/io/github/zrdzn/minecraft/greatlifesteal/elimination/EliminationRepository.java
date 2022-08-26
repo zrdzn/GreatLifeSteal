@@ -40,6 +40,38 @@ public interface EliminationRepository {
     Result<Optional<Elimination>, Exception> findByPlayerUuid(UUID playerUuid);
 
     /**
+     * Finds a record with the specified player's name.
+     *
+     * @param playerName the name of a player
+     * @return an optional elimination with an optional exception
+     */
+    Result<Optional<Elimination>, Exception> findByPlayerName(String playerName);
+
+    /**
+     * Updates a record with the specified id.
+     *
+     * @param id the id of a record
+     * @return a boolean whether it affected any rows with an optional exception
+     */
+    Result<Boolean, Exception> updateReviveById(int id, EliminationReviveStatus status);
+
+    /**
+     * Updates a record with the specified player's uuid.
+     *
+     * @param playerUuid the uuid of a player
+     * @return a boolean whether it affected any rows with an optional exception
+     */
+    Result<Boolean, Exception> updateReviveByPlayerUuid(UUID playerUuid, EliminationReviveStatus status);
+
+    /**
+     * Updates a record with the specified player's name.
+     *
+     * @param playerName the name of a player
+     * @return a boolean whether it affected any rows with an optional exception
+     */
+    Result<Boolean, Exception> updateReviveByPlayerName(String playerName, EliminationReviveStatus status);
+
+    /**
      * Deletes a record with the specified id.
      *
      * @param id the id of a record
@@ -54,5 +86,13 @@ public interface EliminationRepository {
      * @return an optional exception
      */
     Result<Blank, Exception> deleteByPlayerUuid(UUID playerUuid);
+
+    /**
+     * Deletes a record with the specified player's name.
+     *
+     * @param playerName the name of a player
+     * @return an optional exception
+     */
+    Result<Blank, Exception> deleteByPlayerName(String playerName);
 
 }

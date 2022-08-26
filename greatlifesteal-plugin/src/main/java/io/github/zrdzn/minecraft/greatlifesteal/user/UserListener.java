@@ -8,6 +8,8 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
@@ -18,6 +20,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -30,22 +33,27 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.slf4j.Logger;
 
 public class UserListener implements Listener {
 
     private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
     private final JavaPlugin plugin;
+    private final Logger logger;
     private final SettingsManager config;
+    private final EliminationService eliminationService;
     private final DamageableAdapter adapter;
     private final HealthCache cache;
     private final HeartItem heartItem;
     private final boolean latestVersion;
 
-    public UserListener(JavaPlugin plugin, SettingsManager config, DamageableAdapter adapter, HealthCache cache,
-                        HeartItem heartItem, boolean latestVersion) {
+    public UserListener(JavaPlugin plugin, Logger logger, SettingsManager config, EliminationService eliminationService,
+                        DamageableAdapter adapter, HealthCache cache, HeartItem heartItem, boolean latestVersion) {
         this.plugin = plugin;
+        this.logger = logger;
         this.config = config;
+        this.eliminationService = eliminationService;
         this.adapter = adapter;
         this.cache = cache;
         this.heartItem = heartItem;
@@ -69,7 +77,35 @@ public class UserListener implements Listener {
         Player player = event.getPlayer();
         if (!player.hasPlayedBefore()) {
             this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
+            return;
         }
+
+        UUID playerUuid = player.getUniqueId();
+
+        this.eliminationService.getElimination(playerUuid).thenAccept(result -> result
+                .peek(eliminationMaybe -> {
+                    if (!eliminationMaybe.isPresent()) {
+                        return;
+                    }
+
+                    if (eliminationMaybe.get().getRevive() != EliminationReviveStatus.COMPLETED) {
+                        return;
+                    }
+
+                    this.eliminationService.removeElimination(playerUuid).join()
+                            .peek(ignored -> {
+                                MessageService.send(player, this.config.getProperty(MessagesConfig.SUCCESS_DEFAULT_HEALTH_SET));
+                                this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
+                            })
+                            .onError(error -> {
+                                this.logger.error("Could not set a default health.", error);
+                                MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
+                            });
+                })
+                .onError(error -> {
+                    this.logger.error("Could not get an elimination.", error);
+                    MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
+                }));
 
         // (PAPI) this.cache.removeHealth(player.getName());
     }

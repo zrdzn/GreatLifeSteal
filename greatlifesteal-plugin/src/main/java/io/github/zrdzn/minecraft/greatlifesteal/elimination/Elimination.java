@@ -10,6 +10,7 @@ public class Elimination {
     private UUID playerUuid;
     private String playerName;
     private String action;
+    private EliminationReviveStatus revive;
 
     public Elimination() {
     }
@@ -52,6 +53,14 @@ public class Elimination {
 
     public void setAction(String action) {
         this.action = action;
+    }
+
+    public EliminationReviveStatus getRevive() {
+        return this.revive;
+    }
+
+    public void setRevive(EliminationReviveStatus revive) {
+        this.revive = revive;
     }
 
 }

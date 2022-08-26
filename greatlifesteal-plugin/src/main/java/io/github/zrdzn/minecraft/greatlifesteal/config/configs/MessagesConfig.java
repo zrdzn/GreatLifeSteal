@@ -98,6 +98,16 @@ public class MessagesConfig implements SettingsHolder {
             "&cCould not create the elimination."
     );
 
+    public static final Property<String> SUCCESS_DEFAULT_HEALTH_SET = new StringProperty(
+            "messages.successDefaultHealthSet",
+            "&aYou have been successfully revived."
+    );
+
+    public static final Property<String> FAIL_DEFAULT_HEALTH_SET = new StringProperty(
+            "messages.failDefaultHealthSet",
+            "&cCould not set a default maximum health for you."
+    );
+
     public static final Property<String> INVALID_PLAYER_PROVIDED = new StringProperty(
             "messages.invalidPlayerProvided",
             "&cYou have provided invalid player."
