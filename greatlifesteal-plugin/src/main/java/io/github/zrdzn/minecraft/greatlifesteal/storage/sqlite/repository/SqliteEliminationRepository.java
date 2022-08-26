@@ -38,6 +38,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
                 statement.setString(2, elimination.getPlayerUuid().toString());
                 statement.setString(3, elimination.getPlayerName());
                 statement.setString(4, elimination.getAction());
+                statement.executeUpdate();
 
                 return elimination;
             }

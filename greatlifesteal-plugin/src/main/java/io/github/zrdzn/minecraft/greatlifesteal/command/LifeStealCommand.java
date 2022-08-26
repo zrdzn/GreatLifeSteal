@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -375,11 +376,24 @@ public class LifeStealCommand implements CommandExecutor {
                 elimination.setPlayerName(victimName);
                 elimination.setAction(args[1]);
 
-                this.eliminationService.createElimination(elimination).thenAccept(result -> result
-                        .peek(ignored -> action.getParameters().forEach(parameter -> {
-                            parameter = MessageService.formatPlaceholders(parameter, placeholders);
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
-                        }))
+                this.eliminationService.getElimination(elimination.getPlayerUuid()).thenAccept(result -> result
+                        .peek(eliminationMaybe -> {
+                            if (eliminationMaybe.isPresent()) {
+                                MessageService.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_PRESENT),
+                                        "{PLAYER}", victim.getName());
+                                return;
+                            }
+
+                            this.eliminationService.createElimination(elimination).thenAccept(newElimination -> newElimination
+                                    .peek(ignored -> action.getParameters().forEach(parameter -> {
+                                        parameter = MessageService.formatPlaceholders(parameter, placeholders);
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
+                                    }))
+                                    .onError(error -> {
+                                        this.logger.error("Could not eliminate a player via command.", error);
+                                        MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                                    }));
+                        })
                         .onError(error -> {
                             this.logger.error("Could not eliminate a player via command.", error);
                             MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
@@ -415,13 +429,28 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                this.eliminationService.removeElimination(victim.getUniqueId()).thenAccept(result -> result
-                        .peek(ignored -> action.getRevive().getCommands().forEach(parameter -> {
-                            parameter = MessageService.formatPlaceholders(parameter, "{victim}", victim.getName());
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
-                        }))
+                UUID victimUuid = victim.getUniqueId();
+
+                this.eliminationService.getElimination(victimUuid).thenAccept(result -> result
+                        .peek(eliminationMaybe -> {
+                            if (!eliminationMaybe.isPresent()) {
+                                MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ELIMINATION_PRESENT),
+                                        "{PLAYER}", victim.getName());
+                                return;
+                            }
+
+                            this.eliminationService.removeElimination(victimUuid).join()
+                                    .peek(ignored -> action.getRevive().getCommands().forEach(parameter -> {
+                                        parameter = MessageService.formatPlaceholders(parameter, "{victim}", victim.getName());
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
+                                    }))
+                                    .onError(error -> {
+                                        this.logger.error("Could not revive a player via command.", error);
+                                        MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                                    });
+                        })
                         .onError(error -> {
-                            this.logger.error("Could not eliminate a player via command.", error);
+                            this.logger.error("Could not revive a player via command.", error);
                             MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
                         }));
 
