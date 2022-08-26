@@ -2,17 +2,24 @@ package io.github.zrdzn.minecraft.greatlifesteal.command;
 
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
+import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,22 +27,27 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.slf4j.Logger;
 
 public class LifeStealCommand implements CommandExecutor {
 
     private final GreatLifeStealPlugin plugin;
+    private final Logger logger;
     private final SettingsManager config;
+    private final EliminationService eliminationService;
     private final DamageableAdapter adapter;
     private final HeartItem heart;
     private final Server server;
 
-    public LifeStealCommand(GreatLifeStealPlugin plugin, SettingsManager config, DamageableAdapter adapter,
-                            HeartItem heart, Server server) {
+    public LifeStealCommand(GreatLifeStealPlugin plugin, Logger logger, SettingsManager config, EliminationService eliminationService,
+                            DamageableAdapter adapter, HeartItem heart) {
         this.plugin = plugin;
+        this.logger = logger;
         this.config = config;
+        this.eliminationService = eliminationService;
         this.adapter = adapter;
         this.heart = heart;
-        this.server = server;
+        this.server = plugin.getServer();
     }
 
     @Override
@@ -197,7 +209,7 @@ public class LifeStealCommand implements CommandExecutor {
 
                 ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
                 if (action == null || !action.isEnabled()) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_NOT_ENABLED));
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
                     return true;
                 }
 
@@ -312,6 +324,134 @@ public class LifeStealCommand implements CommandExecutor {
 
                 String[] placeholders = { "{PLAYER}", target.getName(), "{HEARTS}", String.valueOf(amount) };
                 MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_WITHDRAW), placeholders);
+
+                break;
+            }
+            case "eliminate": {
+                if (!sender.hasPermission("greatlifesteal.command.eliminate")) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                    return true;
+                }
+
+                if (args.length == 1) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
+                    return true;
+                }
+
+                ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
+                if (action == null || !action.isEnabled() || action.getType() != ActionType.DISPATCH_COMMANDS) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
+                    return true;
+                }
+
+                if (args.length == 2) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                    return true;
+                }
+
+                Player victim = this.server.getPlayer(args[2]);
+                if (victim == null) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                    return true;
+                }
+
+                String victimName = victim.getName();
+
+                int senderHealth = 0;
+                if (sender instanceof Player) {
+                    senderHealth = (int) ((Player) sender).getMaxHealth();
+                }
+
+                String[] placeholders = {
+                        "{player}", victimName,
+                        "{victim}", victimName,
+                        "{killer}", sender.getName(),
+                        "{victim_max_health}", String.valueOf((int) victim.getMaxHealth()),
+                        "{killer_max_health}", String.valueOf(senderHealth),
+                };
+
+                Elimination elimination = new Elimination();
+                elimination.setCreatedAt(Instant.now());
+                elimination.setPlayerUuid(victim.getUniqueId());
+                elimination.setPlayerName(victimName);
+                elimination.setAction(args[1]);
+
+                this.eliminationService.getElimination(elimination.getPlayerUuid()).thenAccept(result -> result
+                        .peek(eliminationMaybe -> {
+                            if (eliminationMaybe.isPresent()) {
+                                MessageService.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_PRESENT),
+                                        "{PLAYER}", victim.getName());
+                                return;
+                            }
+
+                            this.eliminationService.createElimination(elimination).thenAccept(newElimination -> newElimination
+                                    .peek(ignored -> action.getParameters().forEach(parameter -> {
+                                        parameter = MessageService.formatPlaceholders(parameter, placeholders);
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
+                                    }))
+                                    .onError(error -> {
+                                        this.logger.error("Could not eliminate a player via command.", error);
+                                        MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                                    }));
+                        })
+                        .onError(error -> {
+                            this.logger.error("Could not eliminate a player via command.", error);
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                        }));
+
+                break;
+            }
+            case "revive": {
+                if (!sender.hasPermission("greatlifesteal.command.revive")) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                    return true;
+                }
+
+                if (args.length == 1) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
+                    return true;
+                }
+
+                ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
+                if (action == null || !action.isEnabled() || action.getType() != ActionType.DISPATCH_COMMANDS) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
+                    return true;
+                }
+
+                if (args.length == 2) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                    return true;
+                }
+
+                String victimName = args[2];
+
+                this.eliminationService.getElimination(victimName).thenAccept(result -> result
+                        .peek(eliminationMaybe -> {
+                            if (!eliminationMaybe.isPresent()) {
+                                MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ELIMINATION_PRESENT),
+                                        "{PLAYER}", victimName);
+                                return;
+                            }
+
+                            // Execute all revive-related commands but do not remove the elimination from the database yet.
+                            this.eliminationService.changeReviveStatus(victimName, EliminationReviveStatus.COMPLETED).join()
+                                    .peek(success -> {
+                                        if (success) {
+                                            action.getRevive().getCommands().forEach(parameter -> {
+                                                parameter = MessageService.formatPlaceholders(parameter, "{victim}", victimName);
+                                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
+                                            });
+                                        }
+                                    })
+                                    .onError(error -> {
+                                        this.logger.error("Could not change a revive status.", error);
+                                        MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                                    });
+                        })
+                        .onError(error -> {
+                            this.logger.error("Could not revive a player via command.", error);
+                            MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                        }));
 
                 break;
             }

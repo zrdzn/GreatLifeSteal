@@ -18,7 +18,9 @@ public class MessagesConfig implements SettingsHolder {
                     "&7/&alifesteal withdraw <hearts> [player] &8- &eWithdraws hearts as items." +
                     "&7/&alifesteal health add <player> <health_points> &8- &eAdds the health points to the player.\n" +
                     "&7/&alifesteal health remove <player> <health_points> &8- &eSubtracts the health points from the player.\n" +
-                    "&7/&alifesteal health set <player> <health_points> &8- &eSets the health points for the player."
+                    "&7/&alifesteal health set <player> <health_points> &8- &eSets the health points for the player.\n" +
+                    "&7/&alifesteal eliminate <action> <player> &8- &eEliminates the player through the specified action.\n" +
+                    "&7/&alifesteal revive <action> <player> &8- &eRevives the player for the specified action."
     );
 
     public static final Property<String> NO_PERMISSIONS = new StringProperty(
@@ -61,14 +63,24 @@ public class MessagesConfig implements SettingsHolder {
             "&cYou do not have enough place in the inventory."
     );
 
-    public static final Property<String> ELIMINATION_NOT_ENABLED = new StringProperty(
-            "messages.eliminationNotEnabled",
-            "&cEnable the &eeliminationMode &csetting in order to use this command."
+    public static final Property<String> NO_ACTION_ENABLED = new StringProperty(
+            "messages.noActionEnabled",
+            "&cEnable at least one action in the configuration."
     );
 
     public static final Property<String> NO_ACTION_SPECIFIED = new StringProperty(
             "messages.noActionSpecified",
             "&cYou need to specify a type of an action."
+    );
+
+    public static final Property<String> ELIMINATION_PRESENT = new StringProperty(
+            "messages.eliminationPresent",
+            "&cPlayer {PLAYER} is already eliminated."
+    );
+
+    public static final Property<String> NO_ELIMINATION_PRESENT = new StringProperty(
+            "messages.noEliminationPresent",
+            "&cPlayer {PLAYER} is not eliminated."
     );
 
     public static final Property<String> SUCCESSFUL_COMMAND_RELOAD = new StringProperty(
@@ -79,6 +91,21 @@ public class MessagesConfig implements SettingsHolder {
     public static final Property<String> FAIL_COMMAND_RELOAD = new StringProperty(
             "messages.failCommandReload",
             "&cCould not reload the plugin."
+    );
+
+    public static final Property<String> FAIL_COMMAND_ELIMINATE = new StringProperty(
+            "messages.failCommandEliminate",
+            "&cCould not create the elimination."
+    );
+
+    public static final Property<String> SUCCESS_DEFAULT_HEALTH_SET = new StringProperty(
+            "messages.successDefaultHealthSet",
+            "&aYou have been successfully revived."
+    );
+
+    public static final Property<String> FAIL_DEFAULT_HEALTH_SET = new StringProperty(
+            "messages.failDefaultHealthSet",
+            "&cCould not set a default maximum health for you."
     );
 
     public static final Property<String> INVALID_PLAYER_PROVIDED = new StringProperty(
