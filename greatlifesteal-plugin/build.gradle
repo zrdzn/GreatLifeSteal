@@ -1,0 +1,73 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+repositories {
+    maven {
+        name "jitpack-repository"
+        url "https://jitpack.io/"
+    }
+
+    maven {
+        name "placeholderapi-repository"
+        url = "https://repo.extendedclip.com/content/repositories/placeholderapi/"
+    }
+}
+
+dependencies {
+    implementation(project(":greatlifesteal-spigot"))
+    implementation(project(":v1_8R3"))
+    implementation(project(":v1_9R2"))
+    implementation(project(":v1_10R1"))
+    implementation(project(":v1_11R1"))
+    implementation(project(":v1_12R1"))
+    implementation(project(":v1_13R2"))
+    implementation(project(":v1_14R1"))
+    implementation(project(":v1_15R1"))
+
+    compileOnly "org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT"
+    compileOnly "me.clip:placeholderapi:2.11.2"
+
+    implementation "ch.jalu:configme:1.3.0"
+    implementation "com.github.Querz:NBT:6.1"
+    implementation "org.xerial:sqlite-jdbc:3.36.0.3"
+    implementation "org.panda-lang:expressible:1.1.20"
+    implementation "org.slf4j:slf4j-reload4j:2.0.0"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
+    implementation "org.bstats:bstats-bukkit:3.0.0"
+
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
+    testImplementation "org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT"
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events(TestLogEvent.STARTED, TestLogEvent.PASSED, TestLogEvent.FAILED, TestLogEvent.SKIPPED)
+        exceptionFormat = TestExceptionFormat.FULL
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+        showStandardStreams = true
+    }
+}
+
+java {
+    withSourcesJar()
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset = "UTF-8"
+    filesMatching("plugin.yml") {
+        expand props
+    }
+}
+
+shadowJar {
+    archiveFileName = "${project.parent.name} v${project.version}.jar"
+
+    relocate "org.bstats", "io.github.zrdzn.minecraft.greatlifesteal.libs.bstats"
+}
