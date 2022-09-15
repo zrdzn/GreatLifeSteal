@@ -20,13 +20,13 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -36,6 +36,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
@@ -44,6 +45,8 @@ import org.slf4j.Logger;
 import panda.std.Result;
 
 public class UserListener implements Listener {
+
+    private final List<UUID> playersWaitingForEliminationRemoval = new ArrayList<>();
 
     private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
@@ -90,6 +93,26 @@ public class UserListener implements Listener {
 
         UUID playerUuid = player.getUniqueId();
 
+        if (this.playersWaitingForEliminationRemoval.contains(playerUuid)) {
+            this.eliminationService.removeElimination(playerUuid).join()
+                    .peek(ignored -> {
+                        MessageService.send(player, this.config.getProperty(MessagesConfig.SUCCESS_DEFAULT_HEALTH_SET));
+                        this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
+                        this.playersWaitingForEliminationRemoval.remove(playerUuid);
+                    })
+                    .onError(error -> {
+                        this.logger.error("Could not remove an elimination.", error);
+                        MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
+                    });
+        }
+
+        // (PAPI) this.cache.removeHealth(player.getName());
+    }
+
+    @EventHandler
+    public void preventFromJoining(AsyncPlayerPreLoginEvent event) {
+        UUID playerUuid = event.getUniqueId();
+
         Result<Optional<Elimination>, Exception> foundElimination = this.eliminationService.getElimination(playerUuid).join();
 
         foundElimination
@@ -112,28 +135,16 @@ public class UserListener implements Listener {
                     // Kick player if he is not revived.
                     if (elimination.getRevive() != EliminationReviveStatus.COMPLETED) {
                         if (action.getType() == ActionType.BAN) {
-                            player.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters())));
+                            String reason = ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters()));
+                            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, reason);
                         }
 
                         return;
                     }
 
-                    this.eliminationService.removeElimination(playerUuid).join()
-                            .peek(ignored -> {
-                                MessageService.send(player, this.config.getProperty(MessagesConfig.SUCCESS_DEFAULT_HEALTH_SET));
-                                this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
-                            })
-                            .onError(error -> {
-                                this.logger.error("Could not set a default health.", error);
-                                MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
-                            });
+                    this.playersWaitingForEliminationRemoval.add(playerUuid);
                 })
-                .onError(error -> {
-                    this.logger.error("Could not get an elimination.", error);
-                    MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
-                });
-
-        // (PAPI) this.cache.removeHealth(player.getName());
+                .onError(error -> this.logger.error("Could not get an elimination.", error));
     }
 
     @EventHandler
