@@ -6,6 +6,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.util.Map;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,6 +16,7 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class HeartListener implements Listener {
 
@@ -64,6 +66,19 @@ public class HeartListener implements Listener {
                 }
 
                 if (slotItem.getAmount() < ingredient.getAmount()) {
+                    inventory.setResult(null);
+                    break;
+                }
+
+                ItemMeta slotItemMeta = slotItem.getItemMeta();
+                ItemMeta ingredientItemMeta = ingredient.getItemMeta();
+
+                if (!slotItemMeta.getDisplayName().equals(ingredientItemMeta.getDisplayName())) {
+                    inventory.setResult(null);
+                    break;
+                }
+
+                if (!slotItemMeta.getLore().equals(ingredientItemMeta.getLore())) {
                     inventory.setResult(null);
                     break;
                 }

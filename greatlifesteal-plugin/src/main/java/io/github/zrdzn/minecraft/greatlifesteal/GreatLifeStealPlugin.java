@@ -187,7 +187,16 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 Material recipeItemType = recipeItem.getType();
 
                 recipe.setIngredient(slotRaw.charAt(0), recipeItemType);
-                ingredients.put(slot, new ItemStack(recipeItemType, recipeItem.getAmount()));
+
+                ItemStack ingredient = new ItemStack(recipeItemType, recipeItem.getAmount());
+                ItemMeta ingredientMeta = ingredient.getItemMeta();
+                ingredientMeta.setDisplayName(ChatColor.translateAlternateColorCodes('&', recipeItem.getDisplayName()));
+                ingredientMeta.setLore(recipeItem.getLore().stream()
+                        .map(line -> ChatColor.translateAlternateColorCodes('&', line))
+                        .collect(Collectors.toList()));
+                ingredient.setItemMeta(ingredientMeta);
+
+                ingredients.put(slot, ingredient);
             }
 
             if (this.spigotAdapter.getRecipeManagerAdapter().removeServerShapedRecipe(recipe)) {
