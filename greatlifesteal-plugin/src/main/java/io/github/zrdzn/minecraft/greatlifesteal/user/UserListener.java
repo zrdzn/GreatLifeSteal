@@ -2,12 +2,15 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
+import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
@@ -17,11 +20,15 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.UUID;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,13 +36,17 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
+import panda.std.Result;
 
 public class UserListener implements Listener {
+
+    private final List<UUID> playersWaitingForEliminationRemoval = new ArrayList<>();
 
     private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
@@ -82,32 +93,58 @@ public class UserListener implements Listener {
 
         UUID playerUuid = player.getUniqueId();
 
-        this.eliminationService.getElimination(playerUuid).thenAccept(result -> result
+        if (this.playersWaitingForEliminationRemoval.contains(playerUuid)) {
+            this.eliminationService.removeElimination(playerUuid).join()
+                    .peek(ignored -> {
+                        MessageService.send(player, this.config.getProperty(MessagesConfig.SUCCESS_DEFAULT_HEALTH_SET));
+                        this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
+                        this.playersWaitingForEliminationRemoval.remove(playerUuid);
+                    })
+                    .onError(error -> {
+                        this.logger.error("Could not remove an elimination.", error);
+                        MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
+                    });
+        }
+
+        // (PAPI) this.cache.removeHealth(player.getName());
+    }
+
+    @EventHandler
+    public void preventFromJoining(AsyncPlayerPreLoginEvent event) {
+        UUID playerUuid = event.getUniqueId();
+
+        Result<Optional<Elimination>, Exception> foundElimination = this.eliminationService.getElimination(playerUuid).join();
+
+        foundElimination
                 .peek(eliminationMaybe -> {
                     if (!eliminationMaybe.isPresent()) {
                         return;
                     }
 
-                    if (eliminationMaybe.get().getRevive() != EliminationReviveStatus.COMPLETED) {
+                    Elimination elimination = eliminationMaybe.get();
+
+                    ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(elimination.getAction());
+                    if (action == null || !action.isEnabled()) {
                         return;
                     }
 
-                    this.eliminationService.removeElimination(playerUuid).join()
-                            .peek(ignored -> {
-                                MessageService.send(player, this.config.getProperty(MessagesConfig.SUCCESS_DEFAULT_HEALTH_SET));
-                                this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
-                            })
-                            .onError(error -> {
-                                this.logger.error("Could not set a default health.", error);
-                                MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
-                            });
-                })
-                .onError(error -> {
-                    this.logger.error("Could not get an elimination.", error);
-                    MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
-                }));
+                    if (action.getType() == ActionType.BROADCAST) {
+                        return;
+                    }
 
-        // (PAPI) this.cache.removeHealth(player.getName());
+                    // Kick player if he is not revived.
+                    if (elimination.getRevive() != EliminationReviveStatus.COMPLETED) {
+                        if (action.getType() == ActionType.BAN) {
+                            String reason = ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters()));
+                            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, reason);
+                        }
+
+                        return;
+                    }
+
+                    this.playersWaitingForEliminationRemoval.add(playerUuid);
+                })
+                .onError(error -> this.logger.error("Could not get an elimination.", error));
     }
 
     @EventHandler
@@ -260,6 +297,19 @@ public class UserListener implements Listener {
                                 .map(message -> MessageService.formatPlaceholders(message, placeholders))
                                 .map(GreatLifeStealPlugin::formatColor)
                                 .forEach(Bukkit::broadcastMessage);
+                        break;
+                    case BAN:
+                        Elimination elimination = new Elimination();
+                        elimination.setCreatedAt(Instant.now());
+                        elimination.setPlayerUuid(victim.getUniqueId());
+                        elimination.setPlayerName(victimName);
+                        elimination.setAction(actionKey);
+                        elimination.setRevive(EliminationReviveStatus.PENDING);
+
+                        this.eliminationService.createElimination(elimination).join()
+                                .peek(ignored -> victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters()))))
+                                .onError(error -> this.logger.error("Could not eliminate a player.", error));
+
                         break;
                     default:
                         throw new IllegalArgumentException("Case for the specified action does not exist.");

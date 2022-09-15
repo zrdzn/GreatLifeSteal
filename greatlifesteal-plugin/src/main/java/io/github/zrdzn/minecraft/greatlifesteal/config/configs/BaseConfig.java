@@ -57,7 +57,9 @@ public class BaseConfig implements SettingsHolder {
     public static final List<String> DEFAULT_BROADCAST_MESSAGE = Collections.singletonList(
             "&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a."
     );
-    public static final List<String> DEFAULT_DISPATCH_COMMANDS = Collections.singletonList("tempban {victim} 7d");
+    public static final List<String> DEFAULT_TEMPBAN_COMMAND = Collections.singletonList("tempban {victim} 7d");
+    public static final List<String> DEFAULT_GAMEMODE_SET = Collections.singletonList("gamemode spectator {victim}");
+    public static final List<String> DEFAULT_BAN_REASON = Collections.singletonList("&cYou have been eliminated!");
 
     @Comment({
             "Define what list of actions should happen if a player reaches specific amount of maximum health points.",
@@ -70,6 +72,7 @@ public class BaseConfig implements SettingsHolder {
             "deprecated and will be removed in the future.",
             " DISPATCH_COMMANDS - execute a list of commands as a console.",
             " BROADCAST - broadcast a message that is specified in the parameters list.",
+            " BAN - bans a player with a specified message (you should use DISPATCH_COMMANDS for custom punishments)",
             "type: DISPATCH_COMMANDS",
             "",
             "Amount of health points that are needed to execute the action.",
@@ -83,6 +86,7 @@ public class BaseConfig implements SettingsHolder {
             "List of parameters that are adequate to the chosen action.",
             " DISPATCH_COMMANDS - list of commands.",
             " BROADCAST - list of messages.",
+            " BAN - list of lines for ban reason.",
             "Placeholders:",
             " {killer} - represents killer username, or last damage cause (if killByPlayerOnly not active)",
             " {victim} - represents victim username",
@@ -100,6 +104,8 @@ public class BaseConfig implements SettingsHolder {
             "  enabled: true",
             "",
             "  List of commands that should be executed after a revive execution.",
+            "  For the BAN action type 'commands' are not used because the elimination is removed internally.",
+            "  Allowed action types that works with revive commands: DISPATCH_COMMANDS",
             "  Placeholders:",
             "  {victim} - represents victim username",
             "  commands:",
@@ -114,10 +120,24 @@ public class BaseConfig implements SettingsHolder {
                     .with(announce -> announce.setType(ActionType.BROADCAST))
                     .with(announce -> announce.setParameters(DEFAULT_BROADCAST_MESSAGE))
                     .build())
-            .defaultEntry("eliminate", BeanBuilder
+            .defaultEntry("spectate", BeanBuilder
+                    .from(ActionBean.class)
+                    .with(spectate -> spectate.setType(ActionType.DISPATCH_COMMANDS))
+                    .with(spectate -> spectate.setParameters(DEFAULT_GAMEMODE_SET))
+                    .build())
+            .defaultEntry("eliminatePerm", BeanBuilder
+                    .from(ActionBean.class)
+                    .with(eliminate -> eliminate.setType(ActionType.BAN))
+                    .with(eliminate -> eliminate.setParameters(DEFAULT_BAN_REASON))
+                    .with(eliminate -> eliminate.setRevive(BeanBuilder
+                            .from(ReviveBean.class)
+                            .with(revive -> revive.setEnabled(true))
+                            .build()))
+                    .build())
+            .defaultEntry("eliminateTemp", BeanBuilder
                     .from(ActionBean.class)
                     .with(eliminate -> eliminate.setType(ActionType.DISPATCH_COMMANDS))
-                    .with(eliminate -> eliminate.setParameters(DEFAULT_DISPATCH_COMMANDS))
+                    .with(eliminate -> eliminate.setParameters(DEFAULT_TEMPBAN_COMMAND))
                     .with(eliminate -> eliminate.setRevive(BeanBuilder
                             .from(ReviveBean.class)
                             .with(revive -> revive.setEnabled(true))
