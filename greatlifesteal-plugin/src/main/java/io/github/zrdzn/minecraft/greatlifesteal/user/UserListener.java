@@ -288,12 +288,6 @@ public class UserListener implements Listener {
                                 .forEach(Bukkit::broadcastMessage);
                         break;
                     case BAN:
-                        List<String> reason = action.getParameters().stream()
-                                .map(line -> MessageService.formatPlaceholders(line, placeholders))
-                                .map(GreatLifeStealPlugin::formatColor)
-                                .collect(Collectors.toList());
-                        String formattedReason = String.join("\n", reason);
-
                         Elimination elimination = new Elimination();
                         elimination.setCreatedAt(Instant.now());
                         elimination.setPlayerUuid(victim.getUniqueId());
@@ -301,9 +295,9 @@ public class UserListener implements Listener {
                         elimination.setAction(actionKey);
                         elimination.setRevive(EliminationReviveStatus.PENDING);
 
-                        this.eliminationService.createElimination(elimination).thenAccept(result -> result
-                                .peek(ignored -> victim.kickPlayer(formattedReason))
-                                .onError(error -> this.logger.error("Could not eliminate a player.", error)));
+                        this.eliminationService.createElimination(elimination).join()
+                                .peek(ignored -> victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters()))))
+                                .onError(error -> this.logger.error("Could not eliminate a player.", error));
 
                         break;
                     default:
