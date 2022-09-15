@@ -104,6 +104,8 @@ public class BaseConfig implements SettingsHolder {
             "  enabled: true",
             "",
             "  List of commands that should be executed after a revive execution.",
+            "  For the BAN action type 'commands' are not used because the elimination is removed internally.",
+            "  Allowed action types that works with revive commands: DISPATCH_COMMANDS",
             "  Placeholders:",
             "  {victim} - represents victim username",
             "  commands:",
@@ -127,6 +129,10 @@ public class BaseConfig implements SettingsHolder {
                     .from(ActionBean.class)
                     .with(eliminate -> eliminate.setType(ActionType.BAN))
                     .with(eliminate -> eliminate.setParameters(DEFAULT_BAN_REASON))
+                    .with(eliminate -> eliminate.setRevive(BeanBuilder
+                            .from(ReviveBean.class)
+                            .with(revive -> revive.setEnabled(true))
+                            .build()))
                     .build())
             .defaultEntry("eliminateTemp", BeanBuilder
                     .from(ActionBean.class)
@@ -137,6 +143,7 @@ public class BaseConfig implements SettingsHolder {
                             .with(revive -> revive.setEnabled(true))
                             .with(revive -> revive.setCommands(Collections.singletonList("unban {victim}")))
                             .build()))
+                    .build())
             .build();
 
     private BaseConfig() {

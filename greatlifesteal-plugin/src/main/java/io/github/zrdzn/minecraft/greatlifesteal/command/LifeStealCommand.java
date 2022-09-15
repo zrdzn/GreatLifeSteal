@@ -18,8 +18,10 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.slf4j.Logger;
+import panda.std.Result;
 
 public class LifeStealCommand implements CommandExecutor {
 
@@ -339,8 +342,16 @@ public class LifeStealCommand implements CommandExecutor {
                 }
 
                 ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
-                if (action == null || !action.isEnabled() || action.getType() != ActionType.DISPATCH_COMMANDS) {
+                if (action == null || !action.isEnabled()) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
+                    return true;
+                }
+
+                ActionType actionType = action.getType();
+
+                boolean allowedAction = actionType == ActionType.BAN || actionType == ActionType.DISPATCH_COMMANDS;
+                if (!allowedAction) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.ACTION_TYPE_INVALID));
                     return true;
                 }
 
@@ -376,7 +387,9 @@ public class LifeStealCommand implements CommandExecutor {
                 elimination.setPlayerName(victimName);
                 elimination.setAction(args[1]);
 
-                this.eliminationService.getElimination(elimination.getPlayerUuid()).thenAccept(result -> result
+                Result<Optional<Elimination>, Exception> foundElimination = this.eliminationService.getElimination(elimination.getPlayerUuid()).join();
+
+                foundElimination
                         .peek(eliminationMaybe -> {
                             if (eliminationMaybe.isPresent()) {
                                 MessageService.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_PRESENT),
@@ -384,20 +397,34 @@ public class LifeStealCommand implements CommandExecutor {
                                 return;
                             }
 
-                            this.eliminationService.createElimination(elimination).thenAccept(newElimination -> newElimination
-                                    .peek(ignored -> action.getParameters().forEach(parameter -> {
-                                        parameter = MessageService.formatPlaceholders(parameter, placeholders);
-                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
-                                    }))
+                            Result<Elimination, Exception> createResult = this.eliminationService.createElimination(elimination).join();
+
+                            createResult
+                                    .peek(ignored -> {
+                                        // Kick user if the action type is a ban.
+                                        if (actionType == ActionType.BAN) {
+                                            victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters())));
+                                            return;
+                                        }
+
+                                        action.getParameters().forEach(parameter -> {
+                                            parameter = MessageService.formatPlaceholders(parameter, placeholders);
+
+                                            // Dispatch custom commands for the elimination.
+                                            if (Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter)) {
+                                                this.eliminationService.removeElimination(victim.getUniqueId()).join();
+                                            }
+                                        });
+                                    })
                                     .onError(error -> {
                                         this.logger.error("Could not eliminate a player via command.", error);
                                         MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
-                                    }));
+                                    });
                         })
                         .onError(error -> {
                             this.logger.error("Could not eliminate a player via command.", error);
                             MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
-                        }));
+                        });
 
                 break;
             }
@@ -413,10 +440,19 @@ public class LifeStealCommand implements CommandExecutor {
                 }
 
                 ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
-                if (action == null || !action.isEnabled() || action.getType() != ActionType.DISPATCH_COMMANDS) {
+                if (action == null || !action.isEnabled()) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
                     return true;
                 }
+
+                ActionType actionType = action.getType();
+
+                boolean allowedAction = actionType == ActionType.BAN || actionType == ActionType.DISPATCH_COMMANDS;
+                if (!allowedAction) {
+                    MessageService.send(sender, this.config.getProperty(MessagesConfig.ACTION_TYPE_INVALID));
+                    return true;
+                }
+
 
                 if (args.length == 2) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
@@ -437,10 +473,14 @@ public class LifeStealCommand implements CommandExecutor {
                             this.eliminationService.changeReviveStatus(victimName, EliminationReviveStatus.COMPLETED).join()
                                     .peek(success -> {
                                         if (success) {
-                                            action.getRevive().getCommands().forEach(parameter -> {
-                                                parameter = MessageService.formatPlaceholders(parameter, "{victim}", victimName);
-                                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
-                                            });
+                                            if (actionType == ActionType.DISPATCH_COMMANDS) {
+                                                action.getRevive().getCommands().forEach(parameter -> {
+                                                    parameter = MessageService.formatPlaceholders(parameter, "{victim}", victimName);
+                                                    if (Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter)) {
+                                                        this.eliminationService.changeReviveStatus(victimName, EliminationReviveStatus.PENDING).join();
+                                                    }
+                                                });
+                                            }
                                         }
                                     })
                                     .onError(error -> {

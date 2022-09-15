@@ -68,6 +68,11 @@ public class MessagesConfig implements SettingsHolder {
             "&cEnable at least one action in the configuration."
     );
 
+    public static final Property<String> ACTION_TYPE_INVALID = new StringProperty(
+            "messages.actionTypeInvalid",
+            "&cSpecified action does not match the requirements."
+    );
+
     public static final Property<String> NO_ACTION_SPECIFIED = new StringProperty(
             "messages.noActionSpecified",
             "&cYou need to specify a type of an action."
