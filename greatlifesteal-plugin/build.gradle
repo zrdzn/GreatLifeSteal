@@ -31,7 +31,7 @@ dependencies {
     implementation "com.github.Querz:NBT:6.1"
     implementation "org.xerial:sqlite-jdbc:3.39.3.0"
     implementation "org.panda-lang:expressible:1.2.1"
-    implementation "org.slf4j:slf4j-reload4j:2.0.2"
+    implementation "org.slf4j:slf4j-reload4j:2.0.3"
     implementation "org.apache.commons:commons-lang3:3.12.0"
     implementation "org.bstats:bstats-bukkit:3.0.0"
 
