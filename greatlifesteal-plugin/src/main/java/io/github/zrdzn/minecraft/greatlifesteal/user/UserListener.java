@@ -5,6 +5,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DisabledWorldsConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
@@ -115,6 +116,8 @@ public class UserListener implements Listener {
 
         Result<Optional<Elimination>, Exception> foundElimination = this.eliminationService.getElimination(playerUuid).join();
 
+        List<String> disabledWorlds = this.config.getProperty(DisabledWorldsConfig.ELIMINATIONS);
+
         foundElimination
                 .peek(eliminationMaybe -> {
                     if (!eliminationMaybe.isPresent()) {
@@ -125,6 +128,10 @@ public class UserListener implements Listener {
 
                     ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(elimination.getAction());
                     if (action == null || !action.isEnabled()) {
+                        return;
+                    }
+
+                    if (disabledWorlds.contains(elimination.getLastWorld())) {
                         return;
                     }
 
@@ -158,12 +165,23 @@ public class UserListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
+        List<String> disabledWorlds = this.config.getProperty(DisabledWorldsConfig.HEALTH_CHANGE);
+        if (disabledWorlds.contains(victim.getWorld().getName())) {
+            return;
+        }
+
         EntityDamageEvent lastDamageCause = victim.getLastDamageCause();
 
         boolean killByPlayerOnly = this.config.getProperty(BaseConfig.KILL_BY_PLAYER_ONLY);
 
-        if (killByPlayerOnly && killer == null) {
-            return;
+        if (killer == null) {
+            if (killByPlayerOnly) {
+                return;
+            }
+        } else {
+            if (disabledWorlds.contains(killer.getWorld().getName())) {
+                return;
+            }
         }
 
         double victimHealthChange = this.config.getProperty(HealthChangeConfig.VICTIM);

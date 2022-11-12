@@ -66,7 +66,8 @@ public class SqliteStorage implements Storage {
                 "   player_uuid VARCHAR(36) NOT NULL UNIQUE," +
                 "   player_name VARCHAR NOT NULL UNIQUE," +
                 "   action VARCHAR NOT NULL," +
-                "   revive VARCHAR NOT NULL DEFAULT 'PENDING'" +
+                "   revive VARCHAR NOT NULL DEFAULT 'PENDING'," +
+                "   last_world VARCHAR NOT NULL" +
                 ");";
 
         try (Connection connection = this.getConnection();

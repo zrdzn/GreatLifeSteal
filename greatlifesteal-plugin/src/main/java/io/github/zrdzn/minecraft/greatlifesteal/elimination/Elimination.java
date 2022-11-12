@@ -11,6 +11,7 @@ public class Elimination {
     private String playerName;
     private String action;
     private EliminationReviveStatus revive;
+    private String lastWorld;
 
     public Elimination() {
     }
@@ -61,6 +62,14 @@ public class Elimination {
 
     public void setRevive(EliminationReviveStatus revive) {
         this.revive = revive;
+    }
+
+    public String getLastWorld() {
+        return this.lastWorld;
+    }
+
+    public void setLastWorld(String lastWorld) {
+        this.lastWorld = lastWorld;
     }
 
 }

@@ -17,11 +17,11 @@ import panda.std.Result;
 
 public class SqliteEliminationRepository implements EliminationRepository {
 
-    private static final String INSERT = "INSERT INTO gls_eliminations (created_at, player_uuid, player_name, action) VALUES (?, ?, ?, ?);";
-    private static final String SELECT_BY_ID = "SELECT created_at, player_uuid, player_name, action, revive FROM gls_eliminations WHERE id = ?;";
-    private static final String SELECT_BY_UUID = "SELECT id, created_at, player_name, action, revive FROM gls_eliminations WHERE player_uuid = ?;";
-    private static final String SELECT_BY_NAME = "SELECT id, created_at, player_uuid, action, revive FROM gls_eliminations WHERE player_name = ?;";
-    private static final String SELECT_ALL = "SELECT id, created_at, player_uuid, player_name, action, revive FROM gls_eliminations;";
+    private static final String INSERT = "INSERT INTO gls_eliminations (created_at, player_uuid, player_name, action, last_world) VALUES (?, ?, ?, ?, ?);";
+    private static final String SELECT_BY_ID = "SELECT created_at, player_uuid, player_name, action, revive, last_world FROM gls_eliminations WHERE id = ?;";
+    private static final String SELECT_BY_UUID = "SELECT id, created_at, player_name, action, revive, last_world FROM gls_eliminations WHERE player_uuid = ?;";
+    private static final String SELECT_BY_NAME = "SELECT id, created_at, player_uuid, action, revive, last_world FROM gls_eliminations WHERE player_name = ?;";
+    private static final String SELECT_ALL = "SELECT id, created_at, player_uuid, player_name, action, revive, last_world FROM gls_eliminations;";
     private static final String UPDATE_REVIVE_BY_ID = "UPDATE gls_eliminations SET revive = ? WHERE id = ?;";
     private static final String UPDATE_REVIVE_BY_UUID = "UPDATE gls_eliminations SET revive = ? WHERE player_uuid = ?;";
     private static final String UPDATE_REVIVE_BY_NAME = "UPDATE gls_eliminations SET revive = ? WHERE player_name = ?;";
@@ -44,6 +44,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
                 statement.setString(2, elimination.getPlayerUuid().toString());
                 statement.setString(3, elimination.getPlayerName());
                 statement.setString(4, elimination.getAction());
+                statement.setString(5, elimination.getLastWorld());
 
                 statement.executeUpdate();
 
@@ -68,6 +69,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
                     elimination.setPlayerName(result.getString("player_name"));
                     elimination.setAction(result.getString("action"));
                     elimination.setRevive(EliminationReviveStatus.valueOf(result.getString("revive")));
+                    elimination.setLastWorld(result.getString("last_world"));
 
                     eliminations.add(elimination);
                 }
@@ -95,6 +97,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
                 elimination.setPlayerName(result.getString("player_name"));
                 elimination.setAction(result.getString("action"));
                 elimination.setRevive(EliminationReviveStatus.valueOf(result.getString("revive")));
+                elimination.setLastWorld(result.getString("last_world"));
 
                 return Optional.of(elimination);
             }
@@ -119,6 +122,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
                 elimination.setPlayerName(result.getString("player_name"));
                 elimination.setAction(result.getString("action"));
                 elimination.setRevive(EliminationReviveStatus.valueOf(result.getString("revive")));
+                elimination.setLastWorld(result.getString("last_world"));
 
                 return Optional.of(elimination);
             }
@@ -143,6 +147,7 @@ public class SqliteEliminationRepository implements EliminationRepository {
                 elimination.setPlayerName(playerName);
                 elimination.setAction(result.getString("action"));
                 elimination.setRevive(EliminationReviveStatus.valueOf(result.getString("revive")));
+                elimination.setLastWorld(result.getString("last_world"));
 
                 return Optional.of(elimination);
             }
