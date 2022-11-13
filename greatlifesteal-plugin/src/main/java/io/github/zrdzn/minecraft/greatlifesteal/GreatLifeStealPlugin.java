@@ -11,7 +11,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DataSourceConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
-import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
 import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
@@ -103,34 +102,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             return;
         }
 
-        HealthCache healthCache = new HealthCache(this.logger);
         if (this.pluginManager.getPlugin("PlaceholderAPI") == null) {
             this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
         } else {
-            /* (PAPI) Until .dat files are parsed correctly depending on the version, we cannot support offline players in placeholders.
-
-            Optional<File> playerDataMaybe = this.server.getWorlds().stream()
-
-                .map(world -> new File(this.server.getWorldContainer() + "/" + world.getName() + "/playerdata"))
-                .filter(File::exists)
-                .filter(File::isDirectory)
-                .findAny();
-
-            if (!playerDataMaybe.isPresent()) {
-                this.logger.error("Could not find the world that stores 'playerdata' directory.");
-                this.pluginManager.disablePlugin(this);
-                return;
-            }
-
-            if (healthCache.loadFromFiles(playerDataMaybe.get())) {
-                if (new GreatLifeStealExpansion(this.config.baseSettings, this.spigotAdapter.getDamageableAdapter(),
-                    this.server, healthCache).register()) {
-                    this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
-                }
-            }
-            */
             if (new GreatLifeStealExpansion(this.config, this.spigotAdapter.getDamageableAdapter(),
-                    this.server, healthCache).register()) {
+                    this.server).register()) {
                 this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
             }
         }
@@ -143,7 +119,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         boolean latestVersion = this.checkLatestVersion();
 
         UserListener userListener = new UserListener(this, this.logger, this.config, this.eliminationService,
-                damageableAdapter, healthCache, this.heartItem, latestVersion);
+                damageableAdapter, this.heartItem, latestVersion);
 
         this.pluginManager.registerEvents(userListener, this);
 

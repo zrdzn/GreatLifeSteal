@@ -4,7 +4,6 @@ import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -20,13 +19,11 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
     private final SettingsManager config;
     private final DamageableAdapter adapter;
     private final Server server;
-    private final HealthCache cache;
 
-    public GreatLifeStealExpansion(SettingsManager config, DamageableAdapter adapter, Server server, HealthCache cache) {
+    public GreatLifeStealExpansion(SettingsManager config, DamageableAdapter adapter, Server server) {
         this.config = config;
         this.adapter = adapter;
         this.server = server;
-        this.cache = cache;
     }
 
     @Override
@@ -62,13 +59,6 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
         Player target = this.server.getPlayer(targetName);
         if (target == null) {
-            /*
-            if (!this.cache.getHealths().containsKey(targetName)) {
-                return null;
-            }
-
-            maxHealth = this.cache.getHealth(targetName);
-            */
             return null;
         } else {
             maxHealth = this.adapter.getMaxHealth(target);

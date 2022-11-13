@@ -14,7 +14,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropCo
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
-import io.github.zrdzn.minecraft.greatlifesteal.health.HealthCache;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
@@ -39,7 +38,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
@@ -56,18 +54,16 @@ public class UserListener implements Listener {
     private final SettingsManager config;
     private final EliminationService eliminationService;
     private final DamageableAdapter adapter;
-    private final HealthCache cache;
     private final HeartItem heartItem;
     private final boolean latestVersion;
 
     public UserListener(JavaPlugin plugin, Logger logger, SettingsManager config, EliminationService eliminationService,
-                        DamageableAdapter adapter, HealthCache cache, HeartItem heartItem, boolean latestVersion) {
+                        DamageableAdapter adapter, HeartItem heartItem, boolean latestVersion) {
         this.plugin = plugin;
         this.logger = logger;
         this.config = config;
         this.eliminationService = eliminationService;
         this.adapter = adapter;
-        this.cache = cache;
         this.heartItem = heartItem;
         this.latestVersion = latestVersion;
     }
@@ -106,8 +102,6 @@ public class UserListener implements Listener {
                         MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
                     });
         }
-
-        // (PAPI) this.cache.removeHealth(player.getName());
     }
 
     @EventHandler
@@ -152,12 +146,6 @@ public class UserListener implements Listener {
                     this.playersWaitingForEliminationRemoval.add(playerUuid);
                 })
                 .onError(error -> this.logger.error("Could not get an elimination.", error));
-    }
-
-    @EventHandler
-    public void removeFromCache(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        // (PAPI) this.cache.addHealth(player.getName(), player.getMaxHealth());
     }
 
     @EventHandler
