@@ -3,6 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.heart;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.util.Map;
@@ -138,7 +139,7 @@ public class HeartListener implements Listener {
         Player player = event.getPlayer();
 
         double playerNewHealth = this.adapter.getMaxHealth(player) + this.heartItem.healthAmount;
-        if (playerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
+        if (playerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH) && playerNewHealth <= this.config.getProperty(HeartConfig.MAXIMUM_HEALTH_LIMIT)) {
             this.adapter.setMaxHealth(player, playerNewHealth);
             player.getInventory().removeItem(heartItemStack);
         } else {
