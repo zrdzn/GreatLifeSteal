@@ -24,6 +24,9 @@ public class HeartConfig implements SettingsHolder {
     @Comment("Amount of health points that should be given to a player on item consume.")
     public static final Property<Double> HEALTH_AMOUNT = new DoubleProperty("baseSettings.heartItem.healthAmount", 2.0D);
 
+    @Comment("Upper maximum health limit for healing with the heart item.")
+    public static final Property<Double> MAXIMUM_HEALTH_LIMIT = new DoubleProperty("baseSettings.heartItem.maximumHealthLimit", 20.0D);
+
     @Comment("Type of the item that the heart item should be.")
     public static final Property<Material> TYPE = new EnumProperty<>(
             Material.class, "baseSettings.heartItem.type",
