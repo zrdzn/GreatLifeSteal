@@ -10,4 +10,6 @@ public interface SpigotAdapter {
 
     RecipeManagerAdapter getRecipeManagerAdapter();
 
+    PlayerInventoryAdapter getPlayerInventoryAdapter();
+
 }
