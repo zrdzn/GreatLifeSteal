@@ -229,6 +229,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             case "v1_17_R1":
             case "v1_18_R2":
             case "v1_19_R1":
+            case "v1_19_R2":
                 return new V1_15R1SpigotAdapter(this);
             default:
                 throw new RuntimeException(
