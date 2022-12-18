@@ -5,8 +5,8 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.util.Map;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,10 +20,10 @@ import org.bukkit.inventory.ItemStack;
 public class HeartListener implements Listener {
 
     private final SettingsManager config;
-    private final DamageableAdapter adapter;
+    private final SpigotAdapter adapter;
     private final HeartItem heartItem;
 
-    public HeartListener(SettingsManager config, DamageableAdapter adapter, HeartItem heartItem) {
+    public HeartListener(SettingsManager config, SpigotAdapter adapter, HeartItem heartItem) {
         this.config = config;
         this.adapter = adapter;
         this.heartItem = heartItem;
@@ -138,10 +138,10 @@ public class HeartListener implements Listener {
 
         Player player = event.getPlayer();
 
-        double playerNewHealth = this.adapter.getMaxHealth(player) + this.heartItem.healthAmount;
+        double playerNewHealth = this.adapter.getDamageableAdapter().getMaxHealth(player) + this.heartItem.healthAmount;
         if (playerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH) && playerNewHealth <= this.config.getProperty(HeartConfig.MAXIMUM_HEALTH_LIMIT)) {
-            this.adapter.setMaxHealth(player, playerNewHealth);
-            player.getInventory().removeItem(heartItemStack);
+            this.adapter.getDamageableAdapter().setMaxHealth(player, playerNewHealth);
+            this.adapter.getPlayerInventoryAdapter().removeItem(player.getInventory(), heartItemStack);
         } else {
             MessageService.send(player, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
         }

@@ -22,4 +22,9 @@ public class V1_10R1SpigotAdapter implements SpigotAdapter {
         return new V1_10R1RecipeManagerAdapter();
     }
 
+    @Override
+    public PlayerInventoryAdapter getPlayerInventoryAdapter() {
+        return new V1_9R2PlayerInventoryAdapter();
+    }
+
 }

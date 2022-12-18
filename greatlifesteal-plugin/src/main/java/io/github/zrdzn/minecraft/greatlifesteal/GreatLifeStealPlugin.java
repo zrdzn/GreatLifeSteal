@@ -113,7 +113,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         DamageableAdapter damageableAdapter = this.spigotAdapter.getDamageableAdapter();
 
-        HeartListener heartListener = new HeartListener(this.config, damageableAdapter, this.heartItem);
+        HeartListener heartListener = new HeartListener(this.config, this.spigotAdapter, this.heartItem);
         this.pluginManager.registerEvents(heartListener, this);
 
         boolean latestVersion = this.checkLatestVersion();
