@@ -12,8 +12,7 @@ public class V1_15R1RecipeManagerAdapter implements RecipeManagerAdapter {
         boolean removed = false;
         for (Recipe foundRecipe : Bukkit.getRecipesFor(recipe.getResult())) {
             if (foundRecipe instanceof Keyed) {
-                Bukkit.removeRecipe(((Keyed) recipe).getKey());
-                removed = true;
+                removed = Bukkit.removeRecipe(((Keyed) recipe).getKey());
             }
         }
         return removed;
