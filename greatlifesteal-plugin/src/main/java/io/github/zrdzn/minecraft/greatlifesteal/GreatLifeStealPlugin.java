@@ -31,14 +31,9 @@ import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.MysqlStorage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.SqliteStorage;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.repositories.SqliteEliminationRepository;
+import io.github.zrdzn.minecraft.greatlifesteal.update.UpdateNotifier;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,9 +50,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +111,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         HeartListener heartListener = new HeartListener(this.config, this.spigotAdapter, this.heartItem);
         this.pluginManager.registerEvents(heartListener, this);
 
-        boolean latestVersion = this.checkLatestVersion();
+        UpdateNotifier updateNotifier = new UpdateNotifier(this.logger);
+        boolean latestVersion = updateNotifier.checkIfLatest(this.getDescription().getVersion());
 
         UserListener userListener = new UserListener(this, this.logger, this.config, this.eliminationService,
                 damageableAdapter, this.heartItem, latestVersion);
@@ -258,65 +251,6 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                         "Could not find an adapter for the version: " + version + "\n" +
                         "Check supported versions on the resource page."
                 );
-        }
-    }
-
-    /**
-     * Checks if the plugin is using the latest version.
-     *
-     * @return true if plugin is using the latest version or an error occurred, false if it uses an older version
-     */
-    private boolean checkLatestVersion() {
-        URL url;
-        try {
-            url = new URL("https://api.spigotmc.org/simple/0.1/index.php?action=getResource&id=102206");
-        } catch (MalformedURLException exception) {
-            this.logger.warn("Update notifier: Could not get the resource from spigotmc.");
-            return true;
-        }
-
-        HttpURLConnection http;
-        try {
-            http = (HttpURLConnection) url.openConnection();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(http.getInputStream()));
-            StringBuilder response = new StringBuilder();
-
-            String readLine;
-            while ((readLine = reader.readLine()) != null) {
-                response.append(readLine);
-            }
-            reader.close();
-
-            JSONParser parser = new JSONParser();
-
-            String latestVersion;
-            try {
-                JSONObject json = (JSONObject) parser.parse(response.toString());
-                latestVersion = (String) json.get("current_version");
-            } catch (ParseException exception) {
-                this.logger.warn("Update notifier: Could not parse the json string.");
-                return true;
-            }
-
-            if (latestVersion == null) {
-                this.logger.warn("Update notifier: Something went wrong while getting a version.");
-                return true;
-            }
-
-            if (!latestVersion.equals(this.getDescription().getVersion())) {
-                this.logger.warn("You are using an outdated version of the plugin!");
-                this.logger.warn("You can download the latest one here:");
-                this.logger.warn("https://www.spigotmc.org/resources/greatlifesteal.102206/");
-
-                http.disconnect();
-
-                return false;
-            }
-
-            return true;
-        } catch (IOException exception) {
-            this.logger.warn("Update notifier: Could not read from the json body.");
-            return true;
         }
     }
 
