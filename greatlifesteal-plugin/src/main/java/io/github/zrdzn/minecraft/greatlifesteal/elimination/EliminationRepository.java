@@ -14,14 +14,14 @@ public interface EliminationRepository {
      * @param elimination the elimination dto
      * @return the newly created record with an optional exception
      */
-    Result<Elimination, Exception> save(Elimination elimination);
+    Result<Elimination, Exception> saveElimination(Elimination elimination);
 
     /**
      * Lists all existing records from the database.
      *
      * @return all existing records with an optional exception
      */
-    Result<List<Elimination>, Exception> listAll();
+    Result<List<Elimination>, Exception> listAllEliminations();
 
     /**
      * Finds a record with the specified id.
@@ -29,7 +29,7 @@ public interface EliminationRepository {
      * @param id the id of a record
      * @return an optional elimination with an optional exception
      */
-    Result<Optional<Elimination>, Exception> findById(int id);
+    Result<Optional<Elimination>, Exception> findEliminationById(int id);
 
     /**
      * Finds a record with the specified player's uuid.
@@ -37,7 +37,7 @@ public interface EliminationRepository {
      * @param playerUuid the uuid of a player
      * @return an optional elimination with an optional exception
      */
-    Result<Optional<Elimination>, Exception> findByPlayerUuid(UUID playerUuid);
+    Result<Optional<Elimination>, Exception> findEliminationByPlayerUuid(UUID playerUuid);
 
     /**
      * Finds a record with the specified player's name.
@@ -45,7 +45,7 @@ public interface EliminationRepository {
      * @param playerName the name of a player
      * @return an optional elimination with an optional exception
      */
-    Result<Optional<Elimination>, Exception> findByPlayerName(String playerName);
+    Result<Optional<Elimination>, Exception> findEliminationByPlayerName(String playerName);
 
     /**
      * Updates a record with the specified id.
@@ -77,7 +77,7 @@ public interface EliminationRepository {
      * @param id the id of a record
      * @return an optional exception
      */
-    Result<Blank, Exception> deleteById(int id);
+    Result<Blank, Exception> deleteEliminationById(int id);
 
     /**
      * Deletes a record with the specified player's uuid.
@@ -85,7 +85,7 @@ public interface EliminationRepository {
      * @param playerUuid the uuid of a player
      * @return an optional exception
      */
-    Result<Blank, Exception> deleteByPlayerUuid(UUID playerUuid);
+    Result<Blank, Exception> deleteEliminationByPlayerUuid(UUID playerUuid);
 
     /**
      * Deletes a record with the specified player's name.
@@ -93,6 +93,6 @@ public interface EliminationRepository {
      * @param playerName the name of a player
      * @return an optional exception
      */
-    Result<Blank, Exception> deleteByPlayerName(String playerName);
+    Result<Blank, Exception> deleteEliminationByPlayerName(String playerName);
 
 }

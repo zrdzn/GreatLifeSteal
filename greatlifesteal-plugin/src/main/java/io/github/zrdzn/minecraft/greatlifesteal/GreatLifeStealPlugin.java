@@ -10,7 +10,9 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DataSourceConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.repositories.MysqlEliminationRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
 import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
@@ -26,8 +28,9 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8R3SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9R2SpigotAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.sqlite.SqliteStorage;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.sqlite.repository.SqliteEliminationRepository;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.MysqlStorage;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.SqliteStorage;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.repositories.SqliteEliminationRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
 import java.io.BufferedReader;
 import java.io.File;
@@ -129,6 +132,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(this.config));
     }
 
+    @Override
+    public void onDisable() {
+        this.storage.stop();
+    }
+
     public boolean loadConfigurations() {
         this.saveDefaultConfig();
         this.reloadConfig();
@@ -185,6 +193,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
     }
 
     public void loadDataSource() {
+        EliminationRepository eliminationRepository = null;
+
         StorageType type = this.config.getProperty(DataSourceConfig.TYPE);
         if (type == StorageType.SQLITE) {
             try {
@@ -195,16 +205,28 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 return;
             }
 
-            this.storage = new SqliteStorage(this.config, this.getDataFolder());
-            this.storage.init().onError(exception -> this.logger.error("Could not initialize the data source.", exception));
+            this.storage = new SqliteStorage(this.getDataFolder()).load(this.config)
+                    .peek(ignored -> this.logger.info("Choosing SQLite as a storage provider."))
+                    .onError(error -> {
+                        this.logger.error("Something went wrong while loading the SQLite storage. Check if your credentials are correct and then restart the server.", error);
+                        this.pluginManager.disablePlugin(this);
+                    })
+                    .get();
 
-            this.eliminationService = new EliminationService(new SqliteEliminationRepository((SqliteStorage) this.storage));
+            eliminationRepository = new SqliteEliminationRepository((SqliteStorage) this.storage);
+        } else if (type == StorageType.MYSQL) {
+            this.storage = new MysqlStorage(this.logger).load(this.config)
+                    .peek(ignored -> this.logger.info("Choosing MySQL as a storage provider."))
+                    .onError(error -> {
+                        this.logger.error("Something went wrong while loading the MySQL storage. Check if your credentials are correct and then restart the server.", error);
+                        this.pluginManager.disablePlugin(this);
+                    })
+                    .get();
+
+            eliminationRepository = new MysqlEliminationRepository((MysqlStorage) this.storage);
         }
 
-        if (this.storage == null) {
-            this.logger.error("Data source cannot be null.");
-            this.pluginManager.disablePlugin(this);
-        }
+        this.eliminationService = new EliminationService(eliminationRepository);
     }
 
     private SpigotAdapter prepareSpigotAdapter() {

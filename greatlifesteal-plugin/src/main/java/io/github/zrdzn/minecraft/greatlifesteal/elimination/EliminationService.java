@@ -16,23 +16,23 @@ public class EliminationService {
     }
 
     public CompletableFuture<Result<Elimination, Exception>> createElimination(Elimination elimination) {
-        return CompletableFuture.supplyAsync(() -> this.repository.save(elimination));
+        return CompletableFuture.supplyAsync(() -> this.repository.saveElimination(elimination));
     }
 
     public CompletableFuture<Result<List<Elimination>, Exception>> getAllEliminations() {
-        return CompletableFuture.supplyAsync(this.repository::listAll);
+        return CompletableFuture.supplyAsync(this.repository::listAllEliminations);
     }
 
     public CompletableFuture<Result<Optional<Elimination>, Exception>> getElimination(int id) {
-        return CompletableFuture.supplyAsync(() -> this.repository.findById(id));
+        return CompletableFuture.supplyAsync(() -> this.repository.findEliminationById(id));
     }
 
     public CompletableFuture<Result<Optional<Elimination>, Exception>> getElimination(UUID playerUuid) {
-        return CompletableFuture.supplyAsync(() -> this.repository.findByPlayerUuid(playerUuid));
+        return CompletableFuture.supplyAsync(() -> this.repository.findEliminationByPlayerUuid(playerUuid));
     }
 
     public CompletableFuture<Result<Optional<Elimination>, Exception>> getElimination(String playerName) {
-        return CompletableFuture.supplyAsync(() -> this.repository.findByPlayerName(playerName));
+        return CompletableFuture.supplyAsync(() -> this.repository.findEliminationByPlayerName(playerName));
     }
 
     public CompletableFuture<Result<Boolean, Exception>> changeReviveStatus(int id, EliminationReviveStatus status) {
@@ -48,15 +48,15 @@ public class EliminationService {
     }
 
     public CompletableFuture<Result<Blank, Exception>> removeElimination(int id) {
-        return CompletableFuture.supplyAsync(() -> this.repository.deleteById(id));
+        return CompletableFuture.supplyAsync(() -> this.repository.deleteEliminationById(id));
     }
 
     public CompletableFuture<Result<Blank, Exception>> removeElimination(UUID playerUuid) {
-        return CompletableFuture.supplyAsync(() -> this.repository.deleteByPlayerUuid(playerUuid));
+        return CompletableFuture.supplyAsync(() -> this.repository.deleteEliminationByPlayerUuid(playerUuid));
     }
 
     public CompletableFuture<Result<Blank, Exception>> removeElimination(String playerName) {
-        return CompletableFuture.supplyAsync(() -> this.repository.deleteByPlayerName(playerName));
+        return CompletableFuture.supplyAsync(() -> this.repository.deleteEliminationByPlayerName(playerName));
     }
 
 }

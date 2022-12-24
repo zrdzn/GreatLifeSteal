@@ -1,18 +1,18 @@
 package io.github.zrdzn.minecraft.greatlifesteal.storage;
 
-import panda.std.Blank;
+import ch.jalu.configme.SettingsManager;
 import panda.std.Result;
 
 public interface Storage {
 
+
     /**
-     * An entry point for the data source.
+     * An entry point for a data source.
      * It executes in the first place, so it can have some
      * configurations, parsers, default schemas creations etc.
      *
-     * @return the blank result or an exception if an error occurred
      */
-    Result<Blank, Exception> init();
+    Result<? extends Storage, StorageLoadException> load(SettingsManager config);
 
     /**
      * Gets a type for a storage.
@@ -20,5 +20,10 @@ public interface Storage {
      * @return the type for the storage
      */
     StorageType getType();
+
+    /**
+     * Used to stop the data source or a connection behind it.
+     */
+    void stop();
 
 }
