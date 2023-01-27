@@ -36,6 +36,11 @@ subprojects {
         }
 
         maven {
+            name "reposilite-repository"
+            url "https://maven.reposilite.com/maven-central"
+        }
+
+        maven {
             name "panda-repository"
             url "https://repo.panda-lang.org/releases"
         }
