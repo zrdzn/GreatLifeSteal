@@ -15,7 +15,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
  */
 public class DataSourceConfig implements SettingsHolder {
 
-    @Comment("A type of the data source that should be used. Available: SQLITE")
+    @Comment("A type of the data source that should be used. Available: SQLITE, MYSQL")
     public static final Property<StorageType> TYPE = new EnumProperty<>(
             StorageType.class, "dataSource.type",
             StorageType.SQLITE
