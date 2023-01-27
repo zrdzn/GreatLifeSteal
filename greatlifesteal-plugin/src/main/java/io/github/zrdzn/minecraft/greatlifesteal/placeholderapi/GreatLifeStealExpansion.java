@@ -59,7 +59,8 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
         Player target = this.server.getPlayer(targetName);
         if (target == null) {
-            return null;
+            if (!player.isOnline()) return null;
+            maxHealth = this.adapter.getMaxHealth(player.getPlayer());
         } else {
             maxHealth = this.adapter.getMaxHealth(target);
         }
