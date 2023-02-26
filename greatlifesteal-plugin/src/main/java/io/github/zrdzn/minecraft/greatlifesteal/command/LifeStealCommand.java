@@ -8,9 +8,11 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
@@ -19,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -312,7 +314,7 @@ public class LifeStealCommand implements CommandExecutor {
                 List<ItemStack> heartsLeft = new ArrayList<>();
                 for (int heartCount = 0; heartCount < amount; heartCount++) {
                     Map<Integer, ItemStack> heartsNotFitted = inventory.addItem(this.heart.result);
-                    if (!heartsNotFitted.isEmpty() && !this.config.getProperty(HeartConfig.DROP_ON_GROUND)) {
+                    if (!heartsNotFitted.isEmpty() && this.config.getProperty(HeartDropConfig.FULL_INVENTORY_LOCATION) == HeartDropLocation.NONE) {
                         inventory.remove(this.heart.result);
                         MessageService.send(sender, this.config.getProperty(MessagesConfig.NOT_ENOUGH_PLACE_INVENTORY));
                         return true;
@@ -323,7 +325,17 @@ public class LifeStealCommand implements CommandExecutor {
 
                 this.adapter.setMaxHealth(target, targetNewHealth);
 
-                heartsLeft.forEach(item -> target.getWorld().dropItemNaturally(target.getEyeLocation(), item));
+                HeartDropLocation dropLocation = this.config.getProperty(HeartDropConfig.FULL_INVENTORY_LOCATION);
+
+                World world = target.getWorld();
+
+                heartsLeft.forEach(item -> {
+                    if (dropLocation == HeartDropLocation.GROUND_LEVEL)  {
+                        world.dropItemNaturally(target.getLocation(), item);
+                    } else if (dropLocation == HeartDropLocation.EYE_LEVEL) {
+                        world.dropItemNaturally(target.getEyeLocation(), item);
+                    }
+                });
 
                 String[] placeholders = { "{PLAYER}", target.getName(), "{HEARTS}", String.valueOf(amount) };
                 MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_WITHDRAW), placeholders);
