@@ -5,18 +5,22 @@ import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.PlayerInventoryAdapter;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 public class HeartService {
 
     private final SettingsManager config;
     private final HeartItem heartItem;
+    private final PlayerInventoryAdapter playerInventoryAdapter;
 
-    public HeartService(SettingsManager config, HeartItem heartItem) {
+    public HeartService(SettingsManager config, HeartItem heartItem, PlayerInventoryAdapter playerInventoryAdapter) {
         this.config = config;
         this.heartItem = heartItem;
+        this.playerInventoryAdapter = playerInventoryAdapter;
     }
 
     public void giveHeartToPlayer(Player player) {
@@ -25,7 +29,9 @@ public class HeartService {
             return;
         }
 
-        Map<Integer, ItemStack> remainingItems = player.getInventory().addItem(this.heartItem.result);
+        PlayerInventory inventory = player.getInventory();
+
+        Map<Integer, ItemStack> remainingItems = inventory.addItem(this.heartItem.result);
         if (remainingItems.isEmpty()) {
             return;
         }
@@ -35,6 +41,7 @@ public class HeartService {
             return;
         }
 
+        this.playerInventoryAdapter.removeItem(inventory, this.heartItem.result);
         MessageService.send(player, this.config.getProperty(MessagesConfig.NOT_ENOUGH_PLACE_INVENTORY));
     }
 
