@@ -9,12 +9,12 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DisabledWorldsCon
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartService;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.time.Duration;
@@ -38,7 +38,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
 import panda.std.Result;
@@ -54,16 +53,18 @@ public class UserListener implements Listener {
     private final SettingsManager config;
     private final EliminationService eliminationService;
     private final DamageableAdapter adapter;
+    private final HeartService heartService;
     private final HeartItem heartItem;
     private final boolean latestVersion;
 
     public UserListener(JavaPlugin plugin, Logger logger, SettingsManager config, EliminationService eliminationService,
-                        DamageableAdapter adapter, HeartItem heartItem, boolean latestVersion) {
+                        DamageableAdapter adapter, HeartService heartService, HeartItem heartItem, boolean latestVersion) {
         this.plugin = plugin;
         this.logger = logger;
         this.config = config;
         this.eliminationService = eliminationService;
         this.adapter = adapter;
+        this.heartService = heartService;
         this.heartItem = heartItem;
         this.latestVersion = latestVersion;
     }
@@ -214,7 +215,6 @@ public class UserListener implements Listener {
             double killerMaxHealth = this.adapter.getMaxHealth(killer);
             formattedKillerMaxHealth = String.valueOf((int) killerMaxHealth);
 
-            Inventory killerInventory = killer.getInventory();
             HeartItem heartItem = this.heartItem;
 
             if (victimNewHealth >= minimumHealth) {
@@ -222,11 +222,7 @@ public class UserListener implements Listener {
                 if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                     // Increase the killer's maximum health or give him the heart item.
                     if (this.config.getProperty(HeartDropConfig.ON_EVERY_KILL) && heartItem != null) {
-                        if (this.config.getProperty(HeartConfig.DROP_ON_GROUND)) {
-                            killer.getWorld().dropItemNaturally(killer.getEyeLocation(), heartItem.result);
-                        } else {
-                            killerInventory.addItem(heartItem.result);
-                        }
+                        this.heartService.giveHeartToPlayer(killer);
                     } else {
                         this.adapter.setMaxHealth(killer, killerNewHealth);
                     }
@@ -235,11 +231,7 @@ public class UserListener implements Listener {
 
                     // Give the heart item to the killer if it is enabled.
                     if (heartItem != null && this.config.getProperty(HeartDropConfig.ON_LIMIT_EXCEED)) {
-                        if (this.config.getProperty(HeartConfig.DROP_ON_GROUND)) {
-                            killer.getWorld().dropItemNaturally(killer.getEyeLocation(), heartItem.result);
-                        } else {
-                            killerInventory.addItem(heartItem.result);
-                        }
+                        this.heartService.giveHeartToPlayer(killer);
                     }
                 }
             }

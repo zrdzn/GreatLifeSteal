@@ -15,6 +15,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.repositories.MysqlEliminationRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartService;
 import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
@@ -114,8 +115,10 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         UpdateNotifier updateNotifier = new UpdateNotifier(this.logger);
         boolean latestVersion = updateNotifier.checkIfLatest(this.getDescription().getVersion());
 
+        HeartService heartService = new HeartService(this.config, this.heartItem, this.spigotAdapter.getPlayerInventoryAdapter());
+
         UserListener userListener = new UserListener(this, this.logger, this.config, this.eliminationService,
-                damageableAdapter, this.heartItem, latestVersion);
+                damageableAdapter, heartService, this.heartItem, latestVersion);
 
         this.pluginManager.registerEvents(userListener, this);
 
