@@ -20,8 +20,6 @@ public class HeartService {
     }
 
     public void giveHeartToPlayer(Player player) {
-        World world = player.getWorld();
-
         HeartDropLocation location = this.config.getProperty(HeartDropConfig.LOCATION);
         if (this.dropHeart(player, location)) {
             return;
