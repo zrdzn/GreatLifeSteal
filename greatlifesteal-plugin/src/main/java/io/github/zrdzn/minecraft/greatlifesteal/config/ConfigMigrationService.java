@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
 import org.bukkit.Material;
 
 public class ConfigMigrationService extends PlainMigrationService {
@@ -34,8 +35,9 @@ public class ConfigMigrationService extends PlainMigrationService {
         return migrateCraftingRecipeToCrafting(reader, configData) |
                 migrateEliminationModeToCustomActions(reader, configData) |
                 migrateHealthChangeToHealthChangeSection(reader, configData) |
-                removeTakeGiveHeartsFromPlayers(reader, configData) ||
-                migrateRewardHeartToHeartDropSection(reader, configData) ||
+                removeTakeGiveHeartsFromPlayers(reader, configData) |
+                migrateRewardHeartToHeartDropSection(reader, configData) |
+                migrateDropOnGroundToDropLocation(reader, configData) ||
                 hasDeprecatedKeys(reader);
     }
 
@@ -206,6 +208,22 @@ public class ConfigMigrationService extends PlainMigrationService {
         return MIGRATION_REQUIRED;
     }
 
+    private static boolean migrateDropOnGroundToDropLocation(PropertyReader reader, ConfigurationData configData) {
+        String dropOnGroundKey = "baseSettings.heartItem.dropOnGround";
+        PropertyValue<Boolean> dropOnGroundProperty = new BooleanProperty(dropOnGroundKey, true).determineValue(reader);
+        if (!dropOnGroundProperty.isValidInResource()) {
+            return NO_MIGRATION_NEEDED;
+        }
+
+        if (dropOnGroundProperty.getValue()) {
+            configData.setValue(HeartDropConfig.LOCATION, HeartDropLocation.GROUND_LEVEL);
+        } else {
+            configData.setValue(HeartDropConfig.LOCATION, HeartDropLocation.INVENTORY);
+        }
+
+        return MIGRATION_REQUIRED;
+    }
+
     private static boolean hasDeprecatedKeys(PropertyReader reader) {
         List<String> deprecatedKeys = new ArrayList<String>() {
             {
@@ -215,6 +233,7 @@ public class ConfigMigrationService extends PlainMigrationService {
                 this.add("baseSettings.healthChange");
                 this.add("baseSettings.takeHealthFromVictim");
                 this.add("baseSettings.giveHealthToKiller");
+                this.add("baseSettings.heartItem.dropOnGround");
             }
         };
 
