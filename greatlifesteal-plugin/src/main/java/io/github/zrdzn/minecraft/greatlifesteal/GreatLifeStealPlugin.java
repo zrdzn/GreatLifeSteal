@@ -115,7 +115,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         UpdateNotifier updateNotifier = new UpdateNotifier(this.logger);
         boolean latestVersion = updateNotifier.checkIfLatest(this.getDescription().getVersion());
 
-        HeartService heartService = new HeartService(this.config, this.heartItem);
+        HeartService heartService = new HeartService(this.config, this.heartItem, this.spigotAdapter.getPlayerInventoryAdapter());
 
         UserListener userListener = new UserListener(this, this.logger, this.config, this.eliminationService,
                 damageableAdapter, heartService, this.heartItem, latestVersion);
