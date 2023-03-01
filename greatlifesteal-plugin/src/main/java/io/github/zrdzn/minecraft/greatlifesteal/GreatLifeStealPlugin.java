@@ -46,6 +46,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -147,6 +149,10 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             ItemMeta heartItemMeta = heartItemStack.getItemMeta();
             heartItemMeta.setDisplayName(formatColor(this.config.getProperty(HeartMetaConfig.DISPLAY_NAME)));
             heartItemMeta.setLore(formatColor(this.config.getProperty(HeartMetaConfig.LORE)));
+            if (this.config.getProperty(HeartMetaConfig.GLOWING)) {
+                heartItemMeta.addEnchant(Enchantment.LURE, 1, false);
+                heartItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            }
             heartItemStack.setItemMeta(heartItemMeta);
 
             ShapedRecipe recipe = this.spigotAdapter.getShapedRecipeAdapter().createShapedRecipe(heartItemStack);
