@@ -10,12 +10,17 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DataSourceConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRemovalCache;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.listeners.EliminationJoinPreventListener;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.listeners.EliminationRestoreHealthListener;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.repositories.MysqlEliminationRepository;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.listeners.HeartCraftListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartListener;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.listeners.HeartCraftPrepareListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartService;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.listeners.HeartUseListener;
 import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
@@ -32,6 +37,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.MysqlStorage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.SqliteStorage;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.repositories.SqliteEliminationRepository;
+import io.github.zrdzn.minecraft.greatlifesteal.update.UpdateListener;
 import io.github.zrdzn.minecraft.greatlifesteal.update.UpdateNotifier;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
 import java.io.File;
@@ -111,18 +117,34 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         DamageableAdapter damageableAdapter = this.spigotAdapter.getDamageableAdapter();
 
-        HeartListener heartListener = new HeartListener(this.config, this.spigotAdapter, this.heartItem);
-        this.pluginManager.registerEvents(heartListener, this);
+        HeartCraftPrepareListener heartCraftPrepareListener = new HeartCraftPrepareListener(this.heartItem);
+        HeartCraftListener heartCraftListener = new HeartCraftListener(this.heartItem);
+        HeartUseListener heartUseListener = new HeartUseListener(this.config, this.spigotAdapter, this.heartItem);
 
         UpdateNotifier updateNotifier = new UpdateNotifier(this.logger);
         boolean latestVersion = updateNotifier.checkIfLatest(this.getDescription().getVersion());
+        UpdateListener updateListener = new UpdateListener(this.config, latestVersion);
 
         HeartService heartService = new HeartService(this.config, this.heartItem, this.spigotAdapter.getPlayerInventoryAdapter());
 
         UserListener userListener = new UserListener(this, this.logger, this.config, this.eliminationService,
-                damageableAdapter, heartService, this.heartItem, latestVersion);
+                damageableAdapter, heartService, this.heartItem);
 
+        EliminationRemovalCache eliminationRemovalCache = new EliminationRemovalCache();
+
+        EliminationJoinPreventListener eliminationJoinPreventListener = new EliminationJoinPreventListener(this.logger,
+                this.config, this.eliminationService, eliminationRemovalCache);
+
+        EliminationRestoreHealthListener eliminationRestoreHealthListener = new EliminationRestoreHealthListener(this.logger,
+                this.config, this.eliminationService, this.spigotAdapter.getDamageableAdapter(), eliminationRemovalCache);
+
+        this.pluginManager.registerEvents(updateListener, this);
         this.pluginManager.registerEvents(userListener, this);
+        this.pluginManager.registerEvents(eliminationJoinPreventListener, this);
+        this.pluginManager.registerEvents(eliminationRestoreHealthListener, this);
+        this.pluginManager.registerEvents(heartCraftPrepareListener, this);
+        this.pluginManager.registerEvents(heartCraftListener, this);
+        this.pluginManager.registerEvents(heartUseListener, this);
 
         PluginCommand lifeStealCommand = this.getCommand("lifesteal");
         lifeStealCommand.setExecutor(new LifeStealCommand(this, this.logger, this.config, this.eliminationService,

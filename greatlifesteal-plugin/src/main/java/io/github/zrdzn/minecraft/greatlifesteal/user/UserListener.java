@@ -2,8 +2,6 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DisabledWorldsConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
@@ -20,13 +18,10 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -36,15 +31,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
-import panda.std.Result;
 
 public class UserListener implements Listener {
-
-    private final List<UUID> playersWaitingForEliminationRemoval = new ArrayList<>();
 
     private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
@@ -55,10 +46,9 @@ public class UserListener implements Listener {
     private final DamageableAdapter adapter;
     private final HeartService heartService;
     private final HeartItem heartItem;
-    private final boolean latestVersion;
 
     public UserListener(JavaPlugin plugin, Logger logger, SettingsManager config, EliminationService eliminationService,
-                        DamageableAdapter adapter, HeartService heartService, HeartItem heartItem, boolean latestVersion) {
+                        DamageableAdapter adapter, HeartService heartService, HeartItem heartItem) {
         this.plugin = plugin;
         this.logger = logger;
         this.config = config;
@@ -66,19 +56,6 @@ public class UserListener implements Listener {
         this.adapter = adapter;
         this.heartService = heartService;
         this.heartItem = heartItem;
-        this.latestVersion = latestVersion;
-    }
-
-    @EventHandler
-    public void notifyPermittedPlayer(PlayerJoinEvent event) {
-        if (this.latestVersion) {
-            return;
-        }
-
-        Player player = event.getPlayer();
-        if (player.hasPermission("greatlifesteal.notify.update")) {
-            MessageService.send(player, this.config.getProperty(MessagesConfig.PLUGIN_OUTDATED));
-        }
     }
 
     @EventHandler
@@ -86,67 +63,7 @@ public class UserListener implements Listener {
         Player player = event.getPlayer();
         if (!player.hasPlayedBefore()) {
             this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
-            return;
         }
-
-        UUID playerUuid = player.getUniqueId();
-
-        if (this.playersWaitingForEliminationRemoval.contains(playerUuid)) {
-            this.eliminationService.removeElimination(playerUuid).join()
-                    .peek(ignored -> {
-                        MessageService.send(player, this.config.getProperty(MessagesConfig.SUCCESS_DEFAULT_HEALTH_SET));
-                        this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
-                        this.playersWaitingForEliminationRemoval.remove(playerUuid);
-                    })
-                    .onError(error -> {
-                        this.logger.error("Could not remove an elimination.", error);
-                        MessageService.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
-                    });
-        }
-    }
-
-    @EventHandler
-    public void preventFromJoining(AsyncPlayerPreLoginEvent event) {
-        UUID playerUuid = event.getUniqueId();
-
-        Result<Optional<Elimination>, Exception> foundElimination = this.eliminationService.getElimination(playerUuid).join();
-
-        List<String> disabledWorlds = this.config.getProperty(DisabledWorldsConfig.ELIMINATIONS);
-
-        foundElimination
-                .peek(eliminationMaybe -> {
-                    if (!eliminationMaybe.isPresent()) {
-                        return;
-                    }
-
-                    Elimination elimination = eliminationMaybe.get();
-
-                    ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(elimination.getAction());
-                    if (action == null || !action.isEnabled()) {
-                        return;
-                    }
-
-                    if (disabledWorlds.contains(elimination.getLastWorld())) {
-                        return;
-                    }
-
-                    if (action.getType() == ActionType.BROADCAST) {
-                        return;
-                    }
-
-                    // Kick player if he is not revived.
-                    if (elimination.getRevive() != EliminationReviveStatus.COMPLETED) {
-                        if (action.getType() == ActionType.BAN) {
-                            String reason = ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters()));
-                            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, reason);
-                        }
-
-                        return;
-                    }
-
-                    this.playersWaitingForEliminationRemoval.add(playerUuid);
-                })
-                .onError(error -> this.logger.error("Could not get an elimination.", error));
     }
 
     @EventHandler
