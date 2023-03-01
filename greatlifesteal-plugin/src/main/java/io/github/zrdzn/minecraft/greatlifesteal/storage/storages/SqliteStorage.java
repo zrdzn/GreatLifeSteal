@@ -2,7 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.storage.storages;
 
 import ch.jalu.configme.SettingsManager;
 import com.google.common.io.Files;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DataSourceConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageLoadException;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
@@ -26,7 +26,7 @@ public class SqliteStorage implements Storage {
     @Override
     public Result<? extends Storage, StorageLoadException> load(SettingsManager config) {
         return Result.supplyThrowing(() -> {
-            File sqliteFile = new File(this.dataFolder, config.getProperty(DataSourceConfig.SQLITE_FILE));
+            File sqliteFile = new File(this.dataFolder, config.getProperty(StorageConfig.SQLITE_FILE));
             if (!sqliteFile.exists()) {
                 Files.createParentDirs(sqliteFile);
 

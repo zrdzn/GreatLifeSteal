@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.config.configs;
+package io.github.zrdzn.minecraft.greatlifesteal.storage;
 
 import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
@@ -8,12 +8,11 @@ import ch.jalu.configme.properties.EnumProperty;
 import ch.jalu.configme.properties.IntegerProperty;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringProperty;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
 
 /**
  * Represents 'dataSource' section.
  */
-public class DataSourceConfig implements SettingsHolder {
+public class StorageConfig implements SettingsHolder {
 
     @Comment("A type of the data source that should be used. Available: SQLITE, MYSQL")
     public static final Property<StorageType> TYPE = new EnumProperty<>(
@@ -76,7 +75,7 @@ public class DataSourceConfig implements SettingsHolder {
     );
 
 
-    private DataSourceConfig() {
+    private StorageConfig() {
     }
 
     @Override

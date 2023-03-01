@@ -7,7 +7,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DisabledWorldsCon
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;

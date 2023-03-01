@@ -3,7 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.heart.listeners;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;

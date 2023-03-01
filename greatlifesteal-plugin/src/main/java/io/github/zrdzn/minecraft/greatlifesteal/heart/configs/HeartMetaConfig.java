@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart;
+package io.github.zrdzn.minecraft.greatlifesteal.heart.configs;
 
 import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;

@@ -7,9 +7,9 @@ import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigDataBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigMigrationService;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DataSourceConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartMetaConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartMetaConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRemovalCache;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
@@ -219,7 +219,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
     public void loadDataSource() {
         EliminationRepository eliminationRepository = null;
 
-        StorageType type = this.config.getProperty(DataSourceConfig.TYPE);
+        StorageType type = this.config.getProperty(StorageConfig.TYPE);
         if (type == StorageType.SQLITE) {
             try {
                 Class.forName("org.sqlite.JDBC");

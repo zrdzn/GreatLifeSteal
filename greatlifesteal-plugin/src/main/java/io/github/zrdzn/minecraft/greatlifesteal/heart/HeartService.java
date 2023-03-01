@@ -3,7 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.heart;
 import java.util.Map;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.heart.HeartDropConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.PlayerInventoryAdapter;
 import org.bukkit.World;

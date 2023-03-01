@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import ch.jalu.configme.SettingsManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DataSourceConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.Poolable;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageLoadException;
@@ -27,18 +27,18 @@ public class MysqlStorage implements Storage, Poolable {
     public Result<? extends Storage, StorageLoadException> load(SettingsManager config) {
         HikariConfig hikariConfig = new HikariConfig();
 
-        boolean enableSsl = config.getProperty(DataSourceConfig.ENABLE_SSL);
+        boolean enableSsl = config.getProperty(StorageConfig.ENABLE_SSL);
         if (!enableSsl) {
             this.logger.warn("Storage connection is configured without SSL enabled.");
         }
 
-        String host = config.getProperty(DataSourceConfig.HOST);
-        int port = config.getProperty(DataSourceConfig.PORT);
-        String database = config.getProperty(DataSourceConfig.DATABASE);
-        String user = config.getProperty(DataSourceConfig.USER);
-        String password = config.getProperty(DataSourceConfig.PASSWORD);
-        int maximumPoolSize = config.getProperty(DataSourceConfig.MAXIMUM_POOL_SIZE);
-        int connectionTimeout = config.getProperty(DataSourceConfig.CONNECTION_TIMEOUT);
+        String host = config.getProperty(StorageConfig.HOST);
+        int port = config.getProperty(StorageConfig.PORT);
+        String database = config.getProperty(StorageConfig.DATABASE);
+        String user = config.getProperty(StorageConfig.USER);
+        String password = config.getProperty(StorageConfig.PASSWORD);
+        int maximumPoolSize = config.getProperty(StorageConfig.MAXIMUM_POOL_SIZE);
+        int connectionTimeout = config.getProperty(StorageConfig.CONNECTION_TIMEOUT);
 
         hikariConfig.setJdbcUrl(String.format("jdbc:mysql://%s:%s/%s?ssl=%s", host, port, database, enableSsl));
         hikariConfig.setUsername(user);
