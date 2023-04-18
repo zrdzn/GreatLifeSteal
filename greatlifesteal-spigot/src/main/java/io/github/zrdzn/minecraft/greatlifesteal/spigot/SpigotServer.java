@@ -1,6 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.spigot;
 
-public interface SpigotAdapter {
+public interface SpigotServer {
 
     String getVersion();
 

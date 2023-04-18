@@ -7,6 +7,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigDataBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigMigrationService;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartMetaConfig;
@@ -23,15 +24,14 @@ import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartService;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.listeners.HeartUseListener;
 import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_10R1SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_11R1SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12R1SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_13R2SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_14R1SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_15R1SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8R3SpigotAdapter;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9R2SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_10R1SpigotServer;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_11R1SpigotServer;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_12R1SpigotServer;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_13R2SpigotServer;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_14R1SpigotServer;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_15R1SpigotServer;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_8R3SpigotServer;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.V1_9R2SpigotServer;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.MysqlStorage;
@@ -70,7 +70,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
     private final HeartItem heartItem = new HeartItem();
 
     private SettingsManager config;
-    private SpigotAdapter spigotAdapter;
+    private SpigotServer spigotServer;
 
     private Storage storage;
     private EliminationService eliminationService;
@@ -91,8 +91,8 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         new Metrics(this, 15277);
 
-        this.spigotAdapter = this.prepareSpigotAdapter();
-        this.logger.info("Using {} version of the adapter.", this.spigotAdapter.getVersion());
+        this.spigotServer = this.prepareSpigotAdapter();
+        this.logger.info("Using {} version of the adapter.", this.spigotServer.getVersion());
 
         this.config = SettingsManagerBuilder
                 .withYamlFile(new File(this.getDataFolder(), "config.yml"))
@@ -109,23 +109,23 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         if (this.pluginManager.getPlugin("PlaceholderAPI") == null) {
             this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
         } else {
-            if (new GreatLifeStealExpansion(this.config, this.spigotAdapter.getDamageableAdapter(),
+            if (new GreatLifeStealExpansion(this.config, this.spigotServer.getDamageableAdapter(),
                     this.server).register()) {
                 this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
             }
         }
 
-        DamageableAdapter damageableAdapter = this.spigotAdapter.getDamageableAdapter();
+        DamageableAdapter damageableAdapter = this.spigotServer.getDamageableAdapter();
 
         HeartCraftPrepareListener heartCraftPrepareListener = new HeartCraftPrepareListener(this.heartItem);
         HeartCraftListener heartCraftListener = new HeartCraftListener(this.heartItem);
-        HeartUseListener heartUseListener = new HeartUseListener(this.config, this.spigotAdapter, this.heartItem);
+        HeartUseListener heartUseListener = new HeartUseListener(this.config, this.spigotServer, this.heartItem);
 
         UpdateNotifier updateNotifier = new UpdateNotifier(this.logger);
         boolean latestVersion = updateNotifier.checkIfLatest(this.getDescription().getVersion());
         UpdateListener updateListener = new UpdateListener(this.config, latestVersion);
 
-        HeartService heartService = new HeartService(this.config, this.heartItem, this.spigotAdapter.getPlayerInventoryAdapter());
+        HeartService heartService = new HeartService(this.config, this.heartItem, this.spigotServer.getPlayerInventoryAdapter());
 
         UserListener userListener = new UserListener(this, this.logger, this.config, this.eliminationService,
                 damageableAdapter, heartService, this.heartItem);
@@ -136,7 +136,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 this.config, this.eliminationService, eliminationRemovalCache);
 
         EliminationRestoreHealthListener eliminationRestoreHealthListener = new EliminationRestoreHealthListener(this.logger,
-                this.config, this.eliminationService, this.spigotAdapter.getDamageableAdapter(), eliminationRemovalCache);
+                this.config, this.eliminationService, this.spigotServer.getDamageableAdapter(), eliminationRemovalCache);
 
         this.pluginManager.registerEvents(updateListener, this);
         this.pluginManager.registerEvents(userListener, this);
@@ -177,7 +177,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             }
             heartItemStack.setItemMeta(heartItemMeta);
 
-            ShapedRecipe recipe = this.spigotAdapter.getShapedRecipeAdapter().createShapedRecipe(heartItemStack);
+            ShapedRecipe recipe = this.spigotServer.getShapedRecipeAdapter().createShapedRecipe(heartItemStack);
             recipe.shape("123", "456", "789");
 
             Map<Integer, ItemStack> ingredients = new HashMap<>();
@@ -198,7 +198,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 ingredients.put(slot, new ItemStack(recipeItemType, recipeItem.getAmount()));
             }
 
-            if (this.spigotAdapter.getRecipeManagerAdapter().removeServerShapedRecipe(recipe)) {
+            if (this.spigotServer.getRecipeManagerAdapter().removeServerShapedRecipe(recipe)) {
                 this.logger.info("Removed the old heart item recipe.");
             }
 
@@ -253,23 +253,23 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         this.eliminationService = new EliminationService(eliminationRepository);
     }
 
-    private SpigotAdapter prepareSpigotAdapter() {
+    private SpigotServer prepareSpigotAdapter() {
         String version = this.server.getClass().getPackage().getName().split("\\.")[3];
         switch (version) {
             case "v1_8_R3":
-                return new V1_8R3SpigotAdapter();
+                return new V1_8R3SpigotServer();
             case "v1_9_R2":
-                return new V1_9R2SpigotAdapter();
+                return new V1_9R2SpigotServer();
             case "v1_10_R1":
-                return new V1_10R1SpigotAdapter();
+                return new V1_10R1SpigotServer();
             case "v1_11_R1":
-                return new V1_11R1SpigotAdapter();
+                return new V1_11R1SpigotServer();
             case "v1_12_R1":
-                return new V1_12R1SpigotAdapter(this);
+                return new V1_12R1SpigotServer(this);
             case "v1_13_R2":
-                return new V1_13R2SpigotAdapter(this);
+                return new V1_13R2SpigotServer(this);
             case "v1_14_R1":
-                return new V1_14R1SpigotAdapter(this);
+                return new V1_14R1SpigotServer(this);
             case "v1_15_R1":
             case "v1_16_R3":
             case "v1_17_R1":
@@ -277,7 +277,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
             case "v1_19_R1":
             case "v1_19_R2":
             case "v1_19_R3":
-                return new V1_15R1SpigotAdapter(this);
+                return new V1_15R1SpigotServer(this);
             default:
                 throw new RuntimeException(
                         "Could not find an adapter for the version: " + version + "\n" +

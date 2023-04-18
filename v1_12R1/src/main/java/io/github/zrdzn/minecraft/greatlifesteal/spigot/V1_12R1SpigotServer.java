@@ -2,11 +2,11 @@ package io.github.zrdzn.minecraft.greatlifesteal.spigot;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class V1_12R1SpigotAdapter implements SpigotAdapter {
+public class V1_12R1SpigotServer implements SpigotServer {
 
     private final JavaPlugin plugin;
 
-    public V1_12R1SpigotAdapter(JavaPlugin plugin) {
+    public V1_12R1SpigotServer(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 

@@ -1,6 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.spigot;
 
-public class V1_8R3SpigotAdapter implements SpigotAdapter {
+public class V1_8R3SpigotServer implements SpigotServer {
 
     @Override
     public String getVersion() {

@@ -1,10 +1,10 @@
 package io.github.zrdzn.minecraft.greatlifesteal.spigot;
 
-public class V1_10R1SpigotAdapter implements SpigotAdapter {
+public class V1_11R1SpigotServer implements SpigotServer {
 
     @Override
     public String getVersion() {
-        return "v1.10.2";
+        return "v1.11.2";
     }
 
     @Override
@@ -19,7 +19,7 @@ public class V1_10R1SpigotAdapter implements SpigotAdapter {
 
     @Override
     public RecipeManagerAdapter getRecipeManagerAdapter() {
-        return new V1_10R1RecipeManagerAdapter();
+        return new V1_11R1RecipeManagerAdapter();
     }
 
     @Override

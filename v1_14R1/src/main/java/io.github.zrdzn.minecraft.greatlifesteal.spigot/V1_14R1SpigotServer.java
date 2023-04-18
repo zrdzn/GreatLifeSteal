@@ -1,10 +1,18 @@
 package io.github.zrdzn.minecraft.greatlifesteal.spigot;
 
-public class V1_9R2SpigotAdapter implements SpigotAdapter {
+import org.bukkit.plugin.java.JavaPlugin;
+
+public class V1_14R1SpigotServer implements SpigotServer {
+
+    private final JavaPlugin plugin;
+
+    public V1_14R1SpigotServer(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public String getVersion() {
-        return "v1.9.4";
+        return "v1.14.4";
     }
 
     @Override
@@ -14,12 +22,12 @@ public class V1_9R2SpigotAdapter implements SpigotAdapter {
 
     @Override
     public ShapedRecipeAdapter getShapedRecipeAdapter() {
-        return new V1_8R3ShapedRecipeAdapter();
+        return new V1_12R1ShapedRecipeAdapter(this.plugin);
     }
 
     @Override
     public RecipeManagerAdapter getRecipeManagerAdapter() {
-        return new V1_9R2RecipeManagerAdapter();
+        return new V1_14R1RecipeManagerAdapter();
     }
 
     @Override

@@ -6,7 +6,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotAdapter;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,12 +17,12 @@ import org.bukkit.inventory.ItemStack;
 public class HeartUseListener implements Listener {
 
     private final SettingsManager config;
-    private final SpigotAdapter spigotAdapter;
+    private final SpigotServer spigotServer;
     private final HeartItem heartItem;
 
-    public HeartUseListener(SettingsManager config, SpigotAdapter spigotAdapter, HeartItem heartItem) {
+    public HeartUseListener(SettingsManager config, SpigotServer spigotServer, HeartItem heartItem) {
         this.config = config;
-        this.spigotAdapter = spigotAdapter;
+        this.spigotServer = spigotServer;
         this.heartItem = heartItem;
     }
 
@@ -49,10 +49,10 @@ public class HeartUseListener implements Listener {
 
         Player player = event.getPlayer();
 
-        double playerNewHealth = this.spigotAdapter.getDamageableAdapter().getMaxHealth(player) + this.heartItem.healthAmount;
+        double playerNewHealth = this.spigotServer.getDamageableAdapter().getMaxHealth(player) + this.heartItem.healthAmount;
         if (playerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH) && playerNewHealth <= this.config.getProperty(HeartConfig.MAXIMUM_HEALTH_LIMIT)) {
-            this.spigotAdapter.getDamageableAdapter().setMaxHealth(player, playerNewHealth);
-            this.spigotAdapter.getPlayerInventoryAdapter().removeItem(player.getInventory(), heartItemStack);
+            this.spigotServer.getDamageableAdapter().setMaxHealth(player, playerNewHealth);
+            this.spigotServer.getPlayerInventoryAdapter().removeItem(player.getInventory(), heartItemStack);
         } else {
             MessageService.send(player, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
         }
