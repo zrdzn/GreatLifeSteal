@@ -12,4 +12,6 @@ public interface SpigotServer {
 
     PlayerInventoryAdapter getPlayerInventoryAdapter();
 
+    NbtService getNbtService();
+
 }

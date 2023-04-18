@@ -66,5 +66,7 @@ tasks.withType<ProcessResources> {
 tasks.withType<ShadowJar> {
     archiveFileName.set("GreatLifeSteal v${project.version}.jar")
 
-    relocate("org.bstats", "io.github.zrdzn.minecraft.greatlifesteal.libs.bstats")
+    val libsPath = "io.github.zrdzn.minecraft.greatlifesteal.libs"
+    relocate("org.bstats", "$libsPath.bstats")
+    relocate("de.tr7zw.changeme.nbtapi", "$libsPath.nbtapi")
 }

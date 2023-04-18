@@ -168,6 +168,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         if (this.config.getProperty(HeartConfig.ENABLED)) {
             ItemStack heartItemStack = new ItemStack(this.config.getProperty(HeartConfig.TYPE));
 
+            this.logger.info("Applying NBT to heart item.");
+            this.spigotServer.getNbtService().applyHeartData(heartItemStack);
+
             ItemMeta heartItemMeta = heartItemStack.getItemMeta();
             heartItemMeta.setDisplayName(formatColor(this.config.getProperty(HeartMetaConfig.DISPLAY_NAME)));
             heartItemMeta.setLore(formatColor(this.config.getProperty(HeartMetaConfig.LORE)));
