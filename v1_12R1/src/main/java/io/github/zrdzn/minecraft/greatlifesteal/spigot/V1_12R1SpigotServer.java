@@ -35,4 +35,9 @@ public class V1_12R1SpigotServer implements SpigotServer {
         return new V1_9R2PlayerInventoryAdapter();
     }
 
+    @Override
+    public NbtService getNbtService() {
+        return new V1_8R3NbtService();
+    }
+
 }

@@ -1,13 +1,16 @@
 package io.github.zrdzn.minecraft.greatlifesteal.spigot;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class V1_14R1SpigotServer implements SpigotServer {
 
     private final JavaPlugin plugin;
+    private final NamespacedKey namespacedKey;
 
     public V1_14R1SpigotServer(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.namespacedKey = new NamespacedKey(plugin, "heart");
     }
 
     @Override
@@ -33,6 +36,11 @@ public class V1_14R1SpigotServer implements SpigotServer {
     @Override
     public PlayerInventoryAdapter getPlayerInventoryAdapter() {
         return new V1_9R2PlayerInventoryAdapter();
+    }
+
+    @Override
+    public NbtService getNbtService() {
+        return new V1_14R1NbtService(this.namespacedKey);
     }
 
 }
