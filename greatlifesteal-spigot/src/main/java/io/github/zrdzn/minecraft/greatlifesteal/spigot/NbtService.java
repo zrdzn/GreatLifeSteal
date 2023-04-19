@@ -4,6 +4,6 @@ import org.bukkit.inventory.ItemStack;
 
 public interface NbtService {
 
-    void applyHeartData(ItemStack heartItem);
+    void applyHeartData(ItemStack heart);
 
 }
