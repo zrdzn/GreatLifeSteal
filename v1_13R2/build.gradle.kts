@@ -9,5 +9,5 @@ dependencies {
     // Required to work with CraftBukkit's relocated library
     compileOnly("it.unimi.dsi:fastutil:8.5.12")
 
-    implementation("de.tr7zw:item-nbt-api:2.11.2")
+    implementation("de.tr7zw:item-nbt-api:2.11.3")
 }

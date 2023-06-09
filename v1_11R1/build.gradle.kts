@@ -5,5 +5,5 @@ dependencies {
     compileOnly(project(":v1_10R1"))
     compileOnly("org.spigotmc:spigot:1.11-R0.1-SNAPSHOT")
 
-    implementation("de.tr7zw:item-nbt-api:2.11.2")
+    implementation("de.tr7zw:item-nbt-api:2.11.3")
 }
