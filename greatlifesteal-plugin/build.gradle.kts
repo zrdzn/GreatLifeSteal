@@ -37,8 +37,9 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:4.0.3")
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+
     testImplementation("org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT")
 }
 
