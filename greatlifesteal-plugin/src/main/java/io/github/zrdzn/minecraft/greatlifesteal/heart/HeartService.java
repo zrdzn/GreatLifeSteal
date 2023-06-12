@@ -31,7 +31,7 @@ public class HeartService {
 
         PlayerInventory inventory = player.getInventory();
 
-        Map<Integer, ItemStack> remainingItems = inventory.addItem(this.heartItem.result);
+        Map<Integer, ItemStack> remainingItems = inventory.addItem(this.heartItem.getItemStack());
         if (remainingItems.isEmpty()) {
             return;
         }
@@ -41,7 +41,7 @@ public class HeartService {
             return;
         }
 
-        this.playerInventoryAdapter.removeItem(inventory, this.heartItem.result);
+        this.playerInventoryAdapter.removeItem(inventory, this.heartItem.getItemStack());
         MessageService.send(player, this.config.getProperty(MessagesConfig.NOT_ENOUGH_PLACE_INVENTORY));
     }
 
@@ -50,10 +50,10 @@ public class HeartService {
 
         switch (location) {
             case GROUND_LEVEL:
-                world.dropItemNaturally(player.getLocation(), this.heartItem.result);
+                world.dropItemNaturally(player.getLocation(), this.heartItem.getItemStack());
                 return true;
             case EYE_LEVEL:
-                world.dropItemNaturally(player.getEyeLocation(), this.heartItem.result);
+                world.dropItemNaturally(player.getEyeLocation(), this.heartItem.getItemStack());
                 return true;
             default:
                 return false;

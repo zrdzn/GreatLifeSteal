@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
@@ -41,17 +42,19 @@ public class LifeStealCommand implements CommandExecutor {
     private final SettingsManager config;
     private final EliminationService eliminationService;
     private final DamageableAdapter adapter;
-    private final HeartItem heart;
+    private final HeartItem heartItem;
+    private final SpigotServer spigotServer;
     private final Server server;
 
     public LifeStealCommand(GreatLifeStealPlugin plugin, Logger logger, SettingsManager config, EliminationService eliminationService,
-                            DamageableAdapter adapter, HeartItem heart) {
+                            DamageableAdapter adapter, SpigotServer spigotServer, HeartItem heartItem) {
         this.plugin = plugin;
         this.logger = logger;
         this.config = config;
         this.eliminationService = eliminationService;
         this.adapter = adapter;
-        this.heart = heart;
+        this.heartItem = heartItem;
+        this.spigotServer = spigotServer;
         this.server = plugin.getServer();
     }
 
@@ -198,7 +201,7 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                if (this.plugin.loadConfigurations()) {
+                if (this.plugin.loadConfigurations(this.config, this.logger, this.spigotServer, this.server)) {
                     MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_RELOAD));
                     return true;
                 }
@@ -313,9 +316,9 @@ public class LifeStealCommand implements CommandExecutor {
 
                 List<ItemStack> heartsLeft = new ArrayList<>();
                 for (int heartCount = 0; heartCount < amount; heartCount++) {
-                    Map<Integer, ItemStack> heartsNotFitted = inventory.addItem(this.heart.result);
+                    Map<Integer, ItemStack> heartsNotFitted = inventory.addItem(this.heartItem.getItemStack());
                     if (!heartsNotFitted.isEmpty() && this.config.getProperty(HeartDropConfig.FULL_INVENTORY_LOCATION) == HeartDropLocation.NONE) {
-                        inventory.remove(this.heart.result);
+                        inventory.remove(this.heartItem.getItemStack());
                         MessageService.send(sender, this.config.getProperty(MessagesConfig.NOT_ENOUGH_PLACE_INVENTORY));
                         return true;
                     }

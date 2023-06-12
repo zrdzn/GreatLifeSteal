@@ -24,14 +24,14 @@ public class HeartCraftListener implements Listener {
             return;
         }
 
-        ItemStack heart = this.heartItem.result;
+        ItemStack heartItemStack = this.heartItem.getItemStack();
 
         ItemStack eventResult = inventory.getResult();
         if (eventResult == null) {
             return;
         }
 
-        if (!eventResult.isSimilar(heart)) {
+        if (!eventResult.isSimilar(heartItemStack)) {
             return;
         }
 
@@ -43,7 +43,7 @@ public class HeartCraftListener implements Listener {
                 continue;
             }
 
-            ItemStack ingredient = this.heartItem.ingredients.get(slotIndex);
+            ItemStack ingredient = this.heartItem.getRecipe().getIngredientMap().get((char) (slotIndex + '0'));
             int ingredientAmount = ingredient.getAmount();
 
             int slotItemAmount = slotItem.getAmount();
@@ -54,7 +54,7 @@ public class HeartCraftListener implements Listener {
 
             slotItem.setAmount(slotItemAmount - ingredientAmount);
             inventory.setResult(null);
-            event.getWhoClicked().setItemOnCursor(heart);
+            event.getWhoClicked().setItemOnCursor(heartItemStack);
         }
     }
 

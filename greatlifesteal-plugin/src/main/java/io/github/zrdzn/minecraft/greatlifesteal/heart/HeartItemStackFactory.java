@@ -3,6 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.heart;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartMetaConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.NbtService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -25,12 +26,15 @@ public class HeartItemStackFactory {
     }
 
     public ItemStack createHeartItemStack() {
-        ItemStack item = new ItemStack(this.config.getProperty(HeartConfig.TYPE));
+        ItemStack itemStack = new ItemStack(this.config.getProperty(HeartConfig.TYPE));
+
+        NbtService nbtService = this.spigotServer.getNbtService();
 
         this.logger.info("Applying NBT to heart item.");
-        this.spigotServer.getNbtService().applyHeartData(item);
+        nbtService.setBoolean(itemStack, "heart", true);
+        nbtService.setDouble(itemStack, "heartHealthChange", this.config.getProperty(HeartConfig.HEALTH_AMOUNT));
 
-        ItemMeta heartItemMeta = item.getItemMeta();
+        ItemMeta heartItemMeta = itemStack.getItemMeta();
 
         heartItemMeta.setDisplayName(formatColor(this.config.getProperty(HeartMetaConfig.DISPLAY_NAME)));
         heartItemMeta.setLore(formatColor(this.config.getProperty(HeartMetaConfig.LORE)));
@@ -40,9 +44,9 @@ public class HeartItemStackFactory {
             heartItemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 
-        item.setItemMeta(heartItemMeta);
+        itemStack.setItemMeta(heartItemMeta);
 
-        return item;
+        return itemStack;
     }
 
 }

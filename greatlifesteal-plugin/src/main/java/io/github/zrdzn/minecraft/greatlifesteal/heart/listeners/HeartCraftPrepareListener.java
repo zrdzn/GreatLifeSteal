@@ -25,11 +25,11 @@ public class HeartCraftPrepareListener implements Listener {
             return;
         }
 
-        if (!eventResult.isSimilar(this.heartItem.result)) {
+        if (!eventResult.isSimilar(this.heartItem.getRecipe().getResult())) {
             return;
         }
 
-        Map<Integer, ItemStack> ingredients = this.heartItem.ingredients;
+        Map<Character, ItemStack> ingredients = this.heartItem.getRecipe().getIngredientMap();
 
         for (int matrixIndex = 0; matrixIndex < 9; matrixIndex++) {
             ItemStack slotItem = inventory.getMatrix()[matrixIndex];
@@ -37,7 +37,7 @@ public class HeartCraftPrepareListener implements Listener {
                 continue;
             }
 
-            ItemStack ingredient = ingredients.get(matrixIndex + 1);
+            ItemStack ingredient = ingredients.get((char) ((matrixIndex + 1) + '0'));
 
             if (matrixIndex + 1 <= ingredients.size()) {
                 if (ingredient == null) {

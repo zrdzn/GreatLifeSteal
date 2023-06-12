@@ -6,6 +6,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.NbtService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,16 +20,18 @@ public class HeartUseListener implements Listener {
     private final SettingsManager config;
     private final SpigotServer spigotServer;
     private final HeartItem heartItem;
+    private final NbtService nbtService;
 
-    public HeartUseListener(SettingsManager config, SpigotServer spigotServer, HeartItem heartItem) {
+    public HeartUseListener(SettingsManager config, SpigotServer spigotServer, HeartItem heartItem, NbtService nbtService) {
         this.config = config;
         this.spigotServer = spigotServer;
         this.heartItem = heartItem;
+        this.nbtService = nbtService;
     }
 
     @EventHandler
     public void addHealth(PlayerInteractEvent event) {
-        ItemStack heartItemStack = this.heartItem.result;
+        ItemStack heartItemStack = this.heartItem.getItemStack();
         if (heartItemStack == null) {
             return;
         }
@@ -49,7 +52,9 @@ public class HeartUseListener implements Listener {
 
         Player player = event.getPlayer();
 
-        double playerNewHealth = this.spigotServer.getDamageableAdapter().getMaxHealth(player) + this.heartItem.healthAmount;
+        double healthChange = this.nbtService.getDouble(this.heartItem.getItemStack(), "heartHealthChange");
+
+        double playerNewHealth = this.spigotServer.getDamageableAdapter().getMaxHealth(player) + healthChange;
         if (playerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH) && playerNewHealth <= this.config.getProperty(HeartConfig.MAXIMUM_HEALTH_LIMIT)) {
             this.spigotServer.getDamageableAdapter().setMaxHealth(player, playerNewHealth);
             this.spigotServer.getPlayerInventoryAdapter().removeItem(player.getInventory(), heartItemStack);

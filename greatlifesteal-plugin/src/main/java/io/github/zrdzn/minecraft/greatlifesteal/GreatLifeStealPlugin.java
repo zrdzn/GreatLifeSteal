@@ -6,9 +6,9 @@ import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigDataBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigMigrationService;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationServiceFactory;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItemStackFactory;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItemFactory;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRemovalCache;
@@ -16,7 +16,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.listeners.EliminationJoinPreventListener;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.listeners.EliminationRestoreHealthListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.listeners.HeartCraftListener;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.listeners.HeartCraftPrepareListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartService;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.listeners.HeartUseListener;
@@ -28,18 +27,13 @@ import io.github.zrdzn.minecraft.greatlifesteal.update.UpdateListener;
 import io.github.zrdzn.minecraft.greatlifesteal.update.UpdateNotifier;
 import io.github.zrdzn.minecraft.greatlifesteal.user.UserListener;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.apache.log4j.BasicConfigurator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -48,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 public class GreatLifeStealPlugin extends JavaPlugin {
 
-    private final HeartItem heartItem = new HeartItem();
+    private HeartItem heartItem;
 
     public static String formatColor(String string) {
         return ChatColor.translateAlternateColorCodes('&', string);
@@ -98,7 +92,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         HeartCraftPrepareListener heartCraftPrepareListener = new HeartCraftPrepareListener(this.heartItem);
         HeartCraftListener heartCraftListener = new HeartCraftListener(this.heartItem);
-        HeartUseListener heartUseListener = new HeartUseListener(config, spigotServer, this.heartItem);
+        HeartUseListener heartUseListener = new HeartUseListener(config, spigotServer, this.heartItem, spigotServer.getNbtService());
 
         UpdateNotifier updateNotifier = new UpdateNotifier(logger);
         boolean latestVersion = updateNotifier.checkIfLatest(this.getDescription().getVersion());
@@ -106,7 +100,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         HeartService heartService = new HeartService(config, this.heartItem, spigotServer.getPlayerInventoryAdapter());
 
-        Storage storage = StorageFactory.createStorage(config, logger, this);
+        Storage storage = new StorageFactory(config, logger, this).createStorage();
 
         EliminationService eliminationService = EliminationServiceFactory.createEliminationService(storage);
 
@@ -130,7 +124,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         pluginManager.registerEvents(heartUseListener, this);
 
         PluginCommand lifeStealCommand = this.getCommand("lifesteal");
-        lifeStealCommand.setExecutor(new LifeStealCommand(this, logger, config, eliminationService, damageableAdapter, this.heartItem));
+        lifeStealCommand.setExecutor(new LifeStealCommand(this, logger, config, eliminationService, damageableAdapter, spigotServer, this.heartItem));
         lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(config));
     }
 
@@ -141,28 +135,9 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         config.reload();
 
         if (config.getProperty(HeartConfig.ENABLED)) {
-            ItemStack heartItemStack = new HeartItemStackFactory(config, logger, spigotServer).createHeartItemStack();
+            HeartItem heartItem = new HeartItemFactory(config, logger, spigotServer).createHeartItem();
 
-            ShapedRecipe recipe = spigotServer.getShapedRecipeAdapter().createShapedRecipe(heartItemStack);
-            recipe.shape("123", "456", "789");
-
-            Map<Integer, ItemStack> ingredients = new HashMap<>();
-            for (Entry<String, BasicItemBean> item : config.getProperty(HeartConfig.CRAFTING).entrySet()) {
-                String slotRaw = item.getKey();
-                int slot;
-                try {
-                    slot = Integer.parseUnsignedInt(slotRaw);
-                } catch (NumberFormatException exception) {
-                    logger.warn("Could not parse the {} slot, because it is not a positive integer.", slotRaw);
-                    continue;
-                }
-
-                BasicItemBean recipeItem = item.getValue();
-                Material recipeItemType = recipeItem.getType();
-
-                recipe.setIngredient(slotRaw.charAt(0), recipeItemType);
-                ingredients.put(slot, new ItemStack(recipeItemType, recipeItem.getAmount()));
-            }
+            ShapedRecipe recipe = heartItem.getRecipe();
 
             if (spigotServer.getRecipeManagerAdapter().removeServerShapedRecipe(recipe)) {
                 logger.info("Removed the old heart item recipe.");
@@ -174,9 +149,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
                 logger.error("Could not add the new heart item recipe for some unknown reason.");
             }
 
-            this.heartItem.healthAmount = config.getProperty(HeartConfig.HEALTH_AMOUNT);
-            this.heartItem.result = heartItemStack.clone();
-            this.heartItem.ingredients = ingredients;
+            this.heartItem = heartItem;
         }
 
         return true;
