@@ -28,7 +28,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.3")
 
-    implementation("ch.jalu:configme:1.3.0")
+    implementation("ch.jalu:configme:1.3.1")
     implementation("com.github.Querz:NBT:6.1")
     implementation("org.panda-lang:expressible:1.3.5")
     implementation("org.slf4j:slf4j-reload4j:2.0.7")
