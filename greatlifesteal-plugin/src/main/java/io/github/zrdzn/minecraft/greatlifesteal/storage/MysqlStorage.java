@@ -5,11 +5,6 @@ import java.sql.PreparedStatement;
 import ch.jalu.configme.SettingsManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.Poolable;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageLoadException;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
 import org.slf4j.Logger;
 import panda.std.Result;
 

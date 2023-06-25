@@ -2,10 +2,6 @@ package io.github.zrdzn.minecraft.greatlifesteal.storage;
 
 import ch.jalu.configme.SettingsManager;
 import com.google.common.io.Files;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageLoadException;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.StorageType;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
