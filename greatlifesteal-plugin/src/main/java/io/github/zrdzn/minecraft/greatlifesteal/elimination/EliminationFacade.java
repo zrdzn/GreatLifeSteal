@@ -6,11 +6,11 @@ import java.util.concurrent.CompletableFuture;
 import panda.std.Blank;
 import panda.std.Result;
 
-public class EliminationService {
+public class EliminationFacade {
 
     private final EliminationRepository repository;
 
-    public EliminationService(EliminationRepository repository) {
+    public EliminationFacade(EliminationRepository repository) {
         this.repository = repository;
     }
 

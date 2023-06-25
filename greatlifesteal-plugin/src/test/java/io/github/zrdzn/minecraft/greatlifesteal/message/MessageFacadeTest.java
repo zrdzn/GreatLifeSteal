@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class MessageServiceTest {
+public class MessageFacadeTest {
 
     @Test
     public void shouldFormatPlaceholders() {
@@ -18,7 +18,7 @@ public class MessageServiceTest {
 
         String expectedMessage = "Hello! My name is John and I am 20 years old!";
 
-        assertEquals(expectedMessage, MessageService.formatPlaceholders(message, placeholders));
+        assertEquals(expectedMessage, MessageFacade.formatPlaceholders(message, placeholders));
     }
 
     @Test
@@ -36,15 +36,15 @@ public class MessageServiceTest {
                 "5", "{years}"
         };
 
-        assertEquals(correctMessage, MessageService.formatPlaceholders(message, correctOrder));
-        assertNotEquals(correctMessage, MessageService.formatPlaceholders(message, incorrectOrder));
+        assertEquals(correctMessage, MessageFacade.formatPlaceholders(message, correctOrder));
+        assertNotEquals(correctMessage, MessageFacade.formatPlaceholders(message, incorrectOrder));
     }
 
     @Test
     public void shouldNotFormatPlaceholderWithoutValue() {
         String message = "Placeholder {id} should not be replaced.";
 
-        assertEquals(message, MessageService.formatPlaceholders(message, "{id}"));
+        assertEquals(message, MessageFacade.formatPlaceholders(message, "{id}"));
     }
 
 }

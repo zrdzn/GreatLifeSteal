@@ -3,7 +3,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.heart;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.NbtService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import org.bukkit.entity.Player;
@@ -57,7 +57,7 @@ public class HeartUseListener implements Listener {
             this.spigotServer.getDamageableAdapter().setMaxHealth(player, playerNewHealth);
             this.spigotServer.getPlayerInventoryAdapter().removeItem(player.getInventory(), heartItemStack);
         } else {
-            MessageService.send(player, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
+            MessageFacade.send(player, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
         }
 
         event.setCancelled(true);

@@ -19,14 +19,14 @@ public class EliminationJoinPreventListener implements Listener {
 
     private final Logger logger;
     private final SettingsManager config;
-    private final EliminationService eliminationService;
+    private final EliminationFacade eliminationFacade;
     private final EliminationRemovalCache eliminationRemovalCache;
 
-    public EliminationJoinPreventListener(Logger logger, SettingsManager config, EliminationService eliminationService,
+    public EliminationJoinPreventListener(Logger logger, SettingsManager config, EliminationFacade eliminationFacade,
                                           EliminationRemovalCache eliminationRemovalCache) {
         this.logger = logger;
         this.config = config;
-        this.eliminationService = eliminationService;
+        this.eliminationFacade = eliminationFacade;
         this.eliminationRemovalCache = eliminationRemovalCache;
     }
 
@@ -34,7 +34,7 @@ public class EliminationJoinPreventListener implements Listener {
     public void preventFromJoining(AsyncPlayerPreLoginEvent event) {
         UUID playerUuid = event.getUniqueId();
 
-        Result<Optional<Elimination>, Exception> foundElimination = this.eliminationService.getElimination(playerUuid).join();
+        Result<Optional<Elimination>, Exception> foundElimination = this.eliminationFacade.getElimination(playerUuid).join();
 
         List<String> disabledWorlds = this.config.getProperty(DisabledWorldsConfig.ELIMINATIONS);
 

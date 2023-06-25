@@ -10,10 +10,10 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.StealCooldownConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartService;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.time.Duration;
 import java.time.Instant;
@@ -42,19 +42,19 @@ public class UserListener implements Listener {
     private final JavaPlugin plugin;
     private final Logger logger;
     private final SettingsManager config;
-    private final EliminationService eliminationService;
+    private final EliminationFacade eliminationFacade;
     private final DamageableAdapter adapter;
-    private final HeartService heartService;
+    private final HeartFacade heartFacade;
     private final HeartItem heartItem;
 
-    public UserListener(JavaPlugin plugin, Logger logger, SettingsManager config, EliminationService eliminationService,
-                        DamageableAdapter adapter, HeartService heartService, HeartItem heartItem) {
+    public UserListener(JavaPlugin plugin, Logger logger, SettingsManager config, EliminationFacade eliminationFacade,
+                        DamageableAdapter adapter, HeartFacade heartFacade, HeartItem heartItem) {
         this.plugin = plugin;
         this.logger = logger;
         this.config = config;
-        this.eliminationService = eliminationService;
+        this.eliminationFacade = eliminationFacade;
         this.adapter = adapter;
-        this.heartService = heartService;
+        this.heartFacade = heartFacade;
         this.heartItem = heartItem;
     }
 
@@ -121,7 +121,7 @@ public class UserListener implements Listener {
                     Duration limit = Duration.ofSeconds(this.config.getProperty(StealCooldownConfig.COOLDOWN));
                     if (difference.compareTo(limit) < 0) {
                         String[] placeholders = { "{AMOUNT}", String.valueOf(limit.getSeconds() - difference.getSeconds()) };
-                        MessageService.send(killer, this.config.getProperty(MessagesConfig.STEAL_COOLDOWN_ACTIVE), placeholders);
+                        MessageFacade.send(killer, this.config.getProperty(MessagesConfig.STEAL_COOLDOWN_ACTIVE), placeholders);
                         return;
                     }
                 }
@@ -139,16 +139,16 @@ public class UserListener implements Listener {
                 if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                     // Increase the killer's maximum health or give him the heart item.
                     if (this.config.getProperty(HeartDropConfig.ON_EVERY_KILL) && heartItem != null) {
-                        this.heartService.giveHeartToPlayer(killer);
+                        this.heartFacade.giveHeartToPlayer(killer);
                     } else {
                         this.adapter.setMaxHealth(killer, killerNewHealth);
                     }
                 } else {
-                    MessageService.send(killer, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
+                    MessageFacade.send(killer, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
 
                     // Give the heart item to the killer if it is enabled.
                     if (heartItem != null && this.config.getProperty(HeartDropConfig.ON_LIMIT_EXCEED)) {
-                        this.heartService.giveHeartToPlayer(killer);
+                        this.heartFacade.giveHeartToPlayer(killer);
                     }
                 }
             }
@@ -203,13 +203,13 @@ public class UserListener implements Listener {
                         break;
                     case DISPATCH_COMMANDS:
                         action.getParameters().forEach(command -> {
-                            command = MessageService.formatPlaceholders(command, placeholders);
+                            command = MessageFacade.formatPlaceholders(command, placeholders);
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
                         });
                         break;
                     case BROADCAST:
                         action.getParameters().stream()
-                                .map(message -> MessageService.formatPlaceholders(message, placeholders))
+                                .map(message -> MessageFacade.formatPlaceholders(message, placeholders))
                                 .map(GreatLifeStealPlugin::formatColor)
                                 .forEach(Bukkit::broadcastMessage);
                         break;
@@ -221,7 +221,7 @@ public class UserListener implements Listener {
                         elimination.setAction(actionKey);
                         elimination.setRevive(EliminationReviveStatus.PENDING);
 
-                        this.eliminationService.createElimination(elimination).join()
+                        this.eliminationFacade.createElimination(elimination).join()
                                 .peek(ignored -> victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters()))))
                                 .onError(error -> this.logger.error("Could not eliminate a player.", error));
 

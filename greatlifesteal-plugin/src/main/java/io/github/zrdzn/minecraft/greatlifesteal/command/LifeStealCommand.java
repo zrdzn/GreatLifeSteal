@@ -11,10 +11,10 @@ import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -40,18 +40,18 @@ public class LifeStealCommand implements CommandExecutor {
     private final GreatLifeStealPlugin plugin;
     private final Logger logger;
     private final SettingsManager config;
-    private final EliminationService eliminationService;
+    private final EliminationFacade eliminationFacade;
     private final DamageableAdapter adapter;
     private final HeartItem heartItem;
     private final SpigotServer spigotServer;
     private final Server server;
 
-    public LifeStealCommand(GreatLifeStealPlugin plugin, Logger logger, SettingsManager config, EliminationService eliminationService,
+    public LifeStealCommand(GreatLifeStealPlugin plugin, Logger logger, SettingsManager config, EliminationFacade eliminationFacade,
                             DamageableAdapter adapter, SpigotServer spigotServer, HeartItem heartItem) {
         this.plugin = plugin;
         this.logger = logger;
         this.config = config;
-        this.eliminationService = eliminationService;
+        this.eliminationFacade = eliminationFacade;
         this.adapter = adapter;
         this.heartItem = heartItem;
         this.spigotServer = spigotServer;
@@ -61,32 +61,32 @@ public class LifeStealCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
             return true;
         }
 
         switch (args[0].toLowerCase()) {
             case "health": {
                 if (args.length < 2) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                     return true;
                 }
 
                 switch (args[1].toLowerCase()) {
                     case "add": {
                         if (!sender.hasPermission("greatlifesteal.command.health.add")) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                             return true;
                         }
         
                         if (args.length < 4) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                             return true;
                         }
         
                         Player target = this.server.getPlayer(args[2]);
                         if (target == null) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                             return true;
                         }
         
@@ -94,38 +94,38 @@ public class LifeStealCommand implements CommandExecutor {
                         try {
                             health = Integer.parseInt(args[3]);
                         } catch (NumberFormatException exception) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
         
                         double newHealth = this.adapter.getMaxHealth(target) + health;
                         if (newHealth < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
                                 newHealth > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
         
                         this.adapter.setMaxHealth(target, newHealth);
         
                         String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_ADD), placeholders);
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_ADD), placeholders);
         
                         break;
                     }
                     case "remove": {
                         if (!sender.hasPermission("greatlifesteal.command.health.remove")) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                             return true;
                         }
         
                         if (args.length < 4) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                             return true;
                         }
         
                         Player target = this.server.getPlayer(args[2]);
                         if (target == null) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                             return true;
                         }
         
@@ -133,38 +133,38 @@ public class LifeStealCommand implements CommandExecutor {
                         try {
                             health = Integer.parseInt(args[3]);
                         } catch (NumberFormatException exception) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
         
                         double newHealth = this.adapter.getMaxHealth(target) - health;
                         if (newHealth < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
                                 newHealth > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
         
                         this.adapter.setMaxHealth(target, newHealth);
         
                         String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_REMOVE), placeholders);
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_REMOVE), placeholders);
         
                         break;
                     }
                     case "set": {
                         if (!sender.hasPermission("greatlifesteal.command.health.set")) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                             return true;
                         }
         
                         if (args.length < 4) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                             return true;
                         }
         
                         Player target = this.server.getPlayer(args[2]);
                         if (target == null) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                             return true;
                         }
         
@@ -172,52 +172,52 @@ public class LifeStealCommand implements CommandExecutor {
                         try {
                             health = Integer.parseInt(args[3]);
                         } catch (NumberFormatException exception) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
         
                         if (health < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
                                 health > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
         
                         this.adapter.setMaxHealth(target, health);
         
                         String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_SET), placeholders);
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_SET), placeholders);
         
                         break;
                     }
                     default:
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                 }
 
                 break;
             }
             case "reload":
                 if (!sender.hasPermission("greatlifesteal.command.reload")) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                     return true;
                 }
 
                 if (this.plugin.loadConfigurations(this.config, this.logger, this.spigotServer, this.server)) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_RELOAD));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_RELOAD));
                     return true;
                 }
 
-                MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_RELOAD));
+                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_RELOAD));
 
                 break;
             case "lives": {
                 if (args.length == 1) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
                     return true;
                 }
 
                 ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
                 if (action == null || !action.isEnabled()) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
                     return true;
                 }
 
@@ -225,20 +225,20 @@ public class LifeStealCommand implements CommandExecutor {
                 if (args.length == 2) {
                     if (!sender.hasPermission("greatlifesteal.command.lives.self") &&
                             !sender.hasPermission("greatlifesteal.command.lives")) {
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                         return true;
                     }
 
                     target = (Player) sender;
                 } else {
                     if (!sender.hasPermission("greatlifesteal.command.lives")) {
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                         return true;
                     }
 
                     target = this.server.getPlayer(args[2]);
                     if (target == null) {
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                         return true;
                     }
                 }
@@ -253,13 +253,13 @@ public class LifeStealCommand implements CommandExecutor {
                 }
 
                 String[] placeholders = { "{PLAYER}", target.getName(), "{LIVES}", String.valueOf(lives) };
-                MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_LIVES), placeholders);
+                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_LIVES), placeholders);
 
                 break;
             }
             case "withdraw": {
                 if (args.length == 1) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_NUMBER_SPECIFIED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_NUMBER_SPECIFIED));
                     return true;
                 }
 
@@ -267,12 +267,12 @@ public class LifeStealCommand implements CommandExecutor {
                 try {
                     amount = Integer.parseUnsignedInt(args[1]);
                 } catch (NumberFormatException exception) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_NUMBER_PROVIDED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_NUMBER_PROVIDED));
                     return true;
                 }
 
                 if (amount <= 0) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.POSITIVE_NUMBER_REQUIRED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.POSITIVE_NUMBER_REQUIRED));
                     return true;
                 }
 
@@ -280,20 +280,20 @@ public class LifeStealCommand implements CommandExecutor {
                 if (args.length == 2) {
                     if (!sender.hasPermission("greatlifesteal.command.withdraw.self") &&
                             !sender.hasPermission("greatlifesteal.command.withdraw")) {
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                         return true;
                     }
 
                     target = (Player) sender;
                 } else {
                     if (!sender.hasPermission("greatlifesteal.command.withdraw")) {
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                         return true;
                     }
 
                     target = this.server.getPlayer(args[2]);
                     if (target == null) {
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                         return true;
                     }
                 }
@@ -308,7 +308,7 @@ public class LifeStealCommand implements CommandExecutor {
                 double targetNewHealth = victimMaxHealth - heartItemHealthAmount;
 
                 if (targetNewHealth <= minimumHealth) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NOT_ENOUGH_HEALTH_WITHDRAW));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NOT_ENOUGH_HEALTH_WITHDRAW));
                     return true;
                 }
 
@@ -319,7 +319,7 @@ public class LifeStealCommand implements CommandExecutor {
                     Map<Integer, ItemStack> heartsNotFitted = inventory.addItem(this.heartItem.getItemStack());
                     if (!heartsNotFitted.isEmpty() && this.config.getProperty(HeartDropConfig.FULL_INVENTORY_LOCATION) == HeartDropLocation.NONE) {
                         inventory.remove(this.heartItem.getItemStack());
-                        MessageService.send(sender, this.config.getProperty(MessagesConfig.NOT_ENOUGH_PLACE_INVENTORY));
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NOT_ENOUGH_PLACE_INVENTORY));
                         return true;
                     }
 
@@ -341,24 +341,24 @@ public class LifeStealCommand implements CommandExecutor {
                 });
 
                 String[] placeholders = { "{PLAYER}", target.getName(), "{HEARTS}", String.valueOf(amount) };
-                MessageService.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_WITHDRAW), placeholders);
+                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_WITHDRAW), placeholders);
 
                 break;
             }
             case "eliminate": {
                 if (!sender.hasPermission("greatlifesteal.command.eliminate")) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                     return true;
                 }
 
                 if (args.length == 1) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
                     return true;
                 }
 
                 ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
                 if (action == null || !action.isEnabled()) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
                     return true;
                 }
 
@@ -366,18 +366,18 @@ public class LifeStealCommand implements CommandExecutor {
 
                 boolean allowedAction = actionType == ActionType.BAN || actionType == ActionType.DISPATCH_COMMANDS;
                 if (!allowedAction) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.ACTION_TYPE_INVALID));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.ACTION_TYPE_INVALID));
                     return true;
                 }
 
                 if (args.length == 2) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                     return true;
                 }
 
                 Player victim = this.server.getPlayer(args[2]);
                 if (victim == null) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                     return true;
                 }
 
@@ -402,17 +402,17 @@ public class LifeStealCommand implements CommandExecutor {
                 elimination.setPlayerName(victimName);
                 elimination.setAction(args[1]);
 
-                Result<Optional<Elimination>, Exception> foundElimination = this.eliminationService.getElimination(elimination.getPlayerUuid()).join();
+                Result<Optional<Elimination>, Exception> foundElimination = this.eliminationFacade.getElimination(elimination.getPlayerUuid()).join();
 
                 foundElimination
                         .peek(eliminationMaybe -> {
                             if (eliminationMaybe.isPresent()) {
-                                MessageService.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_PRESENT),
+                                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_PRESENT),
                                         "{PLAYER}", victim.getName());
                                 return;
                             }
 
-                            Result<Elimination, Exception> createResult = this.eliminationService.createElimination(elimination).join();
+                            Result<Elimination, Exception> createResult = this.eliminationFacade.createElimination(elimination).join();
 
                             createResult
                                     .peek(ignored -> {
@@ -423,40 +423,40 @@ public class LifeStealCommand implements CommandExecutor {
                                         }
 
                                         action.getParameters().forEach(parameter -> {
-                                            parameter = MessageService.formatPlaceholders(parameter, placeholders);
+                                            parameter = MessageFacade.formatPlaceholders(parameter, placeholders);
 
                                             // Dispatch custom commands for the elimination.
                                             if (Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter)) {
-                                                this.eliminationService.removeElimination(victim.getUniqueId()).join();
+                                                this.eliminationFacade.removeElimination(victim.getUniqueId()).join();
                                             }
                                         });
                                     })
                                     .onError(error -> {
                                         this.logger.error("Could not eliminate a player via command.", error);
-                                        MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
                                     });
                         })
                         .onError(error -> {
                             this.logger.error("Could not eliminate a player via command.", error);
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
                         });
 
                 break;
             }
             case "revive": {
                 if (!sender.hasPermission("greatlifesteal.command.revive")) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                     return true;
                 }
 
                 if (args.length == 1) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_SPECIFIED));
                     return true;
                 }
 
                 ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
                 if (action == null || !action.isEnabled()) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
                     return true;
                 }
 
@@ -464,35 +464,35 @@ public class LifeStealCommand implements CommandExecutor {
 
                 boolean allowedAction = actionType == ActionType.BAN || actionType == ActionType.DISPATCH_COMMANDS;
                 if (!allowedAction) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.ACTION_TYPE_INVALID));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.ACTION_TYPE_INVALID));
                     return true;
                 }
 
 
                 if (args.length == 2) {
-                    MessageService.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
+                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                     return true;
                 }
 
                 String victimName = args[2];
 
-                this.eliminationService.getElimination(victimName).thenAccept(result -> result
+                this.eliminationFacade.getElimination(victimName).thenAccept(result -> result
                         .peek(eliminationMaybe -> {
                             if (!eliminationMaybe.isPresent()) {
-                                MessageService.send(sender, this.config.getProperty(MessagesConfig.NO_ELIMINATION_PRESENT),
+                                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ELIMINATION_PRESENT),
                                         "{PLAYER}", victimName);
                                 return;
                             }
 
                             // Execute all revive-related commands but do not remove the elimination from the database yet.
-                            this.eliminationService.changeReviveStatus(victimName, EliminationReviveStatus.COMPLETED).join()
+                            this.eliminationFacade.changeReviveStatus(victimName, EliminationReviveStatus.COMPLETED).join()
                                     .peek(success -> {
                                         if (success) {
                                             if (actionType == ActionType.DISPATCH_COMMANDS) {
                                                 action.getRevive().getCommands().forEach(parameter -> {
-                                                    parameter = MessageService.formatPlaceholders(parameter, "{victim}", victimName);
+                                                    parameter = MessageFacade.formatPlaceholders(parameter, "{victim}", victimName);
                                                     if (Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter)) {
-                                                        this.eliminationService.changeReviveStatus(victimName, EliminationReviveStatus.PENDING).join();
+                                                        this.eliminationFacade.changeReviveStatus(victimName, EliminationReviveStatus.PENDING).join();
                                                     }
                                                 });
                                             }
@@ -500,18 +500,18 @@ public class LifeStealCommand implements CommandExecutor {
                                     })
                                     .onError(error -> {
                                         this.logger.error("Could not change a revive status.", error);
-                                        MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
                                     });
                         })
                         .onError(error -> {
                             this.logger.error("Could not revive a player via command.", error);
-                            MessageService.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
                         }));
 
                 break;
             }
             default:
-                MessageService.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
+                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
         }
 
         return true;

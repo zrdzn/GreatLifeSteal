@@ -6,18 +6,18 @@ import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigDataBuilder;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigMigrationService;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationServiceFactory;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacadeFactory;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItemFactory;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRemovalCache;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationJoinPreventListener;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRestoreHealthListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartCraftListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartCraftPrepareListener;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartService;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartUseListener;
 import io.github.zrdzn.minecraft.greatlifesteal.placeholderapi.GreatLifeStealExpansion;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
@@ -98,22 +98,22 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         boolean latestVersion = updateNotifier.checkIfLatest(this.getDescription().getVersion());
         UpdateListener updateListener = new UpdateListener(config, latestVersion);
 
-        HeartService heartService = new HeartService(config, this.heartItem, spigotServer.getPlayerInventoryAdapter());
+        HeartFacade heartFacade = new HeartFacade(config, this.heartItem, spigotServer.getPlayerInventoryAdapter());
 
         Storage storage = new StorageFactory(config, logger, this).createStorage();
 
-        EliminationService eliminationService = EliminationServiceFactory.createEliminationService(storage);
+        EliminationFacade eliminationFacade = EliminationFacadeFactory.createEliminationFacade(storage);
 
-        UserListener userListener = new UserListener(this, logger, config, eliminationService, damageableAdapter,
-                heartService, this.heartItem);
+        UserListener userListener = new UserListener(this, logger, config, eliminationFacade, damageableAdapter,
+                heartFacade, this.heartItem);
 
         EliminationRemovalCache eliminationRemovalCache = new EliminationRemovalCache();
 
         EliminationJoinPreventListener eliminationJoinPreventListener = new EliminationJoinPreventListener(logger, config,
-                eliminationService, eliminationRemovalCache);
+                eliminationFacade, eliminationRemovalCache);
 
         EliminationRestoreHealthListener eliminationRestoreHealthListener = new EliminationRestoreHealthListener(logger,
-                config, eliminationService, spigotServer.getDamageableAdapter(), eliminationRemovalCache);
+                config, eliminationFacade, spigotServer.getDamageableAdapter(), eliminationRemovalCache);
 
         pluginManager.registerEvents(updateListener, this);
         pluginManager.registerEvents(userListener, this);
@@ -124,7 +124,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         pluginManager.registerEvents(heartUseListener, this);
 
         PluginCommand lifeStealCommand = this.getCommand("lifesteal");
-        lifeStealCommand.setExecutor(new LifeStealCommand(this, logger, config, eliminationService, damageableAdapter, spigotServer, this.heartItem));
+        lifeStealCommand.setExecutor(new LifeStealCommand(this, logger, config, eliminationFacade, damageableAdapter, spigotServer, this.heartItem));
         lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(config));
     }
 

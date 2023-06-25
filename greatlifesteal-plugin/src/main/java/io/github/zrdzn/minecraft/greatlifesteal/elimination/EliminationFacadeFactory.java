@@ -6,14 +6,14 @@ import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.MysqlStorage;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.SqliteStorage;
 
-public class EliminationServiceFactory {
+public class EliminationFacadeFactory {
 
-    public static EliminationService createEliminationService(Storage storage) {
+    public static EliminationFacade createEliminationFacade(Storage storage) {
         switch (storage.getType()) {
             case MYSQL:
-                return new EliminationService(new MysqlEliminationRepository((MysqlStorage) storage));
+                return new EliminationFacade(new MysqlEliminationRepository((MysqlStorage) storage));
             case SQLITE:
-                return new EliminationService(new SqliteEliminationRepository((SqliteStorage) storage));
+                return new EliminationFacade(new SqliteEliminationRepository((SqliteStorage) storage));
             default:
                 throw new IllegalArgumentException("There is no such storage type.");
         }

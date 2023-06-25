@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.CommandSender;
 
-public class MessageService {
+public class MessageFacade {
 
     public static CompletableFuture<Void> send(CommandSender receiver, final String message, String... placeholders) {
         return CompletableFuture.runAsync(() -> {

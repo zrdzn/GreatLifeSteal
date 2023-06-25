@@ -3,20 +3,20 @@ package io.github.zrdzn.minecraft.greatlifesteal.heart;
 import java.util.Map;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.PlayerInventoryAdapter;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-public class HeartService {
+public class HeartFacade {
 
     private final SettingsManager config;
     private final HeartItem heartItem;
     private final PlayerInventoryAdapter playerInventoryAdapter;
 
-    public HeartService(SettingsManager config, HeartItem heartItem, PlayerInventoryAdapter playerInventoryAdapter) {
+    public HeartFacade(SettingsManager config, HeartItem heartItem, PlayerInventoryAdapter playerInventoryAdapter) {
         this.config = config;
         this.heartItem = heartItem;
         this.playerInventoryAdapter = playerInventoryAdapter;
@@ -41,7 +41,7 @@ public class HeartService {
         }
 
         this.playerInventoryAdapter.removeItem(inventory, this.heartItem.getItemStack());
-        MessageService.send(player, this.config.getProperty(MessagesConfig.NOT_ENOUGH_PLACE_INVENTORY));
+        MessageFacade.send(player, this.config.getProperty(MessagesConfig.NOT_ENOUGH_PLACE_INVENTORY));
     }
 
     private boolean dropHeart(Player player, HeartDropLocation location) {
