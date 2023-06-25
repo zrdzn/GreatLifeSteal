@@ -1,9 +1,9 @@
 package io.github.zrdzn.minecraft.greatlifesteal.storage;
 
-public class StorageLoadException extends Exception {
+public class StorageLoadException extends RuntimeException {
 
     public StorageLoadException(String message, Throwable exception) {
-        super("Something went wrong while loading a storage: " + message, exception);
+        super("Could not load the storage: " + message, exception);
     }
 
 }
