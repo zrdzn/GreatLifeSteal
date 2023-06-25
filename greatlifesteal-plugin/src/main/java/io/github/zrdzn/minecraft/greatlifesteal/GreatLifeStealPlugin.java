@@ -62,7 +62,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         Logger logger = LoggerFactory.getLogger("GreatLifeSteal");
 
-        SpigotServer spigotServer = SpigotServerFactory.createServer(this);
+        SpigotServer spigotServer = new SpigotServerFactory(this).createServer();
         logger.info("Using {} version of the adapter.", spigotServer.getVersion());
 
         SettingsManager config = SettingsManagerBuilder
