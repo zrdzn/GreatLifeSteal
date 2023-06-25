@@ -1,10 +1,8 @@
 package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.repositories.MysqlEliminationRepository;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.repositories.SqliteEliminationRepository;
 import io.github.zrdzn.minecraft.greatlifesteal.storage.Storage;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.MysqlStorage;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.SqliteStorage;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.MysqlStorage;
+import io.github.zrdzn.minecraft.greatlifesteal.storage.SqliteStorage;
 
 public class EliminationServiceFactory {
 

@@ -2,12 +2,12 @@ package io.github.zrdzn.minecraft.greatlifesteal.user;
 
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DisabledWorldsConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.StealCooldownConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartDropConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.DisabledWorldsConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.StealCooldownConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;

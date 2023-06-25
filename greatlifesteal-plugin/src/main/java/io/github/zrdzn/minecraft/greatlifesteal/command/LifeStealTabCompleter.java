@@ -1,8 +1,8 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
 import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

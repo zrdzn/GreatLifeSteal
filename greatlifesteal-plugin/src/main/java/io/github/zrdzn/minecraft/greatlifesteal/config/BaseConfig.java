@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.config.configs;
+package io.github.zrdzn.minecraft.greatlifesteal.config;
 
 import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
@@ -10,8 +10,8 @@ import ch.jalu.configme.properties.PropertyBuilder;
 import ch.jalu.configme.properties.types.BeanPropertyType;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BeanBuilder;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ReviveBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ReviveBean;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

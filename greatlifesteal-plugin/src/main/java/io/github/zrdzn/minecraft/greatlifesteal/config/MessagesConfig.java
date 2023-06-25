@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.config.configs;
+package io.github.zrdzn.minecraft.greatlifesteal.config;
 
 import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.CommentsConfiguration;

@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.storage.storages;
+package io.github.zrdzn.minecraft.greatlifesteal.storage;
 
 import ch.jalu.configme.SettingsManager;
 import com.google.common.io.Files;

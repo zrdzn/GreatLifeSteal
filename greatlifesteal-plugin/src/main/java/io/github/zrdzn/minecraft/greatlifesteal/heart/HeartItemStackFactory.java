@@ -1,8 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
 import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartMetaConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.NbtService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import org.bukkit.enchantments.Enchantment;

@@ -1,17 +1,13 @@
-package io.github.zrdzn.minecraft.greatlifesteal.elimination.listeners;
+package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.DisabledWorldsConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRemovalCache;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.DisabledWorldsConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

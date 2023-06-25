@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.heart.listeners;
+package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import org.bukkit.event.EventHandler;

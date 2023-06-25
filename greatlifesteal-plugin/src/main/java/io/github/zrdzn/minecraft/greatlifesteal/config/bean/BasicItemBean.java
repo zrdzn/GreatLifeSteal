@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans;
+package io.github.zrdzn.minecraft.greatlifesteal.config.bean;
 
 import org.bukkit.Material;
 

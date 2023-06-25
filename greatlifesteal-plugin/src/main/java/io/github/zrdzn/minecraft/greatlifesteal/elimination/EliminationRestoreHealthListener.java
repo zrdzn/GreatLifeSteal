@@ -1,11 +1,9 @@
-package io.github.zrdzn.minecraft.greatlifesteal.elimination.listeners;
+package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
 import java.util.UUID;
 import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRemovalCache;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationService;
+import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.entity.Player;

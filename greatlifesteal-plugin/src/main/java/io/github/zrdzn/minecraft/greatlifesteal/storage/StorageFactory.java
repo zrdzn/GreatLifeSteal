@@ -1,8 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.storage;
 
 import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.MysqlStorage;
-import io.github.zrdzn.minecraft.greatlifesteal.storage.storages.SqliteStorage;
 import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;
 

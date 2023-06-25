@@ -1,4 +1,4 @@
-package io.github.zrdzn.minecraft.greatlifesteal.storage.storages;
+package io.github.zrdzn.minecraft.greatlifesteal.storage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

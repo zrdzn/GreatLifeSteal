@@ -1,7 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.update;
 
 import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
