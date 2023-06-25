@@ -1,7 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
 import java.util.Map;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;

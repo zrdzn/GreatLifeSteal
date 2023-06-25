@@ -6,7 +6,6 @@ import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.BooleanProperty;
 import ch.jalu.configme.properties.EnumProperty;
 import ch.jalu.configme.properties.Property;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
 
 /**
  * Represents 'baseSettings.heartItem.drop' section.
