@@ -37,6 +37,7 @@ public class SpigotServerFactory {
             case "v1_19_R1":
             case "v1_19_R2":
             case "v1_19_R3":
+            case "v1_20_R1":
                 return new V1_15R1SpigotServer(plugin);
             default:
                 throw new IllegalArgumentException(
