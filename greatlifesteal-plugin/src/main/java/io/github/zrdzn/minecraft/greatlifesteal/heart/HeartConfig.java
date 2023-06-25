@@ -1,5 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
+import java.util.Map;
 import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.CommentsConfiguration;
@@ -10,7 +11,6 @@ import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.PropertyBuilder;
 import ch.jalu.configme.properties.types.BeanPropertyType;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BasicItemBean;
-import java.util.Map;
 import org.bukkit.Material;
 
 /**

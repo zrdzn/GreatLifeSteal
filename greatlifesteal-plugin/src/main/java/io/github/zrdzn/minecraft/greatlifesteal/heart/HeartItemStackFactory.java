@@ -8,18 +8,19 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin.formatColor;
 
 public class HeartItemStackFactory {
 
+    private final Logger logger = LoggerFactory.getLogger(HeartItemStackFactory.class);
+
     private final SettingsManager config;
-    private final Logger logger;
     private final SpigotServer spigotServer;
 
-    public HeartItemStackFactory(SettingsManager config, Logger logger, SpigotServer spigotServer) {
+    public HeartItemStackFactory(SettingsManager config, SpigotServer spigotServer) {
         this.config = config;
-        this.logger = logger;
         this.spigotServer = spigotServer;
     }
 

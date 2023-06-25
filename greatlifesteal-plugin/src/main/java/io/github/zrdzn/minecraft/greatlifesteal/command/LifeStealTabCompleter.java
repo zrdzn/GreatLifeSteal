@@ -1,13 +1,13 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
-import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

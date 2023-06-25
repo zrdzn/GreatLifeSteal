@@ -5,26 +5,27 @@ import java.util.Optional;
 import java.util.UUID;
 import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.DisabledWorldsConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import panda.std.Result;
 
 public class EliminationJoinPreventListener implements Listener {
 
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(EliminationJoinPreventListener.class);
+
     private final SettingsManager config;
     private final EliminationFacade eliminationFacade;
     private final EliminationRemovalCache eliminationRemovalCache;
 
-    public EliminationJoinPreventListener(Logger logger, SettingsManager config, EliminationFacade eliminationFacade,
+    public EliminationJoinPreventListener(SettingsManager config, EliminationFacade eliminationFacade,
                                           EliminationRemovalCache eliminationRemovalCache) {
-        this.logger = logger;
         this.config = config;
         this.eliminationFacade = eliminationFacade;
         this.eliminationRemovalCache = eliminationRemovalCache;

@@ -1,12 +1,12 @@
 package io.github.zrdzn.minecraft.greatlifesteal.placeholderapi;
 
-import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.text.DecimalFormat;
 import java.util.Arrays;
+import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;

@@ -31,4 +31,5 @@ public class HealthChangeConfig implements SettingsHolder {
                 "If you want to disable the life steal system for a killer or a victim just set their health change to 0."
         );
     }
+
 }

@@ -3,23 +3,24 @@ package io.github.zrdzn.minecraft.greatlifesteal.storage;
 import ch.jalu.configme.SettingsManager;
 import org.bukkit.plugin.Plugin;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StorageFactory {
 
+    private final Logger logger = LoggerFactory.getLogger(StorageFactory.class);
+
     private final SettingsManager config;
-    private final Logger logger;
     private final Plugin plugin;
 
-    public StorageFactory(SettingsManager config, Logger logger, Plugin plugin) {
+    public StorageFactory(SettingsManager config, Plugin plugin) {
         this.config = config;
-        this.logger = logger;
         this.plugin = plugin;
     }
 
     public Storage createStorage() {
         switch (this.config.getProperty(StorageConfig.TYPE)) {
             case MYSQL:
-                return new MysqlStorage(this.logger).load(this.config)
+                return new MysqlStorage().load(this.config)
                         .peek(ignored -> this.logger.info("Choosing MySQL as a storage provider."))
                         .onError(error -> {
                             this.logger.error("Something went wrong while loading the MySQL storage. Check if your credentials are correct and then restart the server.", error);

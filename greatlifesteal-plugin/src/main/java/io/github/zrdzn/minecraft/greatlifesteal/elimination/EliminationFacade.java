@@ -26,7 +26,8 @@ public class EliminationFacade {
         return CompletableFuture.supplyAsync(() -> this.repository.findEliminationByPlayerName(playerName));
     }
 
-    public CompletableFuture<Result<Boolean, Exception>> changeReviveStatus(String playerName, EliminationReviveStatus status) {
+    public CompletableFuture<Result<Boolean, Exception>> changeReviveStatus(String playerName,
+                                                                            EliminationReviveStatus status) {
         return CompletableFuture.supplyAsync(() -> this.repository.updateReviveByPlayerName(playerName, status));
     }
 

@@ -9,21 +9,22 @@ import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HeartItemFactory {
 
+    private final Logger logger = LoggerFactory.getLogger(HeartItemFactory.class);
+
     private final SettingsManager config;
-    private final Logger logger;
     private final SpigotServer spigotServer;
 
-    public HeartItemFactory(SettingsManager config, Logger logger, SpigotServer spigotServer) {
+    public HeartItemFactory(SettingsManager config, SpigotServer spigotServer) {
         this.config = config;
-        this.logger = logger;
         this.spigotServer = spigotServer;
     }
 
     public HeartItem createHeartItem() {
-        ItemStack itemStack = new HeartItemStackFactory(this.config, this.logger, this.spigotServer).createHeartItemStack();
+        ItemStack itemStack = new HeartItemStackFactory(this.config, this.spigotServer).createHeartItemStack();
 
         // Creating heart recipe.
         ShapedRecipe recipe = this.spigotServer.getShapedRecipeAdapter().createShapedRecipe(itemStack);

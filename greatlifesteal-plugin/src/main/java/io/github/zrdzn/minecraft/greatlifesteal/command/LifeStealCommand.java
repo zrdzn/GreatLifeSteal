@@ -1,26 +1,26 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
-import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
+import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
+import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,12 +33,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import panda.std.Result;
 
 public class LifeStealCommand implements CommandExecutor {
 
+    private final Logger logger = LoggerFactory.getLogger(LifeStealCommand.class);
+
     private final GreatLifeStealPlugin plugin;
-    private final Logger logger;
     private final SettingsManager config;
     private final EliminationFacade eliminationFacade;
     private final DamageableAdapter adapter;
@@ -46,10 +48,9 @@ public class LifeStealCommand implements CommandExecutor {
     private final SpigotServer spigotServer;
     private final Server server;
 
-    public LifeStealCommand(GreatLifeStealPlugin plugin, Logger logger, SettingsManager config, EliminationFacade eliminationFacade,
+    public LifeStealCommand(GreatLifeStealPlugin plugin, SettingsManager config, EliminationFacade eliminationFacade,
                             DamageableAdapter adapter, SpigotServer spigotServer, HeartItem heartItem) {
         this.plugin = plugin;
-        this.logger = logger;
         this.config = config;
         this.eliminationFacade = eliminationFacade;
         this.adapter = adapter;
@@ -78,18 +79,18 @@ public class LifeStealCommand implements CommandExecutor {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                             return true;
                         }
-        
+
                         if (args.length < 4) {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                             return true;
                         }
-        
+
                         Player target = this.server.getPlayer(args[2]);
                         if (target == null) {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                             return true;
                         }
-        
+
                         int health;
                         try {
                             health = Integer.parseInt(args[3]);
@@ -97,19 +98,19 @@ public class LifeStealCommand implements CommandExecutor {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
-        
+
                         double newHealth = this.adapter.getMaxHealth(target) + health;
                         if (newHealth < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
                                 newHealth > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
-        
+
                         this.adapter.setMaxHealth(target, newHealth);
-        
+
                         String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
                         MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_ADD), placeholders);
-        
+
                         break;
                     }
                     case "remove": {
@@ -117,18 +118,18 @@ public class LifeStealCommand implements CommandExecutor {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                             return true;
                         }
-        
+
                         if (args.length < 4) {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                             return true;
                         }
-        
+
                         Player target = this.server.getPlayer(args[2]);
                         if (target == null) {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                             return true;
                         }
-        
+
                         int health;
                         try {
                             health = Integer.parseInt(args[3]);
@@ -136,19 +137,19 @@ public class LifeStealCommand implements CommandExecutor {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
-        
+
                         double newHealth = this.adapter.getMaxHealth(target) - health;
                         if (newHealth < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
                                 newHealth > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
-        
+
                         this.adapter.setMaxHealth(target, newHealth);
-        
+
                         String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
                         MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_REMOVE), placeholders);
-        
+
                         break;
                     }
                     case "set": {
@@ -156,18 +157,18 @@ public class LifeStealCommand implements CommandExecutor {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_PERMISSIONS));
                             return true;
                         }
-        
+
                         if (args.length < 4) {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.COMMAND_USAGE));
                             return true;
                         }
-        
+
                         Player target = this.server.getPlayer(args[2]);
                         if (target == null) {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_PLAYER_PROVIDED));
                             return true;
                         }
-        
+
                         int health;
                         try {
                             health = Integer.parseInt(args[3]);
@@ -175,18 +176,18 @@ public class LifeStealCommand implements CommandExecutor {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
-        
+
                         if (health < this.config.getProperty(BaseConfig.MINIMUM_HEALTH) ||
                                 health > this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
                             MessageFacade.send(sender, this.config.getProperty(MessagesConfig.INVALID_HEALTH_PROVIDED));
                             return true;
                         }
-        
+
                         this.adapter.setMaxHealth(target, health);
-        
+
                         String[] placeholders = { "{PLAYER}", target.getDisplayName(), "{HEALTH}", String.valueOf(health) };
                         MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_SET), placeholders);
-        
+
                         break;
                     }
                     default:
@@ -201,7 +202,7 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                if (this.plugin.loadConfigurations(this.config, this.logger, this.spigotServer, this.server)) {
+                if (this.plugin.loadConfigurations(this.config, this.spigotServer, this.server)) {
                     MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_RELOAD));
                     return true;
                 }
@@ -333,7 +334,7 @@ public class LifeStealCommand implements CommandExecutor {
                 World world = target.getWorld();
 
                 heartsLeft.forEach(item -> {
-                    if (dropLocation == HeartDropLocation.GROUND_LEVEL)  {
+                    if (dropLocation == HeartDropLocation.GROUND_LEVEL) {
                         world.dropItemNaturally(target.getLocation(), item);
                     } else if (dropLocation == HeartDropLocation.EYE_LEVEL) {
                         world.dropItemNaturally(target.getEyeLocation(), item);

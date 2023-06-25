@@ -6,17 +6,14 @@ import ch.jalu.configme.SettingsManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import panda.std.Result;
 
 public class MysqlStorage implements Storage, Poolable {
 
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(MysqlStorage.class);
 
     private HikariDataSource hikariDataSource;
-
-    public MysqlStorage(Logger logger) {
-        this.logger = logger;
-    }
 
     @Override
     public Result<? extends Storage, StorageLoadException> load(SettingsManager config) {

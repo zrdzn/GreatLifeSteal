@@ -1,11 +1,11 @@
 package io.github.zrdzn.minecraft.greatlifesteal.config;
 
+import java.util.List;
 import ch.jalu.configme.Comment;
 import ch.jalu.configme.SettingsHolder;
 import ch.jalu.configme.configurationdata.CommentsConfiguration;
 import ch.jalu.configme.properties.Property;
 import ch.jalu.configme.properties.StringListProperty;
-import java.util.List;
 
 /**
  * Represents 'baseSettings.disabledWorlds' section.

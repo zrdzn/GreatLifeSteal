@@ -1,20 +1,5 @@
 package io.github.zrdzn.minecraft.greatlifesteal.user;
 
-import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.DisabledWorldsConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.StealCooldownConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -22,6 +7,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
+import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.DisabledWorldsConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.StealCooldownConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
+import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -34,23 +34,24 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UserListener implements Listener {
+
+    private final Logger logger = LoggerFactory.getLogger(UserListener.class);
 
     private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
     private final JavaPlugin plugin;
-    private final Logger logger;
     private final SettingsManager config;
     private final EliminationFacade eliminationFacade;
     private final DamageableAdapter adapter;
     private final HeartFacade heartFacade;
     private final HeartItem heartItem;
 
-    public UserListener(JavaPlugin plugin, Logger logger, SettingsManager config, EliminationFacade eliminationFacade,
+    public UserListener(JavaPlugin plugin, SettingsManager config, EliminationFacade eliminationFacade,
                         DamageableAdapter adapter, HeartFacade heartFacade, HeartItem heartItem) {
         this.plugin = plugin;
-        this.logger = logger;
         this.config = config;
         this.eliminationFacade = eliminationFacade;
         this.adapter = adapter;

@@ -1,12 +1,12 @@
 package io.github.zrdzn.minecraft.greatlifesteal.storage;
 
-import ch.jalu.configme.SettingsManager;
-import com.google.common.io.Files;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import ch.jalu.configme.SettingsManager;
+import com.google.common.io.Files;
 import panda.std.Result;
 
 public class SqliteStorage implements Storage {
@@ -35,14 +35,14 @@ public class SqliteStorage implements Storage {
 
             String query =
                     "CREATE TABLE IF NOT EXISTS gls_eliminations (" +
-                    "   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
-                    "   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_DATE," +
-                    "   player_uuid VARCHAR(36) NOT NULL UNIQUE," +
-                    "   player_name VARCHAR NOT NULL UNIQUE," +
-                    "   action VARCHAR NOT NULL," +
-                    "   revive VARCHAR NOT NULL DEFAULT 'PENDING'," +
-                    "   last_world VARCHAR NOT NULL" +
-                    ");";
+                            "   id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                            "   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_DATE," +
+                            "   player_uuid VARCHAR(36) NOT NULL UNIQUE," +
+                            "   player_name VARCHAR NOT NULL UNIQUE," +
+                            "   action VARCHAR NOT NULL," +
+                            "   revive VARCHAR NOT NULL DEFAULT 'PENDING'," +
+                            "   last_world VARCHAR NOT NULL" +
+                            ");";
             try (Connection connection = this.getConnection();
                  PreparedStatement statement = connection.prepareStatement(query)) {
                 statement.executeUpdate();

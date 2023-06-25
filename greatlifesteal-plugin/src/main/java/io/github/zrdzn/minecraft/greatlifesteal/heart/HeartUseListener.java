@@ -20,7 +20,8 @@ public class HeartUseListener implements Listener {
     private final HeartItem heartItem;
     private final NbtService nbtService;
 
-    public HeartUseListener(SettingsManager config, SpigotServer spigotServer, HeartItem heartItem, NbtService nbtService) {
+    public HeartUseListener(SettingsManager config, SpigotServer spigotServer, HeartItem heartItem,
+                            NbtService nbtService) {
         this.config = config;
         this.spigotServer = spigotServer;
         this.heartItem = heartItem;

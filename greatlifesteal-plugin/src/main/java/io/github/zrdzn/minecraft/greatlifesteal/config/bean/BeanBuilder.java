@@ -18,7 +18,7 @@ public class BeanBuilder<T> {
      * Define what is the bean class you want to work on.
      *
      * @param bean the class of the bean
-     * @param <T> the bean object
+     * @param <T>  the bean object
      *
      * @return the new builder holding the bean instance
      */

@@ -11,18 +11,20 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EliminationRestoreHealthListener implements Listener {
 
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(EliminationRestoreHealthListener.class);
+
     private final SettingsManager config;
     private final EliminationFacade eliminationFacade;
     private final DamageableAdapter damageableAdapter;
     private final EliminationRemovalCache eliminationRemovalCache;
 
-    public EliminationRestoreHealthListener(Logger logger, SettingsManager config, EliminationFacade eliminationFacade,
-                                            DamageableAdapter damageableAdapter, EliminationRemovalCache eliminationRemovalCache) {
-        this.logger = logger;
+    public EliminationRestoreHealthListener(SettingsManager config, EliminationFacade eliminationFacade,
+                                            DamageableAdapter damageableAdapter,
+                                            EliminationRemovalCache eliminationRemovalCache) {
         this.config = config;
         this.eliminationFacade = eliminationFacade;
         this.damageableAdapter = damageableAdapter;

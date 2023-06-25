@@ -31,7 +31,7 @@ public class MysqlEliminationRepository implements EliminationRepository {
     public Result<Elimination, Exception> saveElimination(Elimination elimination) {
         return Result.supplyThrowing(() -> {
             try (Connection connection = this.storage.getHikariDataSource().getConnection();
-                    PreparedStatement statement = connection.prepareStatement(INSERT_ELIMINATION)) {
+                 PreparedStatement statement = connection.prepareStatement(INSERT_ELIMINATION)) {
                 statement.setTimestamp(1, Timestamp.from(elimination.getCreatedAt()));
                 statement.setString(2, elimination.getPlayerUuid().toString());
                 statement.setString(3, elimination.getPlayerName());
@@ -49,7 +49,7 @@ public class MysqlEliminationRepository implements EliminationRepository {
     public Result<Optional<Elimination>, Exception> findEliminationByPlayerUuid(UUID playerUuid) {
         return Result.supplyThrowing(() -> {
             try (Connection connection = this.storage.getHikariDataSource().getConnection();
-                    PreparedStatement statement = connection.prepareStatement(SELECT_ELIMINATION_BY_UUID)) {
+                 PreparedStatement statement = connection.prepareStatement(SELECT_ELIMINATION_BY_UUID)) {
                 statement.setString(1, playerUuid.toString());
                 ResultSet result = statement.executeQuery();
                 if (!result.next()) {
@@ -74,7 +74,7 @@ public class MysqlEliminationRepository implements EliminationRepository {
     public Result<Optional<Elimination>, Exception> findEliminationByPlayerName(String playerName) {
         return Result.supplyThrowing(() -> {
             try (Connection connection = this.storage.getHikariDataSource().getConnection();
-                    PreparedStatement statement = connection.prepareStatement(SELECT_ELIMINATION_BY_NAME)) {
+                 PreparedStatement statement = connection.prepareStatement(SELECT_ELIMINATION_BY_NAME)) {
                 statement.setString(1, playerName);
                 ResultSet result = statement.executeQuery();
                 if (!result.next()) {
@@ -99,7 +99,7 @@ public class MysqlEliminationRepository implements EliminationRepository {
     public Result<Boolean, Exception> updateReviveByPlayerName(String playerName, EliminationReviveStatus status) {
         return Result.supplyThrowing(() -> {
             try (Connection connection = this.storage.getHikariDataSource().getConnection();
-                    PreparedStatement statement = connection.prepareStatement(UPDATE_REVIVE_BY_NAME)) {
+                 PreparedStatement statement = connection.prepareStatement(UPDATE_REVIVE_BY_NAME)) {
                 statement.setString(1, status.toString());
                 statement.setString(2, playerName);
 
@@ -112,7 +112,7 @@ public class MysqlEliminationRepository implements EliminationRepository {
     public Result<Blank, Exception> deleteEliminationByPlayerUuid(UUID playerUuid) {
         return Result.supplyThrowing(() -> {
             try (Connection connection = this.storage.getHikariDataSource().getConnection();
-                    PreparedStatement statement = connection.prepareStatement(DELETE_ELIMINATION_BY_UUID)) {
+                 PreparedStatement statement = connection.prepareStatement(DELETE_ELIMINATION_BY_UUID)) {
                 statement.setString(1, playerUuid.toString());
                 statement.executeUpdate();
             }

@@ -10,7 +10,6 @@ public interface Storage {
      * An entry point for a data source.
      * It executes in the first place, so it can have some
      * configurations, parsers, default schemas creations etc.
-     *
      */
     Result<? extends Storage, StorageLoadException> load(SettingsManager config);
 
