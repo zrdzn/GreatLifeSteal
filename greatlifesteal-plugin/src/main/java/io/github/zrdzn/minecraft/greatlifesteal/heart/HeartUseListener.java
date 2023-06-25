@@ -50,7 +50,7 @@ public class HeartUseListener implements Listener {
 
         Player player = event.getPlayer();
 
-        double healthChange = this.nbtService.getDouble(this.heartItem.getItemStack(), "heartHealthChange");
+        double healthChange = this.nbtService.getDouble(this.heartItem.getItemStack(), HeartItem.HEART_HEALTH_CHANGE_NBT_KEY);
 
         double playerNewHealth = this.spigotServer.getDamageableAdapter().getMaxHealth(player) + healthChange;
         if (playerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH) && playerNewHealth <= this.config.getProperty(HeartConfig.MAXIMUM_HEALTH_LIMIT)) {

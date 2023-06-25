@@ -28,9 +28,10 @@ public class HeartItemStackFactory {
 
         NbtService nbtService = this.spigotServer.getNbtService();
 
-        this.logger.info("Applying NBT to heart item.");
-        nbtService.setBoolean(itemStack, "heart", true);
-        nbtService.setDouble(itemStack, "heartHealthChange", this.config.getProperty(HeartConfig.HEALTH_AMOUNT));
+        this.logger.info("Applying '{}' nbt key to heart item.", HeartItem.HEART_NBT_KEY);
+        nbtService.setBoolean(itemStack, HeartItem.HEART_NBT_KEY, true);
+        this.logger.info("Applying '{}' nbt key to heart item.", HeartItem.HEART_HEALTH_CHANGE_NBT_KEY);
+        nbtService.setDouble(itemStack, HeartItem.HEART_HEALTH_CHANGE_NBT_KEY, this.config.getProperty(HeartConfig.HEALTH_AMOUNT));
 
         ItemMeta heartItemMeta = itemStack.getItemMeta();
 

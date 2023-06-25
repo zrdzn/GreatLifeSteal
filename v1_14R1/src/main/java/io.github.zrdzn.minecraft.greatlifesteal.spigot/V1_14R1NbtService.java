@@ -19,11 +19,10 @@ public class V1_14R1NbtService implements NbtService {
         NamespacedKey namespacedKey = new NamespacedKey(this.plugin, key);
 
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) {
-            return;
-        }
 
         itemMeta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.INTEGER, value ? 1 : 0);
+
+        itemStack.setItemMeta(itemMeta);
     }
 
     @Override
@@ -48,11 +47,10 @@ public class V1_14R1NbtService implements NbtService {
         NamespacedKey namespacedKey = new NamespacedKey(this.plugin, key);
 
         ItemMeta itemMeta = itemStack.getItemMeta();
-        if (itemMeta == null) {
-            return;
-        }
 
         itemMeta.getPersistentDataContainer().set(namespacedKey, PersistentDataType.DOUBLE, value);
+
+        itemStack.setItemMeta(itemMeta);
     }
 
     @Override

@@ -5,6 +5,9 @@ import org.bukkit.inventory.ShapedRecipe;
 
 public class HeartItem {
 
+    public static final String HEART_NBT_KEY = "heart";
+    public static final String HEART_HEALTH_CHANGE_NBT_KEY = "heart-health-change";
+
     private final ItemStack itemStack;
     private final ShapedRecipe recipe;
 
