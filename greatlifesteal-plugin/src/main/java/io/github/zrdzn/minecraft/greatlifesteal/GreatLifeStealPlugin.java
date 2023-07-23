@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import ch.jalu.configme.SettingsManager;
 import ch.jalu.configme.SettingsManagerBuilder;
+import dev.piotrulla.craftinglib.CraftingException;
+import dev.piotrulla.craftinglib.CraftingLib;
+import dev.piotrulla.craftinglib.CraftingManager;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigDataBuilder;
@@ -15,8 +18,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationJoinPreve
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRemovalCache;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRestoreHealthListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartCraftListener;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartCraftPrepareListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItemFactory;
@@ -34,7 +35,6 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.slf4j.Logger;
@@ -75,10 +75,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         Server server = this.getServer();
         PluginManager pluginManager = server.getPluginManager();
 
-        if (!this.loadConfigurations(config, spigotServer, server)) {
-            pluginManager.disablePlugin(this);
-            return;
-        }
+        this.loadConfigurations(config, spigotServer, server);
 
         if (pluginManager.getPlugin("PlaceholderAPI") == null) {
             this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
@@ -90,8 +87,6 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         DamageableAdapter damageableAdapter = spigotServer.getDamageableAdapter();
 
-        HeartCraftPrepareListener heartCraftPrepareListener = new HeartCraftPrepareListener(this.heartItem);
-        HeartCraftListener heartCraftListener = new HeartCraftListener(this.heartItem);
         HeartUseListener heartUseListener = new HeartUseListener(config, spigotServer, this.heartItem, spigotServer.getNbtService());
 
         UpdateNotifier updateNotifier = new UpdateNotifier();
@@ -118,8 +113,6 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         pluginManager.registerEvents(userListener, this);
         pluginManager.registerEvents(eliminationJoinPreventListener, this);
         pluginManager.registerEvents(eliminationRestoreHealthListener, this);
-        pluginManager.registerEvents(heartCraftPrepareListener, this);
-        pluginManager.registerEvents(heartCraftListener, this);
         pluginManager.registerEvents(heartUseListener, this);
 
         PluginCommand lifeStealCommand = this.getCommand("lifesteal");
@@ -127,7 +120,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(config));
     }
 
-    public boolean loadConfigurations(SettingsManager config, SpigotServer spigotServer, Server server) {
+    public void loadConfigurations(SettingsManager config, SpigotServer spigotServer, Server server) {
         this.saveDefaultConfig();
         this.reloadConfig();
 
@@ -136,22 +129,23 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         if (config.getProperty(HeartConfig.ENABLED)) {
             HeartItem heartItem = new HeartItemFactory(config, spigotServer).createHeartItem();
 
-            ShapedRecipe recipe = heartItem.getRecipe();
+            CraftingManager craftingManager = new CraftingLib(this).getCraftingManager();
 
-            if (spigotServer.getRecipeManagerAdapter().removeServerShapedRecipe(recipe)) {
+            try {
+                craftingManager.removeCrafting(HeartItem.HEART_CRAFTING_NAME);
                 this.logger.info("Removed the old heart item recipe.");
-            }
+            } catch (CraftingException ignored) {}
 
-            if (server.addRecipe(recipe)) {
+            try {
+                craftingManager.createCrafting(HeartItem.HEART_CRAFTING_NAME, heartItem.getCraftingRecipe());
                 this.logger.info("Added the new heart item recipe.");
-            } else {
-                this.logger.error("Could not add the new heart item recipe for some unknown reason.");
+            } catch (CraftingException exception) {
+                this.logger.error("Heart recipe already exists.", exception);
+                return;
             }
 
             this.heartItem = heartItem;
         }
-
-        return true;
     }
 
 }

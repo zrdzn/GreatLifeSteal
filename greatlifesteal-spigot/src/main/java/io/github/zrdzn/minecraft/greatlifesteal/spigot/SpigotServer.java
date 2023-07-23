@@ -6,10 +6,6 @@ public interface SpigotServer {
 
     DamageableAdapter getDamageableAdapter();
 
-    ShapedRecipeAdapter getShapedRecipeAdapter();
-
-    RecipeManagerAdapter getRecipeManagerAdapter();
-
     PlayerInventoryAdapter getPlayerInventoryAdapter();
 
     NbtService getNbtService();

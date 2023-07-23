@@ -13,16 +13,6 @@ public class V1_11R1SpigotServer implements SpigotServer {
     }
 
     @Override
-    public ShapedRecipeAdapter getShapedRecipeAdapter() {
-        return new V1_8R3ShapedRecipeAdapter();
-    }
-
-    @Override
-    public RecipeManagerAdapter getRecipeManagerAdapter() {
-        return new V1_11R1RecipeManagerAdapter();
-    }
-
-    @Override
     public PlayerInventoryAdapter getPlayerInventoryAdapter() {
         return new V1_9R2PlayerInventoryAdapter();
     }

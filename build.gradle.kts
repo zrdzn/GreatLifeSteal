@@ -49,5 +49,10 @@ subprojects {
             name = "codemc-repository"
             url = uri("https://repo.codemc.io/repository/maven-public/")
         }
+
+        maven {
+            name = "jitpack-repository"
+            url = uri("https://jitpack.io")
+        }
     }
 }

@@ -1,27 +1,28 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
+import dev.piotrulla.craftinglib.Crafting;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 
 public class HeartItem {
 
+    public static final String HEART_CRAFTING_NAME = "glsHeart";
     public static final String HEART_NBT_KEY = "heart";
     public static final String HEART_HEALTH_CHANGE_NBT_KEY = "heart-health-change";
 
     private final ItemStack itemStack;
-    private final ShapedRecipe recipe;
+    private final Crafting craftingRecipe;
 
-    public HeartItem(ItemStack itemStack, ShapedRecipe recipe) {
+    public HeartItem(ItemStack itemStack, Crafting craftingRecipe) {
         this.itemStack = itemStack;
-        this.recipe = recipe;
+        this.craftingRecipe = craftingRecipe;
     }
 
     public ItemStack getItemStack() {
         return this.itemStack;
     }
 
-    public ShapedRecipe getRecipe() {
-        return this.recipe;
+    public Crafting getCraftingRecipe() {
+        return this.craftingRecipe;
     }
 
 }

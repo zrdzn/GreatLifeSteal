@@ -33,19 +33,25 @@ public class HeartConfig implements SettingsHolder {
             Material.APPLE
     );
 
-    @Comment("Recipe for the heart item creation. Each number is an ordered slot in the workbench (1-9).")
+    @Comment({
+            "Recipe for the heart item creation. Each letter represents a slot in the crafting table.",
+            "Scheme:",
+            "A B C",
+            "D E F",
+            "G H I",
+    })
     public static final Property<Map<String, BasicItemBean>> CRAFTING = new PropertyBuilder
             .MapPropertyBuilder<>(BeanPropertyType.of(BasicItemBean.class))
             .path("baseSettings.heartItem.crafting")
-            .defaultEntry("1", new BasicItemBean())
-            .defaultEntry("2", new BasicItemBean())
-            .defaultEntry("3", new BasicItemBean())
-            .defaultEntry("4", new BasicItemBean())
-            .defaultEntry("5", new BasicItemBean())
-            .defaultEntry("6", new BasicItemBean())
-            .defaultEntry("7", new BasicItemBean())
-            .defaultEntry("8", new BasicItemBean())
-            .defaultEntry("9", new BasicItemBean())
+            .defaultEntry("A", new BasicItemBean())
+            .defaultEntry("B", new BasicItemBean())
+            .defaultEntry("C", new BasicItemBean())
+            .defaultEntry("D", new BasicItemBean())
+            .defaultEntry("E", new BasicItemBean())
+            .defaultEntry("F", new BasicItemBean())
+            .defaultEntry("G", new BasicItemBean())
+            .defaultEntry("H", new BasicItemBean())
+            .defaultEntry("I", new BasicItemBean())
             .build();
 
     private HeartConfig() {

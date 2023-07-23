@@ -31,9 +31,9 @@ public class SpigotServerFactory {
             case "v1_11_R1":
                 return new V1_11R1SpigotServer();
             case "v1_12_R1":
-                return new V1_12R1SpigotServer(this.plugin);
+                return new V1_12R1SpigotServer();
             case "v1_13_R2":
-                return new V1_13R2SpigotServer(this.plugin);
+                return new V1_13R2SpigotServer();
             case "v1_14_R1":
                 return new V1_14R1SpigotServer(this.plugin);
             case "v1_15_R1":
