@@ -2,9 +2,6 @@ package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import panda.std.Blank;
-import panda.std.Result;
 
 public class EliminationFacade {
 
@@ -14,25 +11,60 @@ public class EliminationFacade {
         this.repository = repository;
     }
 
-    public CompletableFuture<Result<Elimination, Exception>> createElimination(Elimination elimination) {
-        return CompletableFuture.supplyAsync(() -> this.repository.saveElimination(elimination));
+    public Elimination createElimination(UUID playerUuid, String playerName, String action, String lastWorld) {
+        if (playerUuid == null) {
+            throw new EliminationException("Player's unique id cannot be null.");
+        }
+
+        if (playerName == null) {
+            throw new EliminationException("Player's name cannot be null.");
+        }
+
+        if (action == null) {
+            throw new EliminationException("Action cannot be null.");
+        }
+
+        if (lastWorld == null) {
+            throw new EliminationException("Last world cannot be null.");
+        }
+
+        return this.repository.createElimination(playerUuid, playerName, action, lastWorld);
     }
 
-    public CompletableFuture<Result<Optional<Elimination>, Exception>> getElimination(UUID playerUuid) {
-        return CompletableFuture.supplyAsync(() -> this.repository.findEliminationByPlayerUuid(playerUuid));
+    public Optional<Elimination> findEliminationByPlayerUuid(UUID playerUuid) {
+        if (playerUuid == null) {
+            throw new EliminationException("Player's unique id cannot be null.");
+        }
+
+        return this.repository.findEliminationByPlayerUuid(playerUuid);
     }
 
-    public CompletableFuture<Result<Optional<Elimination>, Exception>> getElimination(String playerName) {
-        return CompletableFuture.supplyAsync(() -> this.repository.findEliminationByPlayerName(playerName));
+    public Optional<Elimination> findEliminationByPlayerName(String playerName) {
+        if (playerName == null) {
+            throw new EliminationException("Player's name cannot be null.");
+        }
+
+        return this.repository.findEliminationByPlayerName(playerName);
     }
 
-    public CompletableFuture<Result<Boolean, Exception>> changeReviveStatus(String playerName,
-                                                                            EliminationReviveStatus status) {
-        return CompletableFuture.supplyAsync(() -> this.repository.updateReviveByPlayerName(playerName, status));
+    public boolean updateReviveByPlayerName(String playerName, EliminationReviveStatus status) {
+        if (playerName == null) {
+            throw new EliminationException("Player's name cannot be null.");
+        }
+
+        if (status == null) {
+            throw new EliminationException("Revive status cannot be null.");
+        }
+
+        return this.repository.updateReviveByPlayerName(playerName, status);
     }
 
-    public CompletableFuture<Result<Blank, Exception>> removeElimination(UUID playerUuid) {
-        return CompletableFuture.supplyAsync(() -> this.repository.deleteEliminationByPlayerUuid(playerUuid));
+    public void removeEliminationByPlayerUuid(UUID playerUuid) {
+        if (playerUuid == null) {
+            throw new EliminationException("Player's unique id cannot be null.");
+        }
+
+        this.repository.removeEliminationByPlayerUuid(playerUuid);
     }
 
 }

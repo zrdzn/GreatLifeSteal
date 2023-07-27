@@ -14,9 +14,8 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.DisabledWorldsConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.StealCooldownConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationException;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
@@ -33,6 +32,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,17 +215,19 @@ public class UserListener implements Listener {
                                 .forEach(Bukkit::broadcastMessage);
                         break;
                     case BAN:
-                        Elimination elimination = new Elimination();
-                        elimination.setCreatedAt(Instant.now());
-                        elimination.setPlayerUuid(victim.getUniqueId());
-                        elimination.setPlayerName(victimName);
-                        elimination.setAction(actionKey);
-                        elimination.setRevive(EliminationReviveStatus.PENDING);
+                        BukkitScheduler scheduler = this.plugin.getServer().getScheduler();
 
-                        this.eliminationFacade.createElimination(elimination).join()
-                                .peek(ignored -> victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters()))))
-                                .onError(error -> this.logger.error("Could not eliminate a player.", error));
-
+                        scheduler.runTaskAsynchronously(this.plugin, () -> {
+                            try {
+                                this.eliminationFacade.createElimination(victim.getUniqueId(), victimName, actionKey, victim.getWorld().getName());
+                                scheduler.runTask(this.plugin, () ->
+                                        victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters())))
+                                );
+                            } catch (EliminationException exception) {
+                                this.logger.error("Could not eliminate a player.", exception);
+                                MessageFacade.send(victim, this.config.getProperty(MessagesConfig.FAIL_VICTIM_ELIMINATION));
+                            }
+                        });
                         break;
                     default:
                         throw new IllegalArgumentException("Case for the specified action does not exist.");

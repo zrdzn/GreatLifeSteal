@@ -93,14 +93,24 @@ public class MessagesConfig implements SettingsHolder {
             "&aPlugin has been successfully reloaded."
     );
 
-    public static final Property<String> FAIL_COMMAND_RELOAD = new StringProperty(
-            "messages.failCommandReload",
-            "&cCould not reload the plugin."
-    );
-
     public static final Property<String> FAIL_COMMAND_ELIMINATE = new StringProperty(
             "messages.failCommandEliminate",
             "&cCould not create the elimination."
+    );
+
+    public static final Property<String> FAIL_COMMAND_REVIVE = new StringProperty(
+            "messages.failCommandRevive",
+            "&cCould not revive the victim."
+    );
+
+    public static final Property<String> PLAYER_IS_ALREADY_REVIVED = new StringProperty(
+            "messages.playerIsAlreadyRevived",
+            "&cPlayer {PLAYER} is already revived."
+    );
+
+    public static final Property<String> FAIL_VICTIM_ELIMINATION = new StringProperty(
+            "messages.failVictimElimination",
+            "&cSomething went wrong while eliminating you."
     );
 
     public static final Property<String> SUCCESS_DEFAULT_HEALTH_SET = new StringProperty(

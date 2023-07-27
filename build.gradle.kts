@@ -41,11 +41,6 @@ subprojects {
         }
 
         maven {
-            name = "panda-repository"
-            url = uri("https://repo.panda-lang.org/releases")
-        }
-
-        maven {
             name = "codemc-repository"
             url = uri("https://repo.codemc.io/repository/maven-public/")
         }

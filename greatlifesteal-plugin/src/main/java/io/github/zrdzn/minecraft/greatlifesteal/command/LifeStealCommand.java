@@ -1,6 +1,5 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +12,7 @@ import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationException;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
@@ -32,9 +32,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import panda.std.Result;
 
 public class LifeStealCommand implements CommandExecutor {
 
@@ -47,6 +47,7 @@ public class LifeStealCommand implements CommandExecutor {
     private final HeartItem heartItem;
     private final SpigotServer spigotServer;
     private final Server server;
+    private final BukkitScheduler scheduler;
 
     public LifeStealCommand(GreatLifeStealPlugin plugin, SettingsManager config, EliminationFacade eliminationFacade,
                             DamageableAdapter adapter, SpigotServer spigotServer, HeartItem heartItem) {
@@ -57,6 +58,7 @@ public class LifeStealCommand implements CommandExecutor {
         this.heartItem = heartItem;
         this.spigotServer = spigotServer;
         this.server = plugin.getServer();
+        this.scheduler = this.server.getScheduler();
     }
 
     @Override
@@ -202,12 +204,8 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                if (this.plugin.loadConfigurations(this.config, this.spigotServer, this.server)) {
-                    MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_RELOAD));
-                    return true;
-                }
-
-                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_RELOAD));
+                this.plugin.loadConfigurations(this.config, this.spigotServer, this.server);
+                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.SUCCESSFUL_COMMAND_RELOAD));
 
                 break;
             case "lives": {
@@ -357,7 +355,9 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
+                String actionKey = args[1];
+
+                ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(actionKey);
                 if (action == null || !action.isEnabled()) {
                     MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
                     return true;
@@ -397,50 +397,35 @@ public class LifeStealCommand implements CommandExecutor {
                         "{killer_max_health}", String.valueOf(senderHealth),
                 };
 
-                Elimination elimination = new Elimination();
-                elimination.setCreatedAt(Instant.now());
-                elimination.setPlayerUuid(victim.getUniqueId());
-                elimination.setPlayerName(victimName);
-                elimination.setAction(args[1]);
+                this.scheduler.runTaskAsynchronously(this.plugin, () -> {
+                    try {
+                        Optional<Elimination> eliminationMaybe = this.eliminationFacade.findEliminationByPlayerUuid(victim.getUniqueId());
+                        if (eliminationMaybe.isPresent()) {
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_PRESENT), "{PLAYER}", victim.getName());
+                            return;
+                        }
 
-                Result<Optional<Elimination>, Exception> foundElimination = this.eliminationFacade.getElimination(elimination.getPlayerUuid()).join();
+                        this.eliminationFacade.createElimination(victim.getUniqueId(), victimName, actionKey, victim.getWorld().getName());
+                    } catch (EliminationException exception) {
+                        this.logger.error("Could not find or create an elimination.", exception);
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                        return;
+                    }
 
-                foundElimination
-                        .peek(eliminationMaybe -> {
-                            if (eliminationMaybe.isPresent()) {
-                                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.ELIMINATION_PRESENT),
-                                        "{PLAYER}", victim.getName());
-                                return;
-                            }
+                    this.scheduler.runTask(this.plugin, () -> {
+                        if (actionType == ActionType.BAN) {
+                            victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters())));
+                            return;
+                        }
 
-                            Result<Elimination, Exception> createResult = this.eliminationFacade.createElimination(elimination).join();
+                        action.getParameters().forEach(parameter -> {
+                            parameter = MessageFacade.formatPlaceholders(parameter, placeholders);
 
-                            createResult
-                                    .peek(ignored -> {
-                                        // Kick user if the action type is a ban.
-                                        if (actionType == ActionType.BAN) {
-                                            victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters())));
-                                            return;
-                                        }
-
-                                        action.getParameters().forEach(parameter -> {
-                                            parameter = MessageFacade.formatPlaceholders(parameter, placeholders);
-
-                                            // Dispatch custom commands for the elimination.
-                                            if (Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter)) {
-                                                this.eliminationFacade.removeElimination(victim.getUniqueId()).join();
-                                            }
-                                        });
-                                    })
-                                    .onError(error -> {
-                                        this.logger.error("Could not eliminate a player via command.", error);
-                                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
-                                    });
-                        })
-                        .onError(error -> {
-                            this.logger.error("Could not eliminate a player via command.", error);
-                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
+                            // Dispatch custom commands for the elimination.
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
                         });
+                    });
+                });
 
                 break;
             }
@@ -455,7 +440,9 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
+                String actionKey = args[1];
+
+                ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(actionKey);
                 if (action == null || !action.isEnabled()) {
                     MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ACTION_ENABLED));
                     return true;
@@ -477,37 +464,35 @@ public class LifeStealCommand implements CommandExecutor {
 
                 String victimName = args[2];
 
-                this.eliminationFacade.getElimination(victimName).thenAccept(result -> result
-                        .peek(eliminationMaybe -> {
-                            if (!eliminationMaybe.isPresent()) {
-                                MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ELIMINATION_PRESENT),
-                                        "{PLAYER}", victimName);
-                                return;
+                this.scheduler.runTaskAsynchronously(this.plugin, () -> {
+                    try {
+                        Optional<Elimination> eliminationMaybe = this.eliminationFacade.findEliminationByPlayerName(victimName);
+                        if (!eliminationMaybe.isPresent()) {
+                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.NO_ELIMINATION_PRESENT), "{PLAYER}", victimName);
+                            return;
+                        }
+
+                        // Execute all revive-related commands but do not remove the elimination from the database yet.
+                        boolean statusChanged = this.eliminationFacade.updateReviveByPlayerName(victimName, EliminationReviveStatus.COMPLETED);
+                        if (statusChanged) {
+                            if (actionType == ActionType.DISPATCH_COMMANDS) {
+                                this.scheduler.runTask(this.plugin, () ->
+                                        action.getRevive().getCommands().forEach(parameter -> {
+                                            parameter = MessageFacade.formatPlaceholders(parameter, "{victim}", victimName);
+                                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
+                                        })
+                                );
                             }
 
-                            // Execute all revive-related commands but do not remove the elimination from the database yet.
-                            this.eliminationFacade.changeReviveStatus(victimName, EliminationReviveStatus.COMPLETED).join()
-                                    .peek(success -> {
-                                        if (success) {
-                                            if (actionType == ActionType.DISPATCH_COMMANDS) {
-                                                action.getRevive().getCommands().forEach(parameter -> {
-                                                    parameter = MessageFacade.formatPlaceholders(parameter, "{victim}", victimName);
-                                                    if (Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter)) {
-                                                        this.eliminationFacade.changeReviveStatus(victimName, EliminationReviveStatus.PENDING).join();
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    })
-                                    .onError(error -> {
-                                        this.logger.error("Could not change a revive status.", error);
-                                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
-                                    });
-                        })
-                        .onError(error -> {
-                            this.logger.error("Could not revive a player via command.", error);
-                            MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_ELIMINATE));
-                        }));
+                            return;
+                        }
+
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.PLAYER_IS_ALREADY_REVIVED), "{PLAYER}", victimName);
+                    } catch (EliminationException exception) {
+                        this.logger.error("Could not find or update an elimination.", exception);
+                        MessageFacade.send(sender, this.config.getProperty(MessagesConfig.FAIL_COMMAND_REVIVE));
+                    }
+                });
 
                 break;
             }

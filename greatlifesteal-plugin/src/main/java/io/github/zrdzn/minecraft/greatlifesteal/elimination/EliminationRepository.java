@@ -2,54 +2,63 @@ package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
 import java.util.Optional;
 import java.util.UUID;
-import panda.std.Blank;
-import panda.std.Result;
 
 public interface EliminationRepository {
 
     /**
-     * Saves a new record in the database.
+     * Creates a new elimination.
      *
-     * @param elimination the elimination dto
+     * @param playerUuid the unique id of a player
+     * @param playerName the name of a player
+     * @param action the action that is a cause of elimination
+     * @param lastWorld the last world where the player was
      *
-     * @return the newly created record with an optional exception
+     * @return an elimination
+     *
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<Elimination, Exception> saveElimination(Elimination elimination);
+    Elimination createElimination(UUID playerUuid, String playerName, String action, String lastWorld);
 
     /**
-     * Finds a record with the specified player's uuid.
+     * Finds an elimination with the specified player's unique id.
      *
-     * @param playerUuid the uuid of a player
+     * @param playerUuid the unique id of a player
      *
-     * @return an optional elimination with an optional exception
+     * @return an optional elimination
+     *
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<Optional<Elimination>, Exception> findEliminationByPlayerUuid(UUID playerUuid);
+    Optional<Elimination> findEliminationByPlayerUuid(UUID playerUuid);
 
     /**
-     * Finds a record with the specified player's name.
+     * Finds an elimination with the specified player's name.
      *
      * @param playerName the name of a player
      *
-     * @return an optional elimination with an optional exception
+     * @return an optional elimination
+     *
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<Optional<Elimination>, Exception> findEliminationByPlayerName(String playerName);
+    Optional<Elimination> findEliminationByPlayerName(String playerName);
 
     /**
-     * Updates a record with the specified player's name.
+     * Updates a revive status with the specified player's name
      *
      * @param playerName the name of a player
      *
-     * @return a boolean whether it affected any rows with an optional exception
+     * @return true if the elimination was updated, false otherwise
+     *
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<Boolean, Exception> updateReviveByPlayerName(String playerName, EliminationReviveStatus status);
+    boolean updateReviveByPlayerName(String playerName, EliminationReviveStatus status);
 
     /**
-     * Deletes a record with the specified player's uuid.
+     * Deletes an elimination with the specified player's unique id.
      *
-     * @param playerUuid the uuid of a player
+     * @param playerUuid the unique id of a player
      *
-     * @return an optional exception
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<Blank, Exception> deleteEliminationByPlayerUuid(UUID playerUuid);
+    void removeEliminationByPlayerUuid(UUID playerUuid);
 
 }

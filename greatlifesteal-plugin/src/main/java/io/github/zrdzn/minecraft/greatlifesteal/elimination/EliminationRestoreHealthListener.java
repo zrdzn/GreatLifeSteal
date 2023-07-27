@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,14 +19,18 @@ public class EliminationRestoreHealthListener implements Listener {
 
     private final Logger logger = LoggerFactory.getLogger(EliminationRestoreHealthListener.class);
 
+    private final Plugin plugin;
+    private final BukkitScheduler scheduler;
     private final SettingsManager config;
     private final EliminationFacade eliminationFacade;
     private final DamageableAdapter damageableAdapter;
     private final EliminationRemovalCache eliminationRemovalCache;
 
-    public EliminationRestoreHealthListener(SettingsManager config, EliminationFacade eliminationFacade,
+    public EliminationRestoreHealthListener(Plugin plugin, SettingsManager config, EliminationFacade eliminationFacade,
                                             DamageableAdapter damageableAdapter,
                                             EliminationRemovalCache eliminationRemovalCache) {
+        this.plugin = plugin;
+        this.scheduler = plugin.getServer().getScheduler();
         this.config = config;
         this.eliminationFacade = eliminationFacade;
         this.damageableAdapter = damageableAdapter;
@@ -37,16 +43,21 @@ public class EliminationRestoreHealthListener implements Listener {
         UUID playerUuid = player.getUniqueId();
 
         if (this.eliminationRemovalCache.isPlayerPresent(playerUuid)) {
-            this.eliminationFacade.removeElimination(playerUuid).join()
-                    .peek(ignored -> {
-                        MessageFacade.send(player, this.config.getProperty(MessagesConfig.SUCCESS_DEFAULT_HEALTH_SET));
-                        this.damageableAdapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
-                        this.eliminationRemovalCache.removePlayer(playerUuid);
-                    })
-                    .onError(error -> {
-                        this.logger.error("Could not remove an elimination.", error);
-                        MessageFacade.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
-                    });
+            this.scheduler.runTaskAsynchronously(this.plugin, () -> {
+                try {
+                    this.eliminationFacade.removeEliminationByPlayerUuid(playerUuid);
+                } catch (EliminationException exception) {
+                    this.logger.error("An error occurred while removing an elimination by player's unique id.", exception);
+                    MessageFacade.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
+                    return;
+                }
+
+                this.scheduler.runTask(this.plugin, () -> {
+                    MessageFacade.send(player, this.config.getProperty(MessagesConfig.SUCCESS_DEFAULT_HEALTH_SET));
+                    this.damageableAdapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
+                    this.eliminationRemovalCache.removePlayer(playerUuid);
+                });
+            });
         }
     }
 

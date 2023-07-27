@@ -97,16 +97,16 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         Storage storage = new StorageFactory(config, this).createStorage();
 
-        EliminationFacade eliminationFacade = EliminationFacadeFactory.createEliminationFacade(storage);
+        EliminationFacade eliminationFacade = new EliminationFacadeFactory(storage).createEliminationFacade();
 
         UserListener userListener = new UserListener(this, config, eliminationFacade, damageableAdapter, heartFacade, this.heartItem);
 
         EliminationRemovalCache eliminationRemovalCache = new EliminationRemovalCache();
 
-        EliminationJoinPreventListener eliminationJoinPreventListener = new EliminationJoinPreventListener(config,
+        EliminationJoinPreventListener eliminationJoinPreventListener = new EliminationJoinPreventListener(this, config,
                 eliminationFacade, eliminationRemovalCache);
 
-        EliminationRestoreHealthListener eliminationRestoreHealthListener = new EliminationRestoreHealthListener(config,
+        EliminationRestoreHealthListener eliminationRestoreHealthListener = new EliminationRestoreHealthListener(this, config,
                 eliminationFacade, spigotServer.getDamageableAdapter(), eliminationRemovalCache);
 
         pluginManager.registerEvents(updateListener, this);
