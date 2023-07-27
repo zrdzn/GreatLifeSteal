@@ -30,12 +30,13 @@ dependencies {
 
     implementation("ch.jalu:configme:1.3.0")
     implementation("com.github.Querz:NBT:6.1")
-    implementation("org.panda-lang:expressible:1.3.5")
     implementation("org.slf4j:slf4j-reload4j:2.0.7")
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("org.bstats:bstats-bukkit:3.0.2")
 
     implementation("com.zaxxer:HikariCP:4.0.3")
+
+    implementation("com.github.zrdzn:CraftingLib:2.0.1")
 
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")

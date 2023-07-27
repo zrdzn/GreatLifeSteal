@@ -1,5 +1,10 @@
 package io.github.zrdzn.minecraft.greatlifesteal.config;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import ch.jalu.configme.configurationdata.ConfigurationData;
 import ch.jalu.configme.migration.PlainMigrationService;
 import ch.jalu.configme.properties.BooleanProperty;
@@ -13,45 +18,27 @@ import ch.jalu.configme.properties.types.EnumPropertyType;
 import ch.jalu.configme.properties.types.PropertyType;
 import ch.jalu.configme.resource.PropertyReader;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BasicItemBean;
 import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BeanBuilder;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.BasicItemBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.configs.HeartDropConfig;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
 import org.bukkit.Material;
 
 public class ConfigMigrationService extends PlainMigrationService {
-
-    @Override
-    protected boolean performMigrations(PropertyReader reader, ConfigurationData configData) {
-        return migrateCraftingRecipeToCrafting(reader, configData) |
-                migrateEliminationModeToCustomActions(reader, configData) |
-                migrateHealthChangeToHealthChangeSection(reader, configData) |
-                removeTakeGiveHeartsFromPlayers(reader, configData) |
-                migrateRewardHeartToHeartDropSection(reader, configData) |
-                migrateDropOnGroundToDropLocation(reader, configData) ||
-                hasDeprecatedKeys(reader);
-    }
 
     /**
      * Migrates the old crafting recipe section to the new crafting one.
      * All materials that were in the old list are transferred to the new
      * scheme with an amount of 1.
      *
-     * @since 1.5.2
-     *
-     * @param reader the config reader
+     * @param reader     the config reader
      * @param configData the config inmemory
      *
      * @return the state whether migration is required
+     *
+     * @since 1.5.2
      */
     private static boolean migrateCraftingRecipeToCrafting(PropertyReader reader, ConfigurationData configData) {
         String oldKey = "baseSettings.heartItem.craftingRecipe";
@@ -80,12 +67,12 @@ public class ConfigMigrationService extends PlainMigrationService {
      * Migrates the old elimination mode section to the new custom actions one.
      * Entries in custom actions depend on the old elimination's action.
      *
-     * @since 1.5.2
-     *
-     * @param reader the config reader
+     * @param reader     the config reader
      * @param configData the config inmemory
      *
      * @return the state whether migration is required
+     *
+     * @since 1.5.2
      */
     private static boolean migrateEliminationModeToCustomActions(PropertyReader reader, ConfigurationData configData) {
         String oldKey = "baseSettings.eliminationMode";
@@ -139,14 +126,15 @@ public class ConfigMigrationService extends PlainMigrationService {
      * Migrates the old health change integer to section and splits its
      * value to victim's health change and killer's health change.
      *
-     * @since 1.6
-     *
-     * @param reader the config reader
+     * @param reader     the config reader
      * @param configData the config inmemory
      *
      * @return the state whether migration is required
+     *
+     * @since 1.6
      */
-    private static boolean migrateHealthChangeToHealthChangeSection(PropertyReader reader, ConfigurationData configData) {
+    private static boolean migrateHealthChangeToHealthChangeSection(PropertyReader reader,
+                                                                    ConfigurationData configData) {
         String oldKey = "baseSettings.healthChange";
         PropertyValue<Integer> healthProperty = new IntegerProperty(oldKey, 0).determineValue(reader);
         if (!healthProperty.isValidInResource()) {
@@ -165,12 +153,12 @@ public class ConfigMigrationService extends PlainMigrationService {
      * Removes the old take/give hearts from a victim/killer and
      * replaces it with their healthChange set to 0.
      *
-     * @since 1.6
-     *
-     * @param reader the config reader
+     * @param reader     the config reader
      * @param configData the config inmemory
      *
      * @return the state whether migration is required
+     *
+     * @since 1.6
      */
     private static boolean removeTakeGiveHeartsFromPlayers(PropertyReader reader, ConfigurationData configData) {
         String oldVictimKey = "baseSettings.takeHealthFromVictim";
@@ -244,6 +232,17 @@ public class ConfigMigrationService extends PlainMigrationService {
         }
 
         return NO_MIGRATION_NEEDED;
+    }
+
+    @Override
+    protected boolean performMigrations(PropertyReader reader, ConfigurationData configData) {
+        return migrateCraftingRecipeToCrafting(reader, configData) |
+                migrateEliminationModeToCustomActions(reader, configData) |
+                migrateHealthChangeToHealthChangeSection(reader, configData) |
+                removeTakeGiveHeartsFromPlayers(reader, configData) |
+                migrateRewardHeartToHeartDropSection(reader, configData) |
+                migrateDropOnGroundToDropLocation(reader, configData) ||
+                hasDeprecatedKeys(reader);
     }
 
 }

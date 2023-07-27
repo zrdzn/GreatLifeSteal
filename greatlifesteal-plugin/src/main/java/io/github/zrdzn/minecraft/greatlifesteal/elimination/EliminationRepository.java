@@ -1,98 +1,64 @@
 package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import panda.std.Blank;
-import panda.std.Result;
 
 public interface EliminationRepository {
 
     /**
-     * Saves a new record in the database.
+     * Creates a new elimination.
      *
-     * @param elimination the elimination dto
-     * @return the newly created record with an optional exception
+     * @param playerUuid the unique id of a player
+     * @param playerName the name of a player
+     * @param action the action that is a cause of elimination
+     * @param lastWorld the last world where the player was
+     *
+     * @return an elimination
+     *
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<Elimination, Exception> saveElimination(Elimination elimination);
+    Elimination createElimination(UUID playerUuid, String playerName, String action, String lastWorld);
 
     /**
-     * Lists all existing records from the database.
+     * Finds an elimination with the specified player's unique id.
      *
-     * @return all existing records with an optional exception
+     * @param playerUuid the unique id of a player
+     *
+     * @return an optional elimination
+     *
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<List<Elimination>, Exception> listAllEliminations();
+    Optional<Elimination> findEliminationByPlayerUuid(UUID playerUuid);
 
     /**
-     * Finds a record with the specified id.
-     *
-     * @param id the id of a record
-     * @return an optional elimination with an optional exception
-     */
-    Result<Optional<Elimination>, Exception> findEliminationById(int id);
-
-    /**
-     * Finds a record with the specified player's uuid.
-     *
-     * @param playerUuid the uuid of a player
-     * @return an optional elimination with an optional exception
-     */
-    Result<Optional<Elimination>, Exception> findEliminationByPlayerUuid(UUID playerUuid);
-
-    /**
-     * Finds a record with the specified player's name.
+     * Finds an elimination with the specified player's name.
      *
      * @param playerName the name of a player
-     * @return an optional elimination with an optional exception
-     */
-    Result<Optional<Elimination>, Exception> findEliminationByPlayerName(String playerName);
-
-    /**
-     * Updates a record with the specified id.
      *
-     * @param id the id of a record
-     * @return a boolean whether it affected any rows with an optional exception
-     */
-    Result<Boolean, Exception> updateReviveById(int id, EliminationReviveStatus status);
-
-    /**
-     * Updates a record with the specified player's uuid.
+     * @return an optional elimination
      *
-     * @param playerUuid the uuid of a player
-     * @return a boolean whether it affected any rows with an optional exception
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<Boolean, Exception> updateReviveByPlayerUuid(UUID playerUuid, EliminationReviveStatus status);
+    Optional<Elimination> findEliminationByPlayerName(String playerName);
 
     /**
-     * Updates a record with the specified player's name.
+     * Updates a revive status with the specified player's name
      *
      * @param playerName the name of a player
-     * @return a boolean whether it affected any rows with an optional exception
+     *
+     * @return true if the elimination was updated, false otherwise
+     *
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<Boolean, Exception> updateReviveByPlayerName(String playerName, EliminationReviveStatus status);
+    boolean updateReviveByPlayerName(String playerName, EliminationReviveStatus status);
 
     /**
-     * Deletes a record with the specified id.
+     * Deletes an elimination with the specified player's unique id.
      *
-     * @param id the id of a record
-     * @return an optional exception
-     */
-    Result<Blank, Exception> deleteEliminationById(int id);
-
-    /**
-     * Deletes a record with the specified player's uuid.
+     * @param playerUuid the unique id of a player
      *
-     * @param playerUuid the uuid of a player
-     * @return an optional exception
+     * @throws EliminationException if a repository access error occurs
      */
-    Result<Blank, Exception> deleteEliminationByPlayerUuid(UUID playerUuid);
-
-    /**
-     * Deletes a record with the specified player's name.
-     *
-     * @param playerName the name of a player
-     * @return an optional exception
-     */
-    Result<Blank, Exception> deleteEliminationByPlayerName(String playerName);
+    void removeEliminationByPlayerUuid(UUID playerUuid);
 
 }

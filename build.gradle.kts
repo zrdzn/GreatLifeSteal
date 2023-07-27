@@ -41,13 +41,13 @@ subprojects {
         }
 
         maven {
-            name = "panda-repository"
-            url = uri("https://repo.panda-lang.org/releases")
+            name = "codemc-repository"
+            url = uri("https://repo.codemc.io/repository/maven-public/")
         }
 
         maven {
-            name = "codemc-repository"
-            url = uri("https://repo.codemc.io/repository/maven-public/")
+            name = "jitpack-repository"
+            url = uri("https://jitpack.io")
         }
     }
 }

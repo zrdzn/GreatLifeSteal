@@ -1,13 +1,13 @@
 package io.github.zrdzn.minecraft.greatlifesteal.command;
 
-import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.beans.ActionBean;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.BaseConfig;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -88,22 +88,9 @@ public class LifeStealTabCompleter implements TabCompleter {
                 }
                 break;
             case "lives":
-                if (args.length == 2) {
-                    return this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).entrySet().stream()
-                            .filter(action -> action.getValue().isEnabled())
-                            .map(Entry::getKey)
-                            .collect(Collectors.toList());
-                } else if (args.length == 3) {
-                    ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
-                    if (action == null || !action.isEnabled()) {
-                        return Collections.emptyList();
-                    }
-
-                    return Bukkit.getServer().getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .collect(Collectors.toList());
-                }
-                break;
+            case "eliminate":
+            case "revive":
+                return this.getActionCompletion(args);
             case "withdraw":
                 if (args.length == 2) {
                     return Collections.singletonList("1");
@@ -113,42 +100,28 @@ public class LifeStealTabCompleter implements TabCompleter {
                             .collect(Collectors.toList());
                 }
                 break;
-            case "eliminate":
-                if (args.length == 2) {
-                    return this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).entrySet().stream()
-                            .filter(action -> action.getValue().isEnabled())
-                            .map(Entry::getKey)
-                            .collect(Collectors.toList());
-                } else if (args.length == 3) {
-                    ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
-                    if (action == null || !action.isEnabled()) {
-                        return Collections.emptyList();
-                    }
-
-                    return Bukkit.getServer().getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .collect(Collectors.toList());
-                }
-                break;
-            case "revive":
-                if (args.length == 2) {
-                    return this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).entrySet().stream()
-                            .filter(action -> action.getValue().isEnabled())
-                            .map(Entry::getKey)
-                            .collect(Collectors.toList());
-                } else if (args.length == 3) {
-                    ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
-                    if (action == null || !action.isEnabled()) {
-                        return Collections.emptyList();
-                    }
-
-                    return Bukkit.getServer().getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .collect(Collectors.toList());
-                }
-                break;
             default:
                 return Collections.emptyList();
+        }
+
+        return Collections.emptyList();
+    }
+
+    private List<String> getActionCompletion(String[] args) {
+        if (args.length == 2) {
+            return this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).entrySet().stream()
+                    .filter(action -> action.getValue().isEnabled())
+                    .map(Entry::getKey)
+                    .collect(Collectors.toList());
+        } else if (args.length == 3) {
+            ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
+            if (action == null || !action.isEnabled()) {
+                return Collections.emptyList();
+            }
+
+            return Bukkit.getServer().getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .collect(Collectors.toList());
         }
 
         return Collections.emptyList();

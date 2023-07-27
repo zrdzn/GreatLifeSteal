@@ -10,14 +10,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UpdateNotifier {
 
-    private final Logger logger;
-
-    public UpdateNotifier(Logger logger) {
-        this.logger = logger;
-    }
+    private final Logger logger = LoggerFactory.getLogger(UpdateNotifier.class);
 
 
     /**

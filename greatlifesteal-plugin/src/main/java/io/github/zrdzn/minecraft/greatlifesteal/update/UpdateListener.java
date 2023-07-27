@@ -1,8 +1,8 @@
 package io.github.zrdzn.minecraft.greatlifesteal.update;
 
 import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.configs.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageService;
+import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,7 +26,7 @@ public class UpdateListener implements Listener {
 
         Player player = event.getPlayer();
         if (player.hasPermission("greatlifesteal.notify.update")) {
-            MessageService.send(player, this.config.getProperty(MessagesConfig.PLUGIN_OUTDATED));
+            MessageFacade.send(player, this.config.getProperty(MessagesConfig.PLUGIN_OUTDATED));
         }
     }
 
