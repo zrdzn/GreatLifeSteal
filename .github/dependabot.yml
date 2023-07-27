@@ -9,3 +9,4 @@ updates:
     ignore:
       - dependency-name: org.spigotmc:spigot-api
       - dependency-name: org.spigotmc:spigot
+      - dependency-name: com.zaxxer:HikariCP
