@@ -38,8 +38,9 @@ dependencies {
 
     implementation("com.github.zrdzn:CraftingLib:2.0.1")
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
+    val junit = "5.10.0"
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
 
     testImplementation("org.spigotmc:spigot-api:1.8-R0.1-SNAPSHOT")
 }
