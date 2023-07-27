@@ -5,7 +5,7 @@ plugins {
 
 allprojects {
     group = "io.github.zrdzn.minecraft.greatlifesteal"
-    version = "1.8-SNAPSHOT"
+    version = "2.0-SNAPSHOT"
 }
 
 subprojects {
