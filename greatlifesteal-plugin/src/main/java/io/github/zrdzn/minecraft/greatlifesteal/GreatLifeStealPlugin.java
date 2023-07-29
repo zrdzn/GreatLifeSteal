@@ -3,21 +3,20 @@ package io.github.zrdzn.minecraft.greatlifesteal;
 import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
-import ch.jalu.configme.SettingsManager;
-import ch.jalu.configme.SettingsManagerBuilder;
 import dev.piotrulla.craftinglib.CraftingException;
 import dev.piotrulla.craftinglib.CraftingLib;
 import dev.piotrulla.craftinglib.CraftingManager;
+import eu.okaeri.configs.ConfigManager;
+import eu.okaeri.configs.exception.OkaeriException;
+import eu.okaeri.configs.validator.okaeri.OkaeriValidator;
+import eu.okaeri.configs.yaml.bukkit.YamlBukkitConfigurer;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
-import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigDataBuilder;
-import io.github.zrdzn.minecraft.greatlifesteal.config.ConfigMigrationService;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacadeFactory;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationJoinPreventListener;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRemovalCache;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRestoreHealthListener;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItemFactory;
@@ -65,17 +64,25 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         SpigotServer spigotServer = new SpigotServerFactory(this).createServer();
         this.logger.info("Using {} version of the adapter.", spigotServer.getVersion());
 
-        SettingsManager config = SettingsManagerBuilder
-                .withYamlFile(new File(this.getDataFolder(), "config.yml"))
-                .configurationData(ConfigDataBuilder.build())
-                .migrationService(new ConfigMigrationService())
-                .create();
-        config.save();
-
         Server server = this.getServer();
         PluginManager pluginManager = server.getPluginManager();
 
-        this.loadConfigurations(config, spigotServer, server);
+        PluginConfig config;
+        try {
+            config = ConfigManager.create(PluginConfig.class, (it) -> {
+                it.withConfigurer(new OkaeriValidator(new YamlBukkitConfigurer()));
+                it.withBindFile(new File(this.getDataFolder(), "config.yml"));
+                it.withRemoveOrphans(true);
+                it.saveDefaults();
+                it.load(true);
+            });
+        } catch (OkaeriException exception) {
+            this.logger.error("Could not load the plugin configuration.", exception);
+            pluginManager.disablePlugin(this);
+            return;
+        }
+
+        this.loadConfigurations(config, spigotServer);
 
         if (pluginManager.getPlugin("PlaceholderAPI") == null) {
             this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
@@ -91,11 +98,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         UpdateNotifier updateNotifier = new UpdateNotifier();
         boolean latestVersion = updateNotifier.checkIfLatest(this.getDescription().getVersion());
-        UpdateListener updateListener = new UpdateListener(config, latestVersion);
+        UpdateListener updateListener = new UpdateListener(config.getMessages(), latestVersion);
 
         HeartFacade heartFacade = new HeartFacade(config, this.heartItem, spigotServer.getPlayerInventoryAdapter());
 
-        Storage storage = new StorageFactory(config, this).createStorage();
+        Storage storage = new StorageFactory(config.getStorage(), this).createStorage();
 
         EliminationFacade eliminationFacade = new EliminationFacadeFactory(storage).createEliminationFacade();
 
@@ -120,14 +127,13 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(config));
     }
 
-    public void loadConfigurations(SettingsManager config, SpigotServer spigotServer, Server server) {
+    public void loadConfigurations(PluginConfig config, SpigotServer spigotServer) {
         this.saveDefaultConfig();
         this.reloadConfig();
+        config.load();
 
-        config.reload();
-
-        if (config.getProperty(HeartConfig.ENABLED)) {
-            HeartItem heartItem = new HeartItemFactory(config, spigotServer).createHeartItem();
+        if (config.getHeart().isEnabled()) {
+            HeartItem heartItem = new HeartItemFactory(config.getHeart(), spigotServer).createHeartItem();
 
             CraftingManager craftingManager = new CraftingLib(this).getCraftingManager();
 

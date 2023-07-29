@@ -1,68 +1,101 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
+import java.util.HashMap;
 import java.util.Map;
-import ch.jalu.configme.Comment;
-import ch.jalu.configme.SettingsHolder;
-import ch.jalu.configme.configurationdata.CommentsConfiguration;
-import ch.jalu.configme.properties.BooleanProperty;
-import ch.jalu.configme.properties.DoubleProperty;
-import ch.jalu.configme.properties.EnumProperty;
-import ch.jalu.configme.properties.Property;
-import ch.jalu.configme.properties.PropertyBuilder;
-import ch.jalu.configme.properties.types.BeanPropertyType;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.BasicItemBean;
+import eu.okaeri.configs.OkaeriConfig;
+import eu.okaeri.configs.annotation.Comment;
 import org.bukkit.Material;
 
-/**
- * Represents 'baseSettings.heartItem' section.
- */
-public class HeartConfig implements SettingsHolder {
+public class HeartConfig extends OkaeriConfig {
 
-    @Comment("If any heart item should be enabled on the server.")
-    public static final Property<Boolean> ENABLED = new BooleanProperty("baseSettings.heartItem.enabled", true);
+    @Comment("If the heart item should be enabled on the server.")
+    private boolean enabled = true;
 
-    @Comment("Amount of health points that should be given to a player on item consume.")
-    public static final Property<Double> HEALTH_AMOUNT = new DoubleProperty("baseSettings.heartItem.healthAmount", 2.0D);
+    @Comment("The amount of health points that should be given to a player upon item consumption.")
+    private double healthAmount = 2.0D;
 
-    @Comment("Upper maximum health limit for healing with the heart item.")
-    public static final Property<Double> MAXIMUM_HEALTH_LIMIT = new DoubleProperty("baseSettings.heartItem.maximumHealthLimit", 20.0D);
+    @Comment("Upper limit for maximum health when healing with the heart item.")
+    private double maximumHealthLimit = 40.0D;
 
     @Comment("Type of the item that the heart item should be.")
-    public static final Property<Material> TYPE = new EnumProperty<>(
-            Material.class, "baseSettings.heartItem.type",
-            Material.APPLE
-    );
+    private Material type = Material.APPLE;
 
-    @Comment({
-            "Recipe for the heart item creation. Each letter represents a slot in the crafting table.",
-            "Scheme:",
-            "A B C",
-            "D E F",
-            "G H I",
-    })
-    public static final Property<Map<String, BasicItemBean>> CRAFTING = new PropertyBuilder
-            .MapPropertyBuilder<>(BeanPropertyType.of(BasicItemBean.class))
-            .path("baseSettings.heartItem.crafting")
-            .defaultEntry("A", new BasicItemBean())
-            .defaultEntry("B", new BasicItemBean())
-            .defaultEntry("C", new BasicItemBean())
-            .defaultEntry("D", new BasicItemBean())
-            .defaultEntry("E", new BasicItemBean())
-            .defaultEntry("F", new BasicItemBean())
-            .defaultEntry("G", new BasicItemBean())
-            .defaultEntry("H", new BasicItemBean())
-            .defaultEntry("I", new BasicItemBean())
-            .build();
+    private HeartMetaConfig meta = new HeartMetaConfig();
 
-    private HeartConfig() {
+    @Comment("Recipe for the heart item creation. Each letter represents a slot in the crafting table.")
+    @Comment("Scheme:")
+    @Comment("A B C")
+    @Comment("D E F")
+    @Comment("G H I")
+    private Map<String, HeartCraftingIngredientConfig> crafting = new HashMap<String, HeartCraftingIngredientConfig>() {{
+        this.put("A", new HeartCraftingIngredientConfig(Material.REDSTONE, 8));
+        this.put("B", new HeartCraftingIngredientConfig(Material.DIAMOND_BLOCK, 1));
+        this.put("C", new HeartCraftingIngredientConfig(Material.REDSTONE, 8));
+        this.put("D", new HeartCraftingIngredientConfig(Material.DIAMOND_BLOCK, 1));
+        this.put("E", new HeartCraftingIngredientConfig(Material.EMERALD, 4));
+        this.put("F", new HeartCraftingIngredientConfig(Material.DIAMOND_BLOCK, 1));
+        this.put("G", new HeartCraftingIngredientConfig(Material.REDSTONE, 8));
+        this.put("H", new HeartCraftingIngredientConfig(Material.DIAMOND_BLOCK, 1));
+        this.put("I", new HeartCraftingIngredientConfig(Material.REDSTONE, 8));
+    }};
+
+    @Comment("Everything related to heart item drop.")
+    private HeartDropConfig drop = new HeartDropConfig();
+
+    public boolean isEnabled() {
+        return this.enabled;
     }
 
-    @Override
-    public void registerComments(CommentsConfiguration config) {
-        config.setComment(
-                "baseSettings.heartItem",
-                "Item that can be used by a player to give him a specified amount of health points."
-        );
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public double getHealthAmount() {
+        return this.healthAmount;
+    }
+
+    public void setHealthAmount(double healthAmount) {
+        this.healthAmount = healthAmount;
+    }
+
+    public double getMaximumHealthLimit() {
+        return this.maximumHealthLimit;
+    }
+
+    public void setMaximumHealthLimit(double maximumHealthLimit) {
+        this.maximumHealthLimit = maximumHealthLimit;
+    }
+
+    public Material getType() {
+        return this.type;
+    }
+
+    public void setType(Material type) {
+        this.type = type;
+    }
+
+    public HeartMetaConfig getMeta() {
+        return this.meta;
+    }
+
+    public void setMeta(HeartMetaConfig meta) {
+        this.meta = meta;
+    }
+
+    public Map<String, HeartCraftingIngredientConfig> getCrafting() {
+        return this.crafting;
+    }
+
+    public void setCrafting(Map<String, HeartCraftingIngredientConfig> crafting) {
+        this.crafting = crafting;
+    }
+
+    public HeartDropConfig getDrop() {
+        return this.drop;
+    }
+
+    public void setDrop(HeartDropConfig drop) {
+        this.drop = drop;
     }
 
 }

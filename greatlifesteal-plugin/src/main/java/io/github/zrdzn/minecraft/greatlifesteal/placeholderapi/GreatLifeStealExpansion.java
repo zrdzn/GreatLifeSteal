@@ -2,10 +2,9 @@ package io.github.zrdzn.minecraft.greatlifesteal.placeholderapi;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.health.HealthChangeConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
@@ -17,11 +16,11 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
     private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
-    private final SettingsManager config;
+    private final PluginConfig config;
     private final DamageableAdapter adapter;
     private final Server server;
 
-    public GreatLifeStealExpansion(SettingsManager config, DamageableAdapter adapter, Server server) {
+    public GreatLifeStealExpansion(PluginConfig config, DamageableAdapter adapter, Server server) {
         this.config = config;
         this.adapter = adapter;
         this.server = server;
@@ -51,8 +50,7 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
     public String onRequest(OfflinePlayer player, String parameters) {
         String[] parametersSplitted = parameters.split("_");
 
-        ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS)
-                .get(parametersSplitted[parametersSplitted.length - 2]);
+        ActionConfig action = this.config.getActions().get(parametersSplitted[parametersSplitted.length - 2]);
 
         String targetName = parametersSplitted[parametersSplitted.length - 1];
 
@@ -75,7 +73,7 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
                 int lives = 0;
                 if (maxHealth > action.getActivateAtHealth()) {
-                    double healthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
+                    double healthChange = this.config.getHealth().getChange().getVictim();
                     lives = (int) Math.ceil((maxHealth - action.getActivateAtHealth()) / healthChange);
                 }
 

@@ -1,9 +1,7 @@
 package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
 import java.util.UUID;
-import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.entity.Player;
@@ -21,12 +19,12 @@ public class EliminationRestoreHealthListener implements Listener {
 
     private final Plugin plugin;
     private final BukkitScheduler scheduler;
-    private final SettingsManager config;
+    private final PluginConfig config;
     private final EliminationFacade eliminationFacade;
     private final DamageableAdapter damageableAdapter;
     private final EliminationRemovalCache eliminationRemovalCache;
 
-    public EliminationRestoreHealthListener(Plugin plugin, SettingsManager config, EliminationFacade eliminationFacade,
+    public EliminationRestoreHealthListener(Plugin plugin, PluginConfig config, EliminationFacade eliminationFacade,
                                             DamageableAdapter damageableAdapter,
                                             EliminationRemovalCache eliminationRemovalCache) {
         this.plugin = plugin;
@@ -48,13 +46,13 @@ public class EliminationRestoreHealthListener implements Listener {
                     this.eliminationFacade.removeEliminationByPlayerUuid(playerUuid);
                 } catch (EliminationException exception) {
                     this.logger.error("An error occurred while removing an elimination by player's unique id.", exception);
-                    MessageFacade.send(player, this.config.getProperty(MessagesConfig.FAIL_DEFAULT_HEALTH_SET));
+                    MessageFacade.send(player, this.config.getMessages().getHealthSet());
                     return;
                 }
 
                 this.scheduler.runTask(this.plugin, () -> {
-                    MessageFacade.send(player, this.config.getProperty(MessagesConfig.SUCCESS_DEFAULT_HEALTH_SET));
-                    this.damageableAdapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
+                    MessageFacade.send(player, this.config.getMessages().getRevivedSuccessfully());
+                    this.damageableAdapter.setMaxHealth(player, this.config.getHealth().getDefaultMaximumHealth());
                     this.eliminationRemovalCache.removePlayer(playerUuid);
                 });
             });

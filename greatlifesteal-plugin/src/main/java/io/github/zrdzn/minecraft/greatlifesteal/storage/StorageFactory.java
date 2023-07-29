@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.sql.DataSource;
-import ch.jalu.configme.SettingsManager;
 import com.google.common.io.Files;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -18,10 +17,10 @@ public class StorageFactory {
 
     private final Logger logger = LoggerFactory.getLogger(StorageFactory.class);
 
-    private final SettingsManager config;
+    private final StorageConfig config;
     private final Plugin plugin;
 
-    public StorageFactory(SettingsManager config, Plugin plugin) {
+    public StorageFactory(StorageConfig config, Plugin plugin) {
         this.config = config;
         this.plugin = plugin;
     }
@@ -31,8 +30,8 @@ public class StorageFactory {
         StorageType storageType;
 
         HikariConfig hikariConfig = new HikariConfig();
-        hikariConfig.setUsername(this.config.getProperty(StorageConfig.USER));
-        hikariConfig.setPassword(this.config.getProperty(StorageConfig.PASSWORD));
+        hikariConfig.setUsername(this.config.getUser());
+        hikariConfig.setPassword(this.config.getPassword());
         hikariConfig.addDataSourceProperty("cachePrepStmts", true);
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", 250);
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
@@ -40,18 +39,18 @@ public class StorageFactory {
         hikariConfig.addDataSourceProperty("cacheResultSetMetadata", true);
         hikariConfig.addDataSourceProperty("tcpKeepAlive", true);
         hikariConfig.setLeakDetectionThreshold(60000L);
-        hikariConfig.setMaximumPoolSize(this.config.getProperty(StorageConfig.MAXIMUM_POOL_SIZE));
-        hikariConfig.setConnectionTimeout(this.config.getProperty(StorageConfig.CONNECTION_TIMEOUT));
+        hikariConfig.setMaximumPoolSize(this.config.getMaximumPoolSize());
+        hikariConfig.setConnectionTimeout(this.config.getConnectionTimeout());
         hikariConfig.setMinimumIdle(0);
         hikariConfig.setIdleTimeout(30000L);
 
-        String host = this.config.getProperty(StorageConfig.HOST);
-        int port = this.config.getProperty(StorageConfig.PORT);
-        String database = this.config.getProperty(StorageConfig.DATABASE);
+        String host = this.config.getHost();
+        int port = this.config.getPort();
+        String database = this.config.getDatabase();
 
-        switch (this.config.getProperty(StorageConfig.TYPE)) {
+        switch (this.config.getType()) {
             case MYSQL:
-                boolean enableSsl = this.config.getProperty(StorageConfig.ENABLE_SSL);
+                boolean enableSsl = this.config.isEnableSsl();
                 if (!enableSsl) {
                     this.logger.warn("Storage connection is configured without SSL enabled.");
                 }
@@ -88,7 +87,7 @@ public class StorageFactory {
                     throw new RuntimeException("SQLite driver not found.", exception);
                 }
 
-                File sqliteFile = new File(this.plugin.getDataFolder(), this.config.getProperty(StorageConfig.SQLITE_FILE));
+                File sqliteFile = new File(this.plugin.getDataFolder(), this.config.getSqliteFile());
                 if (!sqliteFile.exists()) {
                     try {
                         Files.createParentDirs(sqliteFile);

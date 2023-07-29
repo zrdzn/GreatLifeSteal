@@ -28,7 +28,10 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.3")
 
-    implementation("ch.jalu:configme:1.3.1")
+    val okaeriConfigs = "4.0.5"
+    implementation("eu.okaeri:okaeri-configs-yaml-bukkit:$okaeriConfigs")
+    implementation("eu.okaeri:okaeri-configs-validator-okaeri:$okaeriConfigs")
+
     implementation("com.github.Querz:NBT:6.1")
     implementation("org.slf4j:slf4j-reload4j:2.0.7")
     implementation("org.apache.commons:commons-lang3:3.12.0")

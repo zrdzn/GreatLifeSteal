@@ -1,46 +1,43 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
+import java.util.Collections;
 import java.util.List;
-import ch.jalu.configme.Comment;
-import ch.jalu.configme.SettingsHolder;
-import ch.jalu.configme.configurationdata.CommentsConfiguration;
-import ch.jalu.configme.properties.BooleanProperty;
-import ch.jalu.configme.properties.Property;
-import ch.jalu.configme.properties.StringListProperty;
-import ch.jalu.configme.properties.StringProperty;
+import eu.okaeri.configs.OkaeriConfig;
+import eu.okaeri.configs.annotation.Comment;
 
-/**
- * Represents 'baseSettings.heartItem.meta' section.
- */
-public class HeartMetaConfig implements SettingsHolder {
+public class HeartMetaConfig extends OkaeriConfig {
 
-    @Comment("Display name for the item.")
-    public static final Property<String> DISPLAY_NAME = new StringProperty(
-            "baseSettings.heartItem.meta.displayName",
-            "&aThe Heart of an Elk"
-    );
+    @Comment("Display name for the heart item.")
+    private String displayName = "&aThe Healing Heart";
 
-    @Comment("Lore for the item.")
-    public static final Property<List<String>> LORE = new StringListProperty(
-            "baseSettings.heartItem.meta.lore",
-            "&aUse this item to give yourself health points."
-    );
+    @Comment("Lore for the heart item.")
+    private List<String> lore = Collections.singletonList("&aUse this item to increase your maximum health.");
 
-    @Comment("Should heart item glow (Enchantment effect)?")
-    public static final Property<Boolean> GLOWING = new BooleanProperty(
-            "baseSettings.heartItem.meta.glowing",
-            false
-    );
+    @Comment("Should the heart item glow?")
+    private boolean glowing = false;
 
-    private HeartMetaConfig() {
+    public String getDisplayName() {
+        return this.displayName;
     }
 
-    @Override
-    public void registerComments(CommentsConfiguration config) {
-        config.setComment(
-                "baseSettings.heartItem.meta",
-                "Meta for the heart item."
-        );
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public List<String> getLore() {
+        return this.lore;
+    }
+
+    public void setLore(List<String> lore) {
+        this.lore = lore;
+    }
+
+    public boolean isGlowing() {
+        return this.glowing;
+    }
+
+    public void setGlowing(boolean glowing) {
+        this.glowing = glowing;
     }
 
 }

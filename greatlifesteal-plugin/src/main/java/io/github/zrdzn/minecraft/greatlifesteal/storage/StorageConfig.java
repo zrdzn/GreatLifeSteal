@@ -1,89 +1,118 @@
 package io.github.zrdzn.minecraft.greatlifesteal.storage;
 
-import ch.jalu.configme.Comment;
-import ch.jalu.configme.SettingsHolder;
-import ch.jalu.configme.configurationdata.CommentsConfiguration;
-import ch.jalu.configme.properties.BooleanProperty;
-import ch.jalu.configme.properties.EnumProperty;
-import ch.jalu.configme.properties.IntegerProperty;
-import ch.jalu.configme.properties.Property;
-import ch.jalu.configme.properties.StringProperty;
+import eu.okaeri.configs.OkaeriConfig;
+import eu.okaeri.configs.annotation.Comment;
 
-/**
- * Represents 'dataSource' section.
- */
-public class StorageConfig implements SettingsHolder {
+public class StorageConfig extends OkaeriConfig {
 
     @Comment("A type of the data source that should be used. Available: SQLITE, MYSQL")
-    public static final Property<StorageType> TYPE = new EnumProperty<>(
-            StorageType.class, "dataSource.type",
-            StorageType.SQLITE
-    );
+    private StorageType type = StorageType.SQLITE;
 
     @Comment("A file name if SQLite is used.")
-    public static final Property<String> SQLITE_FILE = new StringProperty(
-            "dataSource.sqliteFile",
-            "gls.db"
-    );
+    private String sqliteFile = "greatlifesteal.db";
 
     @Comment("Database host address.")
-    public static final Property<String> HOST = new StringProperty(
-            "dataSource.host",
-            "localhost"
-    );
+    private String host = "localhost";
 
     @Comment("Database port.")
-    public static final Property<Integer> PORT = new IntegerProperty(
-            "dataSource.port",
-            3306
-    );
+    private int port = 3306;
 
     @Comment("Database name.")
-    public static final Property<String> DATABASE = new StringProperty(
-            "dataSource.database",
-            "gls"
-    );
+    private String database = "greatlifesteal";
 
     @Comment("Database user name.")
-    public static final Property<String> USER = new StringProperty(
-            "dataSource.user",
-            "root"
-    );
+    private String user = "minecraft_user";
 
     @Comment("Database password.")
-    public static final Property<String> PASSWORD = new StringProperty(
-            "dataSource.password",
-            "password"
-    );
+    private String password = "tomatoes";
 
     @Comment("Should SSL be enabled for database?")
-    public static final Property<Boolean> ENABLE_SSL = new BooleanProperty(
-            "dataSource.enableSsl",
-            false
-    );
+    private boolean enableSsl = false;
 
     @Comment("Database maximum pool size.")
-    public static final Property<Integer> MAXIMUM_POOL_SIZE = new IntegerProperty(
-            "dataSource.maximumPoolSize",
-            10
-    );
+    private int maximumPoolSize = 10;
 
     @Comment("Database connection timeout.")
-    public static final Property<Integer> CONNECTION_TIMEOUT = new IntegerProperty(
-            "dataSource.connectionTimeout",
-            5000
-    );
+    private int connectionTimeout = 5000;
 
-
-    private StorageConfig() {
+    public StorageType getType() {
+        return this.type;
     }
 
-    @Override
-    public void registerComments(CommentsConfiguration config) {
-        config.setComment(
-                "dataSource",
-                "A section for the data source configuration."
-        );
+    public void setType(StorageType type) {
+        this.type = type;
+    }
+
+    public String getSqliteFile() {
+        return this.sqliteFile;
+    }
+
+    public void setSqliteFile(String sqliteFile) {
+        this.sqliteFile = sqliteFile;
+    }
+
+    public String getHost() {
+        return this.host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return this.port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getDatabase() {
+        return this.database;
+    }
+
+    public void setDatabase(String database) {
+        this.database = database;
+    }
+
+    public String getUser() {
+        return this.user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public boolean isEnableSsl() {
+        return this.enableSsl;
+    }
+
+    public void setEnableSsl(boolean enableSsl) {
+        this.enableSsl = enableSsl;
+    }
+
+    public int getMaximumPoolSize() {
+        return this.maximumPoolSize;
+    }
+
+    public void setMaximumPoolSize(int maximumPoolSize) {
+        this.maximumPoolSize = maximumPoolSize;
+    }
+
+    public int getConnectionTimeout() {
+        return this.connectionTimeout;
+    }
+
+    public void setConnectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
     }
 
 }

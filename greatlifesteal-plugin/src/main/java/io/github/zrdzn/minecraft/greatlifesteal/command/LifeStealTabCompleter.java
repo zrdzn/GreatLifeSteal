@@ -5,9 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,9 +15,9 @@ import org.bukkit.entity.Player;
 
 public class LifeStealTabCompleter implements TabCompleter {
 
-    private final SettingsManager config;
+    private final PluginConfig config;
 
-    public LifeStealTabCompleter(SettingsManager config) {
+    public LifeStealTabCompleter(PluginConfig config) {
         this.config = config;
     }
 
@@ -59,7 +58,7 @@ public class LifeStealTabCompleter implements TabCompleter {
             };
         }
 
-        double defaultHealth = this.config.getProperty(BaseConfig.DEFAULT_HEALTH);
+        double defaultHealth = this.config.getHealth().getDefaultMaximumHealth();
 
         switch (args[0].toLowerCase()) {
             case "health":
@@ -109,12 +108,12 @@ public class LifeStealTabCompleter implements TabCompleter {
 
     private List<String> getActionCompletion(String[] args) {
         if (args.length == 2) {
-            return this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).entrySet().stream()
+            return this.config.getActions().entrySet().stream()
                     .filter(action -> action.getValue().isEnabled())
                     .map(Entry::getKey)
                     .collect(Collectors.toList());
         } else if (args.length == 3) {
-            ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(args[1]);
+            ActionConfig action = this.config.getActions().get(args[1]);
             if (action == null || !action.isEnabled()) {
                 return Collections.emptyList();
             }

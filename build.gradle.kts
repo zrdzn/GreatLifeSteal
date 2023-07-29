@@ -49,5 +49,10 @@ subprojects {
             name = "jitpack-repository"
             url = uri("https://jitpack.io")
         }
+
+        maven {
+            name = "okaeri-repository"
+            url = uri("https://storehouse.okaeri.eu/repository/maven-public/")
+        }
     }
 }

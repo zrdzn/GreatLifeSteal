@@ -3,11 +3,9 @@ package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import ch.jalu.configme.SettingsManager;
+import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.DisabledWorldsConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.bean.ActionBean;
+import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,11 +21,11 @@ public class EliminationJoinPreventListener implements Listener {
 
     private final Plugin plugin;
     private final BukkitScheduler scheduler;
-    private final SettingsManager config;
+    private final PluginConfig config;
     private final EliminationFacade eliminationFacade;
     private final EliminationRemovalCache eliminationRemovalCache;
 
-    public EliminationJoinPreventListener(Plugin plugin, SettingsManager config, EliminationFacade eliminationFacade,
+    public EliminationJoinPreventListener(Plugin plugin, PluginConfig config, EliminationFacade eliminationFacade,
                                           EliminationRemovalCache eliminationRemovalCache) {
         this.plugin = plugin;
         this.scheduler = plugin.getServer().getScheduler();
@@ -54,12 +52,12 @@ public class EliminationJoinPreventListener implements Listener {
                 return;
             }
 
-            ActionBean action = this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).get(elimination.getAction());
+            ActionConfig action = this.config.getActions().get(elimination.getAction());
             if (action == null || !action.isEnabled()) {
                 return;
             }
 
-            List<String> disabledWorlds = this.config.getProperty(DisabledWorldsConfig.ELIMINATIONS);
+            List<String> disabledWorlds = this.config.getDisabledWorlds().getEliminations();
 
             if (disabledWorlds.contains(elimination.getLastWorld())) {
                 return;

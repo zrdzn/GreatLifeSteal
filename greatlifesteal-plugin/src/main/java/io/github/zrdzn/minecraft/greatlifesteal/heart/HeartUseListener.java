@@ -1,8 +1,6 @@
 package io.github.zrdzn.minecraft.greatlifesteal.heart;
 
-import ch.jalu.configme.SettingsManager;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.NbtService;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
@@ -15,12 +13,12 @@ import org.bukkit.inventory.ItemStack;
 
 public class HeartUseListener implements Listener {
 
-    private final SettingsManager config;
+    private final PluginConfig config;
     private final SpigotServer spigotServer;
     private final HeartItem heartItem;
     private final NbtService nbtService;
 
-    public HeartUseListener(SettingsManager config, SpigotServer spigotServer, HeartItem heartItem,
+    public HeartUseListener(PluginConfig config, SpigotServer spigotServer, HeartItem heartItem,
                             NbtService nbtService) {
         this.config = config;
         this.spigotServer = spigotServer;
@@ -54,11 +52,11 @@ public class HeartUseListener implements Listener {
         double healthChange = this.nbtService.getDouble(this.heartItem.getItemStack(), HeartItem.HEART_HEALTH_CHANGE_NBT_KEY);
 
         double playerNewHealth = this.spigotServer.getDamageableAdapter().getMaxHealth(player) + healthChange;
-        if (playerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH) && playerNewHealth <= this.config.getProperty(HeartConfig.MAXIMUM_HEALTH_LIMIT)) {
+        if (playerNewHealth <= this.config.getHealth().getMaximumHealth() && playerNewHealth <= this.config.getHeart().getMaximumHealthLimit()) {
             this.spigotServer.getDamageableAdapter().setMaxHealth(player, playerNewHealth);
             this.spigotServer.getPlayerInventoryAdapter().removeItem(player.getInventory(), heartItemStack);
         } else {
-            MessageFacade.send(player, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
+            MessageFacade.send(player, this.config.getMessages().getMaxHealthReached());
         }
 
         event.setCancelled(true);

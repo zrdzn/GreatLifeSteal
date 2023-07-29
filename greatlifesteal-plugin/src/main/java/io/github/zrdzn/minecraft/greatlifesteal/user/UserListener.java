@@ -7,16 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import ch.jalu.configme.SettingsManager;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
-import io.github.zrdzn.minecraft.greatlifesteal.config.BaseConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.DisabledWorldsConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.MessagesConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.config.StealCooldownConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationException;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
@@ -43,13 +37,13 @@ public class UserListener implements Listener {
     private final Map<Player, Entry<Player, Instant>> stealCooldowns = new HashMap<>();
 
     private final JavaPlugin plugin;
-    private final SettingsManager config;
+    private final PluginConfig config;
     private final EliminationFacade eliminationFacade;
     private final DamageableAdapter adapter;
     private final HeartFacade heartFacade;
     private final HeartItem heartItem;
 
-    public UserListener(JavaPlugin plugin, SettingsManager config, EliminationFacade eliminationFacade,
+    public UserListener(JavaPlugin plugin, PluginConfig config, EliminationFacade eliminationFacade,
                         DamageableAdapter adapter, HeartFacade heartFacade, HeartItem heartItem) {
         this.plugin = plugin;
         this.config = config;
@@ -63,7 +57,7 @@ public class UserListener implements Listener {
     public void setDefaultHearts(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (!player.hasPlayedBefore()) {
-            this.adapter.setMaxHealth(player, this.config.getProperty(BaseConfig.DEFAULT_HEALTH));
+            this.adapter.setMaxHealth(player, this.config.getHealth().getDefaultMaximumHealth());
         }
     }
 
@@ -72,17 +66,15 @@ public class UserListener implements Listener {
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
 
-        List<String> disabledWorlds = this.config.getProperty(DisabledWorldsConfig.HEALTH_CHANGE);
+        List<String> disabledWorlds = this.config.getDisabledWorlds().getHealthChange();
         if (disabledWorlds.contains(victim.getWorld().getName())) {
             return;
         }
 
         EntityDamageEvent lastDamageCause = victim.getLastDamageCause();
 
-        boolean killByPlayerOnly = this.config.getProperty(BaseConfig.KILL_BY_PLAYER_ONLY);
-
         if (killer == null) {
-            if (killByPlayerOnly) {
+            if (this.config.isKillByPlayerOnly()) {
                 return;
             }
         } else {
@@ -91,7 +83,7 @@ public class UserListener implements Listener {
             }
         }
 
-        double victimHealthChange = this.config.getProperty(HealthChangeConfig.VICTIM);
+        double victimHealthChange = this.config.getHealth().getChange().getVictim();
         if (victimHealthChange <= 0.0D) {
             return;
         }
@@ -99,30 +91,30 @@ public class UserListener implements Listener {
         double victimMaxHealth = this.adapter.getMaxHealth(victim);
         double victimNewHealth = victimMaxHealth - victimHealthChange;
 
-        double minimumHealth = this.config.getProperty(BaseConfig.MINIMUM_HEALTH);
+        double minimumHealth = this.config.getHealth().getMinimumHealth();
 
         String killerName = null;
         String formattedKillerMaxHealth = null;
 
-        double killerHealthChange = this.config.getProperty(HealthChangeConfig.KILLER);
+        double killerHealthChange = this.config.getHealth().getChange().getKiller();
         if (killerHealthChange > 0.0D && killer != null) {
             killerName = killer.getName();
 
-            if (this.config.getProperty(BaseConfig.IGNORE_SAME_IP)) {
+            if (this.config.isIgnoreSameIp()) {
                 if (victim.getAddress().getAddress().equals(killer.getAddress().getAddress())) {
                     return;
                 }
             }
 
             // Checks if there is any cooldown active on the killer.
-            if (this.config.getProperty(StealCooldownConfig.ENABLED)) {
+            if (this.config.getStealCooldown().isEnabled()) {
                 Entry<Player, Instant> cooldownEntry = this.stealCooldowns.get(killer);
                 if (cooldownEntry != null && victim.equals(cooldownEntry.getKey())) {
                     Duration difference = Duration.between(cooldownEntry.getValue(), Instant.now());
-                    Duration limit = Duration.ofSeconds(this.config.getProperty(StealCooldownConfig.COOLDOWN));
+                    Duration limit = Duration.ofSeconds(this.config.getStealCooldown().getCooldown());
                     if (difference.compareTo(limit) < 0) {
                         String[] placeholders = { "{AMOUNT}", String.valueOf(limit.getSeconds() - difference.getSeconds()) };
-                        MessageFacade.send(killer, this.config.getProperty(MessagesConfig.STEAL_COOLDOWN_ACTIVE), placeholders);
+                        MessageFacade.send(killer, this.config.getMessages().getActiveCooldown(), placeholders);
                         return;
                     }
                 }
@@ -137,18 +129,18 @@ public class UserListener implements Listener {
 
             if (victimNewHealth >= minimumHealth) {
                 double killerNewHealth = killerMaxHealth + killerHealthChange;
-                if (killerNewHealth <= this.config.getProperty(BaseConfig.MAXIMUM_HEALTH)) {
+                if (killerNewHealth <= this.config.getHealth().getMaximumHealth()) {
                     // Increase the killer's maximum health or give him the heart item.
-                    if (this.config.getProperty(HeartDropConfig.ON_EVERY_KILL) && heartItem != null) {
+                    if (this.config.getHeart().getDrop().isOnEveryKill() && heartItem != null) {
                         this.heartFacade.giveHeartToPlayer(killer);
                     } else {
                         this.adapter.setMaxHealth(killer, killerNewHealth);
                     }
                 } else {
-                    MessageFacade.send(killer, this.config.getProperty(MessagesConfig.MAX_HEALTH_REACHED));
+                    MessageFacade.send(killer, this.config.getMessages().getMaxHealthReached());
 
                     // Give the heart item to the killer if it is enabled.
-                    if (heartItem != null && this.config.getProperty(HeartDropConfig.ON_LIMIT_EXCEED)) {
+                    if (heartItem != null && this.config.getHeart().getDrop().isOnLimitExceed()) {
                         this.heartFacade.giveHeartToPlayer(killer);
                     }
                 }
@@ -159,7 +151,7 @@ public class UserListener implements Listener {
             this.adapter.setMaxHealth(victim, victimNewHealth);
         }
 
-        if (this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).isEmpty()) {
+        if (this.config.getActions().isEmpty()) {
             return;
         }
 
@@ -184,7 +176,7 @@ public class UserListener implements Listener {
                 "{killer_max_health}", formattedKillerMaxHealth,
         };
 
-        this.config.getProperty(BaseConfig.CUSTOM_ACTIONS).forEach((actionKey, action) -> {
+        this.config.getActions().forEach((actionKey, action) -> {
             if (!action.isEnabled()) {
                 return;
             }
@@ -225,7 +217,7 @@ public class UserListener implements Listener {
                                 );
                             } catch (EliminationException exception) {
                                 this.logger.error("Could not eliminate a player.", exception);
-                                MessageFacade.send(victim, this.config.getProperty(MessagesConfig.FAIL_VICTIM_ELIMINATION));
+                                MessageFacade.send(victim, this.config.getMessages().getCouldNotEliminateSelf());
                             }
                         });
                         break;
