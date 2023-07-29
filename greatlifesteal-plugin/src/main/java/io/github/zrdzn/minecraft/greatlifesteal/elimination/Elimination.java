@@ -2,6 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
 import java.time.Instant;
 import java.util.UUID;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveStatus;
 
 public class Elimination {
 
@@ -10,11 +11,11 @@ public class Elimination {
     private final UUID playerUuid;
     private final String playerName;
     private final String action;
-    private final EliminationReviveStatus revive;
+    private final ReviveStatus revive;
     private final String lastWorld;
 
     public Elimination(int id, Instant createdAt, UUID playerUuid, String playerName, String action,
-                       EliminationReviveStatus revive, String lastWorld) {
+                       ReviveStatus revive, String lastWorld) {
         this.id = id;
         this.createdAt = createdAt;
         this.playerUuid = playerUuid;
@@ -44,7 +45,7 @@ public class Elimination {
         return this.action;
     }
 
-    public EliminationReviveStatus getRevive() {
+    public ReviveStatus getRevive() {
         return this.revive;
     }
 

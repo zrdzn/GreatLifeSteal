@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationException;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRepository;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveStatus;
 
 class SqlEliminationRepository implements EliminationRepository {
 
@@ -68,7 +68,7 @@ class SqlEliminationRepository implements EliminationRepository {
                     playerUuid,
                     result.getString("player_name"),
                     result.getString("action"),
-                    EliminationReviveStatus.valueOf(result.getString("revive")),
+                    ReviveStatus.valueOf(result.getString("revive")),
                     result.getString("last_world")
             );
 
@@ -94,7 +94,7 @@ class SqlEliminationRepository implements EliminationRepository {
                     UUID.fromString(result.getString("player_uuid")),
                     playerName,
                     result.getString("action"),
-                    EliminationReviveStatus.valueOf(result.getString("revive")),
+                    ReviveStatus.valueOf(result.getString("revive")),
                     result.getString("last_world")
             );
 
@@ -105,7 +105,7 @@ class SqlEliminationRepository implements EliminationRepository {
     }
 
     @Override
-    public boolean updateReviveByPlayerName(String playerName, EliminationReviveStatus status) {
+    public boolean updateReviveByPlayerName(String playerName, ReviveStatus status) {
         try (Connection connection = this.dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(this.updateReviveByPlayerNameQuery)) {
             statement.setString(1, status.toString());

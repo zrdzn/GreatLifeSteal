@@ -8,7 +8,8 @@ import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.health.HealthConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageConfig;
@@ -95,64 +96,26 @@ public class PluginConfig extends OkaeriConfig {
     private static final List<String> DEFAULT_BROADCAST_MESSAGE = Collections.singletonList(
             "&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a."
     );
-    private static final List<String> DEFAULT_TEMPBAN_COMMAND = Collections.singletonList("tempban {victim} 7d");
-    private static final List<String> DEFAULT_GAMEMODE_SET = Collections.singletonList("gamemode spectator {victim}");
-    private static final List<String> DEFAULT_BAN_REASON = Collections.singletonList("&cYou have been eliminated!");
-    private static final List<String> DEFAULT_REVIVE_COMMAND = Collections.singletonList("unban {victim}");
+
+    private static final List<String> DEFAULT_ELIMINATION_COMMAND = Collections.singletonList("ban {victim}");
 
     @Comment("Define the list of actions that should happen when a player reaches a specific amount of maximum health.")
-    @Comment("")
-    @Comment("If the action should be enabled.")
-    @Comment("enabled: false")
-    @Comment("")
-    @Comment("Action type that should be taken upon reaching the health goal.")
-    @Comment("If you are using SPECTATOR_MODE, switch to DISPATCH_COMMANDS instead, as the previous action is deprecated and will be removed in the future.")
-    @Comment(" DISPATCH_COMMANDS - execute a list of commands as a console.")
-    @Comment(" BROADCAST - broadcast a message that is specified in the parameters list.")
-    @Comment(" BAN - bans a player with a specified message (you should use DISPATCH_COMMANDS for custom punishments)")
-    @Comment("type: DISPATCH_COMMANDS")
-    @Comment("")
-    @Comment("Amount of health points that are needed to execute the action.")
-    @Comment("activateAtHealth: 4")
-    @Comment("")
-    @Comment("Delay in ticks after which the action should be executed.")
-    @Comment("Very low values such as 0 or 1 may lead to performance issues, so choose wisely.")
-    @Comment("20 ticks = 1 second.")
-    @Comment("delay: 5")
-    @Comment("")
-    @Comment("List of parameters that are adequate to the chosen action.")
-    @Comment(" DISPATCH_COMMANDS - list of commands.")
-    @Comment(" BROADCAST - list of messages.")
-    @Comment(" BAN - list of lines for ban reason.")
     @Comment("Placeholders:")
     @Comment(" {killer} - represents killer username, or last damage cause (if killByPlayerOnly is not active)")
     @Comment(" {victim} - represents victim username")
     @Comment(" {killer_max_health} - represents killer's max health")
     @Comment(" {victim_max_health} - represents victim's max health")
-    @Comment("parameters:")
-    @Comment("- gamemode spectator {victim}")
-    @Comment("")
-    @Comment("Specify whether or not you want to have a revive available for that action.")
-    @Comment("If enabled, the commands will be executed after a revive execution.")
-    @Comment("For example, if the action is a ban command, you can provide an unban command for the revive.")
-    @Comment("Allowed action types that works with the revive system: DISPATCH_COMMANDS")
-    @Comment("revive:")
-    @Comment("  If the revive for this action should be enabled.")
-    @Comment("  enabled: true")
-    @Comment("")
-    @Comment("  List of commands that should be executed after a revive execution.")
-    @Comment("  For the BAN action type 'commands' are not used because the elimination is removed internally.")
-    @Comment("  Allowed action types that works with revive commands: DISPATCH_COMMANDS")
-    @Comment("  Placeholders:")
-    @Comment("  {victim} - represents victim username")
-    @Comment("  commands:")
-    @Comment("  - unban {victim}")
     private Map<String, ActionConfig> actions = new HashMap<String, ActionConfig>() {{
-        this.put("announce", new ActionConfig(true, ActionType.BROADCAST, DEFAULT_BROADCAST_MESSAGE, new EliminationReviveConfig()));
-        this.put("spectate", new ActionConfig(ActionType.DISPATCH_COMMANDS, DEFAULT_GAMEMODE_SET, new EliminationReviveConfig()));
-        this.put("eliminatePerm", new ActionConfig(ActionType.BAN, DEFAULT_BAN_REASON, new EliminationReviveConfig(true)));
-        this.put("eliminateTemp", new ActionConfig(ActionType.DISPATCH_COMMANDS, DEFAULT_TEMPBAN_COMMAND, new EliminationReviveConfig(true, DEFAULT_REVIVE_COMMAND)));
+        this.put("announce", new ActionConfig(ActionType.BROADCAST, DEFAULT_BROADCAST_MESSAGE));
+        this.put("command", new ActionConfig(ActionType.COMMAND, Collections.singletonList("thor {victim}")));
     }};
+
+    @Comment("Define the list of eliminations that should happen when a player reaches a specific amount of maximum health.")
+    @Comment("Unlike actions, all eliminations are saved in the database in case of need to revive players later.")
+    private Map<String, EliminationConfig> eliminations = Collections.singletonMap("ban", new EliminationConfig(DEFAULT_ELIMINATION_COMMAND));
+
+    @Comment("Define the list of revives for specified eliminations.")
+    private Map<String, ReviveConfig> revives = Collections.singletonMap("ban", new ReviveConfig());
 
     private StorageConfig storage = new StorageConfig();
 
@@ -212,6 +175,22 @@ public class PluginConfig extends OkaeriConfig {
 
     public void setActions(Map<String, ActionConfig> actions) {
         this.actions = actions;
+    }
+
+    public Map<String, EliminationConfig> getEliminations() {
+        return this.eliminations;
+    }
+
+    public void setEliminations(Map<String, EliminationConfig> eliminations) {
+        this.eliminations = eliminations;
+    }
+
+    public Map<String, ReviveConfig> getRevives() {
+        return this.revives;
+    }
+
+    public void setRevives(Map<String, ReviveConfig> revives) {
+        this.revives = revives;
     }
 
     public StorageConfig getStorage() {

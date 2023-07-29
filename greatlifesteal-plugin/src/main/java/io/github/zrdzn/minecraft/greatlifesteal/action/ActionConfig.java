@@ -1,40 +1,38 @@
 package io.github.zrdzn.minecraft.greatlifesteal.action;
 
 import java.util.List;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveConfig;
+import eu.okaeri.configs.OkaeriConfig;
+import eu.okaeri.configs.annotation.Comment;
 
-public class ActionConfig {
+public class ActionConfig extends OkaeriConfig {
 
-    private boolean enabled;
+    @Comment("Action type that should be taken upon reaching the health goal.")
+    @Comment(" COMMAND - execute a list of commands as a console.")
+    @Comment(" BROADCAST - broadcast a message that is specified in the parameters list.")
     private ActionType type;
+
+    @Comment("Amount of health points that are needed to execute the action.")
     private double activateAtHealth;
+
+    @Comment("Delay in ticks after which the action should be executed.")
+    @Comment("Very low values such as 0 or 1 may lead to performance issues, so choose wisely.")
+    @Comment("20 ticks = 1 second.")
     private long delay;
+
+    @Comment("List of parameters that are adequate to the chosen action:")
+    @Comment(" COMMAND - list of commands.")
+    @Comment(" BROADCAST - list of messages.")
     private List<String> parameters;
-    private EliminationReviveConfig revive;
 
-    public ActionConfig(ActionType type, List<String> parameters, EliminationReviveConfig revive) {
-        this(false, type, 4.0D, 5L, parameters, revive);
+    public ActionConfig(ActionType type, List<String> parameters) {
+        this(type, 4.0D, 5L, parameters);
     }
 
-    public ActionConfig(boolean enabled, ActionType type, List<String> parameters, EliminationReviveConfig revive) {
-        this(enabled, type, 4.0D, 5L, parameters, revive);
-    }
-
-    public ActionConfig(boolean enabled, ActionType type, double activateAtHealth, long delay, List<String> parameters, EliminationReviveConfig revive) {
-        this.enabled = enabled;
+    public ActionConfig(ActionType type, double activateAtHealth, long delay, List<String> parameters) {
         this.type = type;
         this.activateAtHealth = activateAtHealth;
         this.delay = delay;
         this.parameters = parameters;
-        this.revive = revive;
-    }
-
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public ActionType getType() {
@@ -67,14 +65,6 @@ public class ActionConfig {
 
     public void setParameters(List<String> parameters) {
         this.parameters = parameters;
-    }
-
-    public EliminationReviveConfig getRevive() {
-        return this.revive;
-    }
-
-    public void setRevive(EliminationReviveConfig revive) {
-        this.revive = revive;
     }
 
 }

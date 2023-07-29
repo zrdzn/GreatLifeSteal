@@ -7,15 +7,11 @@ import java.util.Optional;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
-import io.github.zrdzn.minecraft.greatlifesteal.health.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationException;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
@@ -214,7 +210,7 @@ public class LifeStealCommand implements CommandExecutor {
                 }
 
                 ActionConfig action = this.config.getActions().get(args[1]);
-                if (action == null || !action.isEnabled()) {
+                if (action == null) {
                     MessageFacade.send(sender, this.config.getMessages().getNoActionEnabled());
                     return true;
                 }
@@ -355,7 +351,7 @@ public class LifeStealCommand implements CommandExecutor {
                 String actionKey = args[1];
 
                 ActionConfig action = this.config.getActions().get(actionKey);
-                if (action == null || !action.isEnabled()) {
+                if (action == null) {
                     MessageFacade.send(sender, this.config.getMessages().getNoActionEnabled());
                     return true;
                 }
@@ -470,7 +466,7 @@ public class LifeStealCommand implements CommandExecutor {
                         }
 
                         // Execute all revive-related commands but do not remove the elimination from the database yet.
-                        boolean statusChanged = this.eliminationFacade.updateReviveByPlayerName(victimName, EliminationReviveStatus.COMPLETED);
+                        boolean statusChanged = this.eliminationFacade.updateReviveByPlayerName(victimName, ReviveStatus.COMPLETED);
                         if (statusChanged) {
                             if (actionType == ActionType.DISPATCH_COMMANDS) {
                                 this.scheduler.runTask(this.plugin, () ->

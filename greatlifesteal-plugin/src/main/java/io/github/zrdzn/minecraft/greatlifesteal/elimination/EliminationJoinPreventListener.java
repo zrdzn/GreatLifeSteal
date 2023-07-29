@@ -6,6 +6,7 @@ import java.util.UUID;
 import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveStatus;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -69,7 +70,7 @@ public class EliminationJoinPreventListener implements Listener {
 
             // Kick player if he is not revived.
             this.scheduler.runTask(this.plugin, () -> {
-                if (elimination.getRevive() != EliminationReviveStatus.COMPLETED) {
+                if (elimination.getRevive() != ReviveStatus.COMPLETED) {
                     if (action.getType() == ActionType.BAN) {
                         String reason = ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters()));
                         event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, reason);
