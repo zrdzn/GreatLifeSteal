@@ -17,7 +17,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -191,9 +190,6 @@ public class UserListener implements Listener {
 
             this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {
                 switch (action.getType()) {
-                    case SPECTATOR_MODE:
-                        victim.setGameMode(GameMode.SPECTATOR);
-                        break;
                     case DISPATCH_COMMANDS:
                         action.getParameters().forEach(command -> {
                             command = MessageFacade.formatPlaceholders(command, placeholders);
