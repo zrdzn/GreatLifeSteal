@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
-import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveAwaitingQueue;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveStatus;
-import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -24,19 +22,19 @@ public class EliminationJoinPreventListener implements Listener {
     private final BukkitScheduler scheduler;
     private final PluginConfig config;
     private final EliminationFacade eliminationFacade;
-    private final EliminationRemovalCache eliminationRemovalCache;
+    private final ReviveAwaitingQueue reviveAwaitingQueue;
 
     public EliminationJoinPreventListener(Plugin plugin, PluginConfig config, EliminationFacade eliminationFacade,
-                                          EliminationRemovalCache eliminationRemovalCache) {
+                                          ReviveAwaitingQueue reviveAwaitingQueue) {
         this.plugin = plugin;
         this.scheduler = plugin.getServer().getScheduler();
         this.config = config;
         this.eliminationFacade = eliminationFacade;
-        this.eliminationRemovalCache = eliminationRemovalCache;
+        this.reviveAwaitingQueue = reviveAwaitingQueue;
     }
 
     @EventHandler
-    public void preventFromJoining(AsyncPlayerPreLoginEvent event) {
+    public void checkIfPlayerIsRevived(AsyncPlayerPreLoginEvent event) {
         UUID playerUuid = event.getUniqueId();
 
         this.scheduler.runTaskAsynchronously(this.plugin, () -> {
@@ -53,33 +51,16 @@ public class EliminationJoinPreventListener implements Listener {
                 return;
             }
 
-            ActionConfig action = this.config.getActions().get(elimination.getAction());
-            if (action == null || !action.isEnabled()) {
-                return;
-            }
-
             List<String> disabledWorlds = this.config.getDisabledWorlds().getEliminations();
 
             if (disabledWorlds.contains(elimination.getLastWorld())) {
                 return;
             }
 
-            if (action.getType() == ActionType.BROADCAST) {
-                return;
-            }
-
-            // Kick player if he is not revived.
             this.scheduler.runTask(this.plugin, () -> {
-                if (elimination.getRevive() != ReviveStatus.COMPLETED) {
-                    if (action.getType() == ActionType.BAN) {
-                        String reason = ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters()));
-                        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, reason);
-                    }
-
-                    return;
+                if (elimination.getRevive() == ReviveStatus.COMPLETED) {
+                    this.reviveAwaitingQueue.addPlayer(playerUuid, elimination.getEliminationKey());
                 }
-
-                this.eliminationRemovalCache.addPlayer(playerUuid);
             });
         });
     }

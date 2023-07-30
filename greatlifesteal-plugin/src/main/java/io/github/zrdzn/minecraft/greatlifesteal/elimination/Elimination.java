@@ -10,17 +10,17 @@ public class Elimination {
     private final Instant createdAt;
     private final UUID playerUuid;
     private final String playerName;
-    private final String action;
+    private final String eliminationKey;
     private final ReviveStatus revive;
     private final String lastWorld;
 
-    public Elimination(int id, Instant createdAt, UUID playerUuid, String playerName, String action,
+    public Elimination(int id, Instant createdAt, UUID playerUuid, String playerName, String eliminationKey,
                        ReviveStatus revive, String lastWorld) {
         this.id = id;
         this.createdAt = createdAt;
         this.playerUuid = playerUuid;
         this.playerName = playerName;
-        this.action = action;
+        this.eliminationKey = eliminationKey;
         this.revive = revive;
         this.lastWorld = lastWorld;
     }
@@ -41,8 +41,8 @@ public class Elimination {
         return this.playerName;
     }
 
-    public String getAction() {
-        return this.action;
+    public String getEliminationKey() {
+        return this.eliminationKey;
     }
 
     public ReviveStatus getRevive() {

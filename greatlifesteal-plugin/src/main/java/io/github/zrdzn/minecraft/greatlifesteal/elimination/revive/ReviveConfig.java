@@ -5,13 +5,14 @@ import java.util.List;
 import eu.okaeri.configs.OkaeriConfig;
 import eu.okaeri.configs.annotation.Comment;
 
-public class ReviveConfig {
+public class ReviveConfig extends OkaeriConfig {
 
     public static class ReviveCommandConfig extends OkaeriConfig {
 
         @Comment("List of commands that should be executed when the victim is revived but has not joined yet.")
         private List<String> initial = Collections.singletonList("unban {victim}");
 
+        @Comment("")
         @Comment("List of commands that should be executed on first join of the victim after revive.")
         private List<String> after = Collections.singletonList("msg {victim} hey, you have been revived!");
 

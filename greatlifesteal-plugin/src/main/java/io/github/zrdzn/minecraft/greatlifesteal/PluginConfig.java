@@ -22,6 +22,7 @@ public class PluginConfig extends OkaeriConfig {
         @Comment("If the life steal cooldown should be enabled on the server.")
         private boolean enabled = true;
 
+        @Comment("")
         @Comment("Cooldown time in seconds.")
         private int cooldown = 30;
 
@@ -48,6 +49,7 @@ public class PluginConfig extends OkaeriConfig {
         @Comment("Specify in which worlds gaining/losing health should be disabled.")
         private List<String> healthChange = Collections.singletonList("custom_world");
 
+        @Comment("")
         @Comment("Specify in which worlds eliminations should be disabled.")
         @Comment("Example: If you want to allow the eliminated player X from world Y to access world Z, list it here.")
         private List<String> eliminations = Collections.singletonList("custom_world");
@@ -76,49 +78,57 @@ public class PluginConfig extends OkaeriConfig {
     @Comment("---------------------------")
     private HealthConfig health = new HealthConfig();
 
+    @Comment("")
     @Comment("Health points will only be changed if the player is killed by another player.")
     private boolean killByPlayerOnly = true;
 
+    @Comment("")
     @Comment("If players with the same IP address should be prevented from gaining health points.")
     @Comment("This option can prevent farming health points via multiple accounts on a single device.")
     private boolean ignoreSameIp = false;
 
+    @Comment("")
     @Comment("Specify whether life steal cooldown should be enabled and how long it should last.")
     @Comment("Killers will not be able to take hearts from victims unless a cooldown time has expired.")
     private StealCooldownConfig stealCooldown = new StealCooldownConfig();
 
+    @Comment("")
     @Comment("Specify in which worlds each system should be disabled or where it will not have any impact.")
     private DisabledWorldsConfig disabledWorlds = new DisabledWorldsConfig();
 
+    @Comment("")
     @Comment("An item that can be used by a player to increase their maximum health by a specific amount.")
     private HeartConfig heart = new HeartConfig();
 
-    private static final List<String> DEFAULT_BROADCAST_MESSAGE = Collections.singletonList(
-            "&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a."
-    );
-
-    private static final List<String> DEFAULT_ELIMINATION_COMMAND = Collections.singletonList("ban {victim}");
-
+    @Comment("")
     @Comment("Define the list of actions that should happen when a player reaches a specific amount of maximum health.")
     @Comment("Placeholders:")
     @Comment(" {killer} - represents killer username, or last damage cause (if killByPlayerOnly is not active)")
     @Comment(" {victim} - represents victim username")
     @Comment(" {killer_max_health} - represents killer's max health")
     @Comment(" {victim_max_health} - represents victim's max health")
+    @Comment(" ")
+    @Comment("delay - represents the delay in ticks before the action is executed (20 ticks = 1 second if server has 20 TPS)")
     private Map<String, ActionConfig> actions = new HashMap<String, ActionConfig>() {{
-        this.put("announce", new ActionConfig(ActionType.BROADCAST, DEFAULT_BROADCAST_MESSAGE));
+        this.put("announce", new ActionConfig(ActionType.BROADCAST, Collections.singletonList("&aPlayer &e{victim} ({victim_max_health} hp) &ahas been eliminated by &e{killer} ({killer_max_health} hp)&a.")));
         this.put("command", new ActionConfig(ActionType.COMMAND, Collections.singletonList("thor {victim}")));
     }};
 
+    @Comment("")
     @Comment("Define the list of eliminations that should happen when a player reaches a specific amount of maximum health.")
     @Comment("Unlike actions, all eliminations are saved in the database in case of need to revive players later.")
-    private Map<String, EliminationConfig> eliminations = Collections.singletonMap("ban", new EliminationConfig(DEFAULT_ELIMINATION_COMMAND));
+    @Comment(" ")
+    @Comment("delay - represents the delay in ticks before the action is executed (20 ticks = 1 second if server has 20 TPS)")
+    private Map<String, EliminationConfig> eliminations = Collections.singletonMap("ban", new EliminationConfig(Collections.singletonList("ban {victim}")));
 
+    @Comment("")
     @Comment("Define the list of revives for specified eliminations.")
     private Map<String, ReviveConfig> revives = Collections.singletonMap("ban", new ReviveConfig());
 
+    @Comment("")
     private StorageConfig storage = new StorageConfig();
 
+    @Comment("")
     private MessageConfig messages = new MessageConfig();
 
     public HealthConfig getHealth() {

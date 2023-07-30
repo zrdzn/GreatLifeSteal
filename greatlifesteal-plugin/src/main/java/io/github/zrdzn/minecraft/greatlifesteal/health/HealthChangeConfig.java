@@ -8,6 +8,7 @@ public class HealthChangeConfig extends OkaeriConfig {
     @Comment("How many health points should be deducted from the victim.")
     private double victim = 2.0D;
 
+    @Comment("")
     @Comment("How many health points should the killer be given.")
     private double killer = 2.0D;
 

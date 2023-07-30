@@ -11,14 +11,17 @@ public class ActionConfig extends OkaeriConfig {
     @Comment(" BROADCAST - broadcast a message that is specified in the parameters list.")
     private ActionType type;
 
+    @Comment("")
     @Comment("Amount of health points that are needed to execute the action.")
     private double activateAtHealth;
 
+    @Comment("")
     @Comment("Delay in ticks after which the action should be executed.")
     @Comment("Very low values such as 0 or 1 may lead to performance issues, so choose wisely.")
     @Comment("20 ticks = 1 second.")
     private long delay;
 
+    @Comment("")
     @Comment("List of parameters that are adequate to the chosen action:")
     @Comment(" COMMAND - list of commands.")
     @Comment(" BROADCAST - list of messages.")

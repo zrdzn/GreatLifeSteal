@@ -175,11 +175,10 @@ public class UserListener implements Listener {
                 "{killer_max_health}", formattedKillerMaxHealth,
         };
 
-        this.config.getActions().forEach((actionKey, action) -> {
-            if (!action.isEnabled()) {
-                return;
-            }
+        BukkitScheduler scheduler = this.plugin.getServer().getScheduler();
 
+        // Perform all actions that match the victim's new health.
+        this.config.getActions().forEach((actionKey, action) -> {
             if (victimNewHealth > action.getActivateAtHealth()) {
                 return;
             }
@@ -188,9 +187,9 @@ public class UserListener implements Listener {
                 return;
             }
 
-            this.plugin.getServer().getScheduler().runTaskLater(this.plugin, () -> {
+            scheduler.runTaskLater(this.plugin, () -> {
                 switch (action.getType()) {
-                    case DISPATCH_COMMANDS:
+                    case COMMAND:
                         action.getParameters().forEach(command -> {
                             command = MessageFacade.formatPlaceholders(command, placeholders);
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
@@ -202,25 +201,28 @@ public class UserListener implements Listener {
                                 .map(GreatLifeStealPlugin::formatColor)
                                 .forEach(Bukkit::broadcastMessage);
                         break;
-                    case BAN:
-                        BukkitScheduler scheduler = this.plugin.getServer().getScheduler();
-
-                        scheduler.runTaskAsynchronously(this.plugin, () -> {
-                            try {
-                                this.eliminationFacade.createElimination(victim.getUniqueId(), victimName, actionKey, victim.getWorld().getName());
-                                scheduler.runTask(this.plugin, () ->
-                                        victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters())))
-                                );
-                            } catch (EliminationException exception) {
-                                this.logger.error("Could not eliminate a player.", exception);
-                                MessageFacade.send(victim, this.config.getMessages().getCouldNotEliminateSelf());
-                            }
-                        });
-                        break;
                     default:
                         throw new IllegalArgumentException("Case for the specified action does not exist.");
                 }
             }, action.getDelay());
+        });
+
+        // Perform all eliminations that match the victim's new health.
+        this.config.getEliminations().forEach((eliminationKey, elimination) -> {
+            if (victimNewHealth > elimination.getActivateAtHealth()) {
+                return;
+            }
+
+            if (elimination.getDelay() < 0L) {
+                return;
+            }
+
+            scheduler.runTaskLater(this.plugin, () ->
+                    elimination.getCommands().forEach(command -> {
+                        command = MessageFacade.formatPlaceholders(command, placeholders);
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                    }), elimination.getDelay()
+            );
         });
     }
 

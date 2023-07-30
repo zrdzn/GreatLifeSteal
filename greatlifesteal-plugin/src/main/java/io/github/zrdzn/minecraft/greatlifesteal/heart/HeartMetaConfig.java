@@ -10,9 +10,11 @@ public class HeartMetaConfig extends OkaeriConfig {
     @Comment("Display name for the heart item.")
     private String displayName = "&aThe Healing Heart";
 
+    @Comment("")
     @Comment("Lore for the heart item.")
     private List<String> lore = Collections.singletonList("&aUse this item to increase your maximum health.");
 
+    @Comment("")
     @Comment("Should the heart item glow?")
     private boolean glowing = false;
 

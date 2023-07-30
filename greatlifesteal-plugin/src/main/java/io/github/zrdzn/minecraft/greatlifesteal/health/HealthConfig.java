@@ -8,12 +8,15 @@ public class HealthConfig extends OkaeriConfig {
     @Comment("Default amount of maximum health points given to new players who have not played before.")
     private double defaultMaximumHealth = 20.0D;
 
+    @Comment("")
     @Comment("Minimum amount of health points a player can have.")
     private double minimumHealth = 2.0D;
 
+    @Comment("")
     @Comment("Maximum amount of health points a player can have.")
     private double maximumHealth = 40.0D;
 
+    @Comment("")
     @Comment("Health points are deducted when a player is killed or awarded when a kill is scored.")
     @Comment("If you wish to disable the life steal system for either the killer or the victim, simply set their health change to 0.")
     private HealthChangeConfig change = new HealthChangeConfig();
