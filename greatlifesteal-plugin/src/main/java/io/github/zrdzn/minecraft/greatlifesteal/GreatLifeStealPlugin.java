@@ -87,7 +87,7 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         if (pluginManager.getPlugin("PlaceholderAPI") == null) {
             this.logger.warn("PlaceholderAPI plugin has not been found, external placeholders will not work.");
         } else {
-            if (new GreatLifeStealExpansion(config, spigotServer.getDamageableAdapter(), server).register()) {
+            if (new GreatLifeStealExpansion(config, spigotServer.getDamageableAdapter()).register()) {
                 this.logger.info("PlaceholderAPI has been found and its expansion was successfully registered.");
             }
         }

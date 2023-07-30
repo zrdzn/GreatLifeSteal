@@ -6,7 +6,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,12 +15,10 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
 
     private final PluginConfig config;
     private final DamageableAdapter adapter;
-    private final Server server;
 
-    public GreatLifeStealExpansion(PluginConfig config, DamageableAdapter adapter, Server server) {
+    public GreatLifeStealExpansion(PluginConfig config, DamageableAdapter adapter) {
         this.config = config;
         this.adapter = adapter;
-        this.server = server;
     }
 
     @Override
