@@ -67,10 +67,10 @@ public class StorageFactory {
                 String mysqlCreateEliminationTableQuery =
                         "CREATE TABLE IF NOT EXISTS gls_eliminations (" +
                                 "   id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT," +
-                                "   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_DATE," +
+                                "   created_at TIMESTAMP NOT NULL DEFAULT NOW()," +
                                 "   player_uuid VARCHAR(36) NOT NULL UNIQUE," +
                                 "   player_name TEXT NOT NULL UNIQUE," +
-                                "   action TEXT NOT NULL," +
+                                "   elimination_key TEXT NOT NULL," +
                                 "   revive TEXT NOT NULL DEFAULT 'PENDING'," +
                                 "   last_world TEXT NOT NULL" +
                                 ");";
@@ -113,7 +113,7 @@ public class StorageFactory {
                                 "   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," +
                                 "   player_uuid VARCHAR(36) NOT NULL UNIQUE," +
                                 "   player_name VARCHAR NOT NULL UNIQUE," +
-                                "   action VARCHAR NOT NULL," +
+                                "   elimination_key VARCHAR NOT NULL," +
                                 "   revive VARCHAR NOT NULL DEFAULT 'PENDING'," +
                                 "   last_world VARCHAR NOT NULL" +
                                 ");";

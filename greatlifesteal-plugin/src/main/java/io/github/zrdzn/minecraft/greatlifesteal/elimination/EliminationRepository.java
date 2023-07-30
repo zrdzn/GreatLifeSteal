@@ -2,6 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
 import java.util.Optional;
 import java.util.UUID;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveStatus;
 
 public interface EliminationRepository {
 
@@ -50,7 +51,7 @@ public interface EliminationRepository {
      *
      * @throws EliminationException if a repository access error occurs
      */
-    boolean updateReviveByPlayerName(String playerName, EliminationReviveStatus status);
+    boolean updateReviveByPlayerName(String playerName, ReviveStatus status);
 
     /**
      * Deletes an elimination with the specified player's unique id.

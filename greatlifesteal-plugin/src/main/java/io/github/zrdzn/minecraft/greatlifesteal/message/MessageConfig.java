@@ -40,6 +40,10 @@ public class MessageConfig extends OkaeriConfig {
 
     private String playerIsNotEliminated = "&cPlayer {PLAYER} is not eliminated.";
 
+    private String eliminationDoesNotExist = "&cElimination with this key does not exist.";
+
+    private String reviveDoesNotExist = "&cRevive with this key does not exist.";
+
     private String pluginReloaded = "&aPlugin has been successfully reloaded.";
 
     private String couldNotEliminate = "&cCould not eliminate this player";
@@ -49,8 +53,6 @@ public class MessageConfig extends OkaeriConfig {
     private String couldNotRevive = "&cCould not revive the victim.";
 
     private String playerIsAlreadyRevived = "&cPlayer {PLAYER} is already revived.";
-
-    private String revivedSuccessfully = "&aYou have been successfully revived.";
 
     private String couldNotSetDefaultHealth = "&cCould not set a default maximum health for you.";
 
@@ -67,6 +69,8 @@ public class MessageConfig extends OkaeriConfig {
     private String maxHealthReached = "&cYou have reached the maximum amount of health points.";
 
     private String activeCooldown = "&cYou can't steal hearts from this player for another &e{AMOUNT} seconds&c.";
+
+    private String somethingWentWrong = "&cSomething went wrong.";
 
     private String pluginOutdated = "&7(&aG&6LS&7) &aNew update came out! https://www.spigotmc.org/resources/greatlifesteal.102206/.";
 
@@ -182,6 +186,22 @@ public class MessageConfig extends OkaeriConfig {
         this.playerIsNotEliminated = playerIsNotEliminated;
     }
 
+    public String getEliminationDoesNotExist() {
+        return this.eliminationDoesNotExist;
+    }
+
+    public void setEliminationDoesNotExist(String eliminationDoesNotExist) {
+        this.eliminationDoesNotExist = eliminationDoesNotExist;
+    }
+
+    public String getReviveDoesNotExist() {
+        return this.reviveDoesNotExist;
+    }
+
+    public void setReviveDoesNotExist(String reviveDoesNotExist) {
+        this.reviveDoesNotExist = reviveDoesNotExist;
+    }
+
     public String getPluginReloaded() {
         return this.pluginReloaded;
     }
@@ -220,14 +240,6 @@ public class MessageConfig extends OkaeriConfig {
 
     public void setPlayerIsAlreadyRevived(String playerIsAlreadyRevived) {
         this.playerIsAlreadyRevived = playerIsAlreadyRevived;
-    }
-
-    public String getRevivedSuccessfully() {
-        return this.revivedSuccessfully;
-    }
-
-    public void setRevivedSuccessfully(String revivedSuccessfully) {
-        this.revivedSuccessfully = revivedSuccessfully;
     }
 
     public String getCouldNotSetDefaultHealth() {
@@ -292,6 +304,14 @@ public class MessageConfig extends OkaeriConfig {
 
     public void setActiveCooldown(String activeCooldown) {
         this.activeCooldown = activeCooldown;
+    }
+
+    public String getSomethingWentWrong() {
+        return this.somethingWentWrong;
+    }
+
+    public void setSomethingWentWrong(String somethingWentWrong) {
+        this.somethingWentWrong = somethingWentWrong;
     }
 
     public String getPluginOutdated() {

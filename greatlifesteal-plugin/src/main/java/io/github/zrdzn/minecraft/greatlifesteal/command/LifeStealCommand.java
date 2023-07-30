@@ -7,15 +7,13 @@ import java.util.Optional;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
-import io.github.zrdzn.minecraft.greatlifesteal.health.HealthChangeConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.message.MessageConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationException;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationReviveStatus;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
@@ -214,7 +212,7 @@ public class LifeStealCommand implements CommandExecutor {
                 }
 
                 ActionConfig action = this.config.getActions().get(args[1]);
-                if (action == null || !action.isEnabled()) {
+                if (action == null) {
                     MessageFacade.send(sender, this.config.getMessages().getNoActionEnabled());
                     return true;
                 }
@@ -352,19 +350,11 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                String actionKey = args[1];
+                String eliminationKey = args[1];
 
-                ActionConfig action = this.config.getActions().get(actionKey);
-                if (action == null || !action.isEnabled()) {
+                EliminationConfig eliminationConfig = this.config.getEliminations().get(eliminationKey);
+                if (eliminationConfig == null) {
                     MessageFacade.send(sender, this.config.getMessages().getNoActionEnabled());
-                    return true;
-                }
-
-                ActionType actionType = action.getType();
-
-                boolean allowedAction = actionType == ActionType.BAN || actionType == ActionType.DISPATCH_COMMANDS;
-                if (!allowedAction) {
-                    MessageFacade.send(sender, this.config.getMessages().getActionTypeInvalid());
                     return true;
                 }
 
@@ -379,12 +369,12 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                String victimName = victim.getName();
-
                 int senderHealth = 0;
                 if (sender instanceof Player) {
                     senderHealth = (int) ((Player) sender).getMaxHealth();
                 }
+
+                String victimName = victim.getName();
 
                 String[] placeholders = {
                         "{player}", victimName,
@@ -402,26 +392,19 @@ public class LifeStealCommand implements CommandExecutor {
                             return;
                         }
 
-                        this.eliminationFacade.createElimination(victim.getUniqueId(), victimName, actionKey, victim.getWorld().getName());
+                        this.eliminationFacade.createElimination(victim.getUniqueId(), victimName, eliminationKey, victim.getWorld().getName());
                     } catch (EliminationException exception) {
                         this.logger.error("Could not find or create an elimination.", exception);
                         MessageFacade.send(sender, this.config.getMessages().getCouldNotEliminate());
                         return;
                     }
 
-                    this.scheduler.runTask(this.plugin, () -> {
-                        if (actionType == ActionType.BAN) {
-                            victim.kickPlayer(ChatColor.translateAlternateColorCodes('&', String.join("\n", action.getParameters())));
-                            return;
-                        }
-
-                        action.getParameters().forEach(parameter -> {
-                            parameter = MessageFacade.formatPlaceholders(parameter, placeholders);
-
-                            // Dispatch custom commands for the elimination.
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
-                        });
-                    });
+                    this.scheduler.runTask(this.plugin, () ->
+                            eliminationConfig.getCommands().forEach(eliminationCommand -> {
+                                eliminationCommand = MessageFacade.formatPlaceholders(eliminationCommand, placeholders);
+                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), eliminationCommand);
+                            })
+                    );
                 });
 
                 break;
@@ -437,22 +420,13 @@ public class LifeStealCommand implements CommandExecutor {
                     return true;
                 }
 
-                String actionKey = args[1];
+                String reviveKey = args[1];
 
-                ActionConfig action = this.config.getActions().get(actionKey);
-                if (action == null || !action.isEnabled()) {
-                    MessageFacade.send(sender, this.config.getMessages().getNoActionEnabled());
+                ReviveConfig revive = this.config.getRevives().get(reviveKey);
+                if (revive == null) {
+                    MessageFacade.send(sender, this.config.getMessages().getReviveDoesNotExist());
                     return true;
                 }
-
-                ActionType actionType = action.getType();
-
-                boolean allowedAction = actionType == ActionType.BAN || actionType == ActionType.DISPATCH_COMMANDS;
-                if (!allowedAction) {
-                    MessageFacade.send(sender, this.config.getMessages().getActionTypeInvalid());
-                    return true;
-                }
-
 
                 if (args.length == 2) {
                     MessageFacade.send(sender, this.config.getMessages().getPlayerIsInvalid());
@@ -470,16 +444,14 @@ public class LifeStealCommand implements CommandExecutor {
                         }
 
                         // Execute all revive-related commands but do not remove the elimination from the database yet.
-                        boolean statusChanged = this.eliminationFacade.updateReviveByPlayerName(victimName, EliminationReviveStatus.COMPLETED);
+                        boolean statusChanged = this.eliminationFacade.updateReviveByPlayerName(victimName, ReviveStatus.COMPLETED);
                         if (statusChanged) {
-                            if (actionType == ActionType.DISPATCH_COMMANDS) {
-                                this.scheduler.runTask(this.plugin, () ->
-                                        action.getRevive().getCommands().forEach(parameter -> {
-                                            parameter = MessageFacade.formatPlaceholders(parameter, "{victim}", victimName);
-                                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parameter);
-                                        })
-                                );
-                            }
+                            this.scheduler.runTask(this.plugin, () ->
+                                    revive.getCommands().getInitial().forEach(reviveCommand -> {
+                                        reviveCommand = MessageFacade.formatPlaceholders(reviveCommand, "{victim}", victimName);
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), reviveCommand);
+                                    })
+                            );
 
                             return;
                         }

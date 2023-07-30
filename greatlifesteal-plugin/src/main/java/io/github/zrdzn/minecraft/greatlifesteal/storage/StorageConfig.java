@@ -8,30 +8,39 @@ public class StorageConfig extends OkaeriConfig {
     @Comment("A type of the data source that should be used. Available: SQLITE, MYSQL")
     private StorageType type = StorageType.SQLITE;
 
+    @Comment("")
     @Comment("A file name if SQLite is used.")
     private String sqliteFile = "greatlifesteal.db";
 
+    @Comment("")
     @Comment("Database host address.")
     private String host = "localhost";
 
+    @Comment("")
     @Comment("Database port.")
     private int port = 3306;
 
+    @Comment("")
     @Comment("Database name.")
     private String database = "greatlifesteal";
 
+    @Comment("")
     @Comment("Database user name.")
     private String user = "minecraft_user";
 
+    @Comment("")
     @Comment("Database password.")
     private String password = "tomatoes";
 
+    @Comment("")
     @Comment("Should SSL be enabled for database?")
     private boolean enableSsl = false;
 
+    @Comment("")
     @Comment("Database maximum pool size.")
     private int maximumPoolSize = 10;
 
+    @Comment("")
     @Comment("Database connection timeout.")
     private int connectionTimeout = 5000;
 

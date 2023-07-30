@@ -3,10 +3,9 @@ package io.github.zrdzn.minecraft.greatlifesteal.command;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -89,7 +88,7 @@ public class LifeStealTabCompleter implements TabCompleter {
             case "lives":
             case "eliminate":
             case "revive":
-                return this.getActionCompletion(args);
+                return this.getEliminationCompletion(args);
             case "withdraw":
                 if (args.length == 2) {
                     return Collections.singletonList("1");
@@ -106,15 +105,12 @@ public class LifeStealTabCompleter implements TabCompleter {
         return Collections.emptyList();
     }
 
-    private List<String> getActionCompletion(String[] args) {
+    private List<String> getEliminationCompletion(String[] args) {
         if (args.length == 2) {
-            return this.config.getActions().entrySet().stream()
-                    .filter(action -> action.getValue().isEnabled())
-                    .map(Entry::getKey)
-                    .collect(Collectors.toList());
+            return new ArrayList<>(this.config.getEliminations().keySet());
         } else if (args.length == 3) {
-            ActionConfig action = this.config.getActions().get(args[1]);
-            if (action == null || !action.isEnabled()) {
+            EliminationConfig elimination = this.config.getEliminations().get(args[1]);
+            if (elimination == null) {
                 return Collections.emptyList();
             }
 

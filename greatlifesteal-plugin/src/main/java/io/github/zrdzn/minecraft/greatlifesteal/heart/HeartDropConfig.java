@@ -8,13 +8,16 @@ public class HeartDropConfig extends OkaeriConfig {
     @Comment("If the heart item is dropped when the maximum health limit is exceeded.")
     private boolean onLimitExceed = true;
 
+    @Comment("")
     @Comment("If the heart item should be dropped with every kill for the killer instead of automatically increasing their maximum health.")
     private boolean onEveryKill = false;
 
+    @Comment("")
     @Comment("Where should heart item be dropped first?")
     @Comment("Available: INVENTORY, GROUND_LEVEL, EYE_LEVEL")
     private HeartDropLocation location = HeartDropLocation.INVENTORY;
 
+    @Comment("")
     @Comment("Where should the heart item be dropped if it does not fit into inventory?")
     @Comment("Choose NONE if you want to block giving it and show an error instead.")
     @Comment("Available: NONE, GROUND_LEVEL, EYE_LEVEL")

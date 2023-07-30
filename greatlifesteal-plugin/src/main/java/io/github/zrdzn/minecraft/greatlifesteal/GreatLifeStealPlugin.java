@@ -15,8 +15,8 @@ import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacadeFactory;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationJoinPreventListener;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRemovalCache;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationRestoreHealthListener;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveAwaitingQueue;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveRestoreHealthListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItemFactory;
@@ -108,18 +108,18 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         UserListener userListener = new UserListener(this, config, eliminationFacade, damageableAdapter, heartFacade, this.heartItem);
 
-        EliminationRemovalCache eliminationRemovalCache = new EliminationRemovalCache();
+        ReviveAwaitingQueue reviveAwaitingQueue = new ReviveAwaitingQueue();
 
         EliminationJoinPreventListener eliminationJoinPreventListener = new EliminationJoinPreventListener(this, config,
-                eliminationFacade, eliminationRemovalCache);
+                eliminationFacade, reviveAwaitingQueue);
 
-        EliminationRestoreHealthListener eliminationRestoreHealthListener = new EliminationRestoreHealthListener(this, config,
-                eliminationFacade, spigotServer.getDamageableAdapter(), eliminationRemovalCache);
+        ReviveRestoreHealthListener reviveRestoreHealthListener = new ReviveRestoreHealthListener(this, config,
+                eliminationFacade, spigotServer.getDamageableAdapter(), reviveAwaitingQueue);
 
         pluginManager.registerEvents(updateListener, this);
         pluginManager.registerEvents(userListener, this);
         pluginManager.registerEvents(eliminationJoinPreventListener, this);
-        pluginManager.registerEvents(eliminationRestoreHealthListener, this);
+        pluginManager.registerEvents(reviveRestoreHealthListener, this);
         pluginManager.registerEvents(heartUseListener, this);
 
         PluginCommand lifeStealCommand = this.getCommand("lifesteal");

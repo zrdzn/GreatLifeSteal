@@ -2,6 +2,7 @@ package io.github.zrdzn.minecraft.greatlifesteal.elimination;
 
 import java.util.Optional;
 import java.util.UUID;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveStatus;
 
 public class EliminationFacade {
 
@@ -47,7 +48,7 @@ public class EliminationFacade {
         return this.repository.findEliminationByPlayerName(playerName);
     }
 
-    public boolean updateReviveByPlayerName(String playerName, EliminationReviveStatus status) {
+    public boolean updateReviveByPlayerName(String playerName, ReviveStatus status) {
         if (playerName == null) {
             throw new EliminationException("Player's name cannot be null.");
         }

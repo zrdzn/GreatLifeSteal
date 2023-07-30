@@ -11,17 +11,23 @@ public class HeartConfig extends OkaeriConfig {
     @Comment("If the heart item should be enabled on the server.")
     private boolean enabled = true;
 
+    @Comment("")
     @Comment("The amount of health points that should be given to a player upon item consumption.")
     private double healthAmount = 2.0D;
 
+    @Comment("")
     @Comment("Upper limit for maximum health when healing with the heart item.")
     private double maximumHealthLimit = 40.0D;
 
+    @Comment("")
     @Comment("Type of the item that the heart item should be.")
     private Material type = Material.APPLE;
 
+    @Comment("")
+    @Comment("Meta configuration for the heart item.")
     private HeartMetaConfig meta = new HeartMetaConfig();
 
+    @Comment("")
     @Comment("Recipe for the heart item creation. Each letter represents a slot in the crafting table.")
     @Comment("Scheme:")
     @Comment("A B C")
@@ -39,6 +45,7 @@ public class HeartConfig extends OkaeriConfig {
         this.put("I", new HeartCraftingIngredientConfig(Material.REDSTONE, 8));
     }};
 
+    @Comment("")
     @Comment("Everything related to heart item drop.")
     private HeartDropConfig drop = new HeartDropConfig();
 
