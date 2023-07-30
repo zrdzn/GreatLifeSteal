@@ -6,7 +6,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -46,22 +45,16 @@ public class GreatLifeStealExpansion extends PlaceholderExpansion {
     }
 
     @Override
-    public String onRequest(OfflinePlayer player, String parameters) {
+    public String onPlaceholderRequest(Player player, String parameters) {
         String[] parametersSplitted = parameters.split("_");
 
         EliminationConfig elimination = this.config.getEliminations().get(parametersSplitted[parametersSplitted.length - 2]);
 
-        String targetName = parametersSplitted[parametersSplitted.length - 1];
-
-        double maxHealth;
-
-        Player target = this.server.getPlayer(targetName);
-        if (target == null) {
-            if (!player.isOnline()) return null;
-            maxHealth = this.adapter.getMaxHealth(player.getPlayer());
-        } else {
-            maxHealth = this.adapter.getMaxHealth(target);
+        if (player == null) {
+            return null;
         }
+
+        double maxHealth = this.adapter.getMaxHealth(player);
 
         String placeholderKey = String.join("_", Arrays.copyOf(parametersSplitted, parametersSplitted.length - 1));
         switch (placeholderKey.toLowerCase()) {
