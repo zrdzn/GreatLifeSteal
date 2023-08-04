@@ -1,7 +1,10 @@
 package io.github.zrdzn.minecraft.greatlifesteal.elimination.revive;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationException;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
@@ -25,17 +28,14 @@ public class ReviveRestoreHealthListener implements Listener {
     private final PluginConfig config;
     private final EliminationFacade eliminationFacade;
     private final DamageableAdapter damageableAdapter;
-    private final ReviveAwaitingQueue reviveAwaitingQueue;
 
     public ReviveRestoreHealthListener(Plugin plugin, PluginConfig config, EliminationFacade eliminationFacade,
-                                       DamageableAdapter damageableAdapter,
-                                       ReviveAwaitingQueue reviveAwaitingQueue) {
+                                       DamageableAdapter damageableAdapter) {
         this.plugin = plugin;
         this.scheduler = plugin.getServer().getScheduler();
         this.config = config;
         this.eliminationFacade = eliminationFacade;
         this.damageableAdapter = damageableAdapter;
-        this.reviveAwaitingQueue = reviveAwaitingQueue;
     }
 
     @EventHandler
@@ -43,11 +43,31 @@ public class ReviveRestoreHealthListener implements Listener {
         Player player = event.getPlayer();
         UUID playerUuid = player.getUniqueId();
 
-        if (!this.reviveAwaitingQueue.isPlayerPresent(playerUuid)) {
-            return;
-        }
-
         this.scheduler.runTaskAsynchronously(this.plugin, () -> {
+            Elimination elimination;
+            try {
+                Optional<Elimination> eliminationMaybe = this.eliminationFacade.findEliminationByPlayerUuid(playerUuid);
+                if (!eliminationMaybe.isPresent()) {
+                    return;
+                }
+
+                elimination = eliminationMaybe.get();
+            } catch (EliminationException exception) {
+                this.logger.error("An error occurred while finding an elimination by player's unique id.", exception);
+                return;
+            }
+
+            List<String> disabledWorlds = this.config.getDisabledWorlds().getEliminations();
+
+            if (disabledWorlds.contains(elimination.getLastWorld())) {
+                return;
+            }
+
+            if (elimination.getRevive() != ReviveStatus.COMPLETED) {
+                return;
+            }
+
+            // Remove elimination from database.
             try {
                 this.eliminationFacade.removeEliminationByPlayerUuid(playerUuid);
             } catch (EliminationException exception) {
@@ -56,16 +76,11 @@ public class ReviveRestoreHealthListener implements Listener {
                 return;
             }
 
-            String reviveKey = this.reviveAwaitingQueue.getReviveKey(playerUuid);
-            if (reviveKey == null) {
-                MessageFacade.send(player, this.config.getMessages().getSomethingWentWrong());
-                throw new IllegalStateException("Revive key is null.");
-            }
-
-            ReviveConfig revive = this.config.getRevives().get(reviveKey);
+            ReviveConfig revive = this.config.getRevives().get(elimination.getEliminationKey());
 
             this.scheduler.runTask(this.plugin, () -> {
                 // Perform post-revive commands.
+                this.logger.info("Executing post-revive commands for player {}.", player.getName());
                 revive.getCommands().getAfter().forEach(reviveCommand -> {
                     reviveCommand = MessageFacade.formatPlaceholders(reviveCommand, "{victim}", player.getName());
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), reviveCommand);
@@ -73,8 +88,7 @@ public class ReviveRestoreHealthListener implements Listener {
 
                 // Set default health.
                 this.damageableAdapter.setMaxHealth(player, this.config.getHealth().getDefaultMaximumHealth());
-
-                this.reviveAwaitingQueue.removePlayer(playerUuid);
+                this.logger.info("Set default maximum health for player {}.", player.getName());
             });
         });
     }

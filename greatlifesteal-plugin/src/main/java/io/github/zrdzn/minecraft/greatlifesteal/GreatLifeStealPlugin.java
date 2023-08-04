@@ -14,8 +14,6 @@ import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacadeFactory;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationJoinPreventListener;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveAwaitingQueue;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveRestoreHealthListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
@@ -108,17 +106,11 @@ public class GreatLifeStealPlugin extends JavaPlugin {
 
         UserListener userListener = new UserListener(this, config, eliminationFacade, damageableAdapter, heartFacade, this.heartItem);
 
-        ReviveAwaitingQueue reviveAwaitingQueue = new ReviveAwaitingQueue();
-
-        EliminationJoinPreventListener eliminationJoinPreventListener = new EliminationJoinPreventListener(this, config,
-                eliminationFacade, reviveAwaitingQueue);
-
         ReviveRestoreHealthListener reviveRestoreHealthListener = new ReviveRestoreHealthListener(this, config,
-                eliminationFacade, spigotServer.getDamageableAdapter(), reviveAwaitingQueue);
+                eliminationFacade, spigotServer.getDamageableAdapter());
 
         pluginManager.registerEvents(updateListener, this);
         pluginManager.registerEvents(userListener, this);
-        pluginManager.registerEvents(eliminationJoinPreventListener, this);
         pluginManager.registerEvents(reviveRestoreHealthListener, this);
         pluginManager.registerEvents(heartUseListener, this);
 
