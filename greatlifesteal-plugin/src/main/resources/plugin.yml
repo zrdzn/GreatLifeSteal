@@ -2,9 +2,12 @@ name: GreatLifeSteal
 version: "${version}"
 main: io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin
 api-version: 1.13
-authors: [ zrdzn, some0ne3 ]
+authors:
+  - zrdzn
+  - some0ne3
 description: A recently popular Minecraft plugin for life stealing system in SMP servers.
-softdepend: [ PlaceholderAPI ]
+softdepend:
+  - PlaceholderAPI
 permissions:
   greatlifesteal.command.hearts.set:
     default: op
@@ -16,12 +19,12 @@ permissions:
     default: op
     children:
       greatlifesteal.command.lives.self:
-        default: op
+        default: true
   greatlifesteal.command.withdraw:
     default: op
     children:
       greatlifesteal.command.withdraw.self:
-        default: op
+        default: true
   greatlifesteal.command.reload:
     default: op
   greatlifesteal.command.eliminate:
@@ -32,3 +35,7 @@ permissions:
     default: op
 commands:
   lifesteal:
+    aliases:
+      - gls
+  revive: {}
+

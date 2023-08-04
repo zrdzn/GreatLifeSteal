@@ -49,10 +49,6 @@ public class LifeStealTabCompleter implements TabCompleter {
                     if (sender.hasPermission("greatlifesteal.command.eliminate")) {
                         this.add("eliminate");
                     }
-
-                    if (sender.hasPermission("greatlifesteal.command.revive")) {
-                        this.add("revive");
-                    }
                 }
             };
         }
@@ -87,7 +83,6 @@ public class LifeStealTabCompleter implements TabCompleter {
                 break;
             case "lives":
             case "eliminate":
-            case "revive":
                 return this.getEliminationCompletion(args);
             case "withdraw":
                 if (args.length == 2) {

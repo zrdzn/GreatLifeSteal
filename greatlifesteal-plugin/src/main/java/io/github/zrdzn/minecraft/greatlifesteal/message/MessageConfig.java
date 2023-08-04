@@ -6,13 +6,13 @@ public class MessageConfig extends OkaeriConfig {
 
     private String commandUsage = "&a&lAvailable commands:\n" +
             "&7/&alifesteal reload &8- &eReloads the plugin.\n" +
-            "&7/&alifesteal lives <action> [player] &8- &eShows the health points for the player.\n" +
+            "&7/&alifesteal lives <elimination> [player] &8- &eShows the health points for the player.\n" +
             "&7/&alifesteal withdraw <hearts> [player] &8- &eWithdraws hearts as items.\n" +
             "&7/&alifesteal health add <player> <health_points> &8- &eAdds the health points to the player.\n" +
             "&7/&alifesteal health remove <player> <health_points> &8- &eSubtracts the health points from the player.\n" +
             "&7/&alifesteal health set <player> <health_points> &8- &eSets the health points for the player.\n" +
-            "&7/&alifesteal eliminate <action> <player> &8- &eEliminates the player through the specified action.\n" +
-            "&7/&alifesteal revive <action> <player> &8- &eRevives the player for the specified action.";
+            "&7/&alifesteal eliminate <elimination> <player> &8- &eEliminates the player through the specified elimination key.\n" +
+            "&7/&alifesteal revive <elimination> <player> &8- &eRevives the player for the specified elimination key.";
 
     private String noPermissions = "&cYou don't have enough permissions.";
 
@@ -30,11 +30,7 @@ public class MessageConfig extends OkaeriConfig {
 
     private String notEnoughPlaceInInventory = "&cYou don't have enough place in the inventory.";
 
-    private String noActionEnabled = "&cEnable at least one action in the configuration.";
-
-    private String actionTypeInvalid = "&cSpecified action does not match the requirements.";
-
-    private String noActionSpecified = "&cYou need to specify a type of an action.";
+    private String noEliminationSpecified = "&cYou need to specify a key of an elimination.";
 
     private String playerIsAlreadyEliminated = "&cPlayer {PLAYER} is already eliminated.";
 
@@ -146,28 +142,12 @@ public class MessageConfig extends OkaeriConfig {
         this.notEnoughPlaceInInventory = notEnoughPlaceInInventory;
     }
 
-    public String getNoActionEnabled() {
-        return this.noActionEnabled;
+    public String getNoEliminationSpecified() {
+        return this.noEliminationSpecified;
     }
 
-    public void setNoActionEnabled(String noActionEnabled) {
-        this.noActionEnabled = noActionEnabled;
-    }
-
-    public String getActionTypeInvalid() {
-        return this.actionTypeInvalid;
-    }
-
-    public void setActionTypeInvalid(String actionTypeInvalid) {
-        this.actionTypeInvalid = actionTypeInvalid;
-    }
-
-    public String getNoActionSpecified() {
-        return this.noActionSpecified;
-    }
-
-    public void setNoActionSpecified(String noActionSpecified) {
-        this.noActionSpecified = noActionSpecified;
+    public void setNoEliminationSpecified(String noEliminationSpecified) {
+        this.noEliminationSpecified = noEliminationSpecified;
     }
 
     public String getPlayerIsAlreadyEliminated() {

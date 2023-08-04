@@ -14,6 +14,8 @@ import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealCommand;
 import io.github.zrdzn.minecraft.greatlifesteal.command.LifeStealTabCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacadeFactory;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveCommand;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveCommandCompleter;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveRestoreHealthListener;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
@@ -117,6 +119,10 @@ public class GreatLifeStealPlugin extends JavaPlugin {
         PluginCommand lifeStealCommand = this.getCommand("lifesteal");
         lifeStealCommand.setExecutor(new LifeStealCommand(this, config, eliminationFacade, damageableAdapter, spigotServer, this.heartItem));
         lifeStealCommand.setTabCompleter(new LifeStealTabCompleter(config));
+
+        PluginCommand reviveCommand = this.getCommand("revive");
+        reviveCommand.setExecutor(new ReviveCommand(this, config, eliminationFacade));
+        reviveCommand.setTabCompleter(new ReviveCommandCompleter(config));
     }
 
     public void loadConfigurations(PluginConfig config, SpigotServer spigotServer) {

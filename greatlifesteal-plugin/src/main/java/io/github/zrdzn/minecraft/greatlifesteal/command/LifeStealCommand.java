@@ -6,21 +6,17 @@ import java.util.Map;
 import java.util.Optional;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.action.ActionType;
 import io.github.zrdzn.minecraft.greatlifesteal.action.ActionConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationException;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveConfig;
-import io.github.zrdzn.minecraft.greatlifesteal.elimination.revive.ReviveStatus;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartDropLocation;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartItem;
 import io.github.zrdzn.minecraft.greatlifesteal.message.MessageFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.DamageableAdapter;
 import io.github.zrdzn.minecraft.greatlifesteal.spigot.SpigotServer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -207,13 +203,13 @@ public class LifeStealCommand implements CommandExecutor {
                 break;
             case "lives": {
                 if (args.length == 1) {
-                    MessageFacade.send(sender, this.config.getMessages().getNoActionSpecified());
+                    MessageFacade.send(sender, this.config.getMessages().getNoEliminationSpecified());
                     return true;
                 }
 
-                ActionConfig action = this.config.getActions().get(args[1]);
-                if (action == null) {
-                    MessageFacade.send(sender, this.config.getMessages().getNoActionEnabled());
+                EliminationConfig elimination = this.config.getEliminations().get(args[1]);
+                if (elimination == null) {
+                    MessageFacade.send(sender, this.config.getMessages().getEliminationDoesNotExist());
                     return true;
                 }
 
@@ -238,7 +234,7 @@ public class LifeStealCommand implements CommandExecutor {
                     }
                 }
 
-                double requiredHealth = action.getActivateAtHealth();
+                double requiredHealth = elimination.getActivateAtHealth();
                 double playerHealth = this.adapter.getMaxHealth(target);
                 int lives = 0;
 
@@ -346,7 +342,7 @@ public class LifeStealCommand implements CommandExecutor {
                 }
 
                 if (args.length == 1) {
-                    MessageFacade.send(sender, this.config.getMessages().getNoActionSpecified());
+                    MessageFacade.send(sender, this.config.getMessages().getNoEliminationSpecified());
                     return true;
                 }
 
@@ -354,7 +350,7 @@ public class LifeStealCommand implements CommandExecutor {
 
                 EliminationConfig eliminationConfig = this.config.getEliminations().get(eliminationKey);
                 if (eliminationConfig == null) {
-                    MessageFacade.send(sender, this.config.getMessages().getNoActionEnabled());
+                    MessageFacade.send(sender, this.config.getMessages().getEliminationDoesNotExist());
                     return true;
                 }
 
@@ -405,62 +401,6 @@ public class LifeStealCommand implements CommandExecutor {
                                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), eliminationCommand);
                             })
                     );
-                });
-
-                break;
-            }
-            case "revive": {
-                if (!sender.hasPermission("greatlifesteal.command.revive")) {
-                    MessageFacade.send(sender, this.config.getMessages().getNoPermissions());
-                    return true;
-                }
-
-                if (args.length == 1) {
-                    MessageFacade.send(sender, this.config.getMessages().getNoActionSpecified());
-                    return true;
-                }
-
-                String reviveKey = args[1];
-
-                ReviveConfig revive = this.config.getRevives().get(reviveKey);
-                if (revive == null) {
-                    MessageFacade.send(sender, this.config.getMessages().getReviveDoesNotExist());
-                    return true;
-                }
-
-                if (args.length == 2) {
-                    MessageFacade.send(sender, this.config.getMessages().getPlayerIsInvalid());
-                    return true;
-                }
-
-                String victimName = args[2];
-
-                this.scheduler.runTaskAsynchronously(this.plugin, () -> {
-                    try {
-                        Optional<Elimination> eliminationMaybe = this.eliminationFacade.findEliminationByPlayerName(victimName);
-                        if (!eliminationMaybe.isPresent()) {
-                            MessageFacade.send(sender, this.config.getMessages().getPlayerIsNotEliminated(), "{PLAYER}", victimName);
-                            return;
-                        }
-
-                        // Execute all revive-related commands but do not remove the elimination from the database yet.
-                        boolean statusChanged = this.eliminationFacade.updateReviveByPlayerName(victimName, ReviveStatus.COMPLETED);
-                        if (statusChanged) {
-                            this.scheduler.runTask(this.plugin, () ->
-                                    revive.getCommands().getInitial().forEach(reviveCommand -> {
-                                        reviveCommand = MessageFacade.formatPlaceholders(reviveCommand, "{victim}", victimName);
-                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), reviveCommand);
-                                    })
-                            );
-
-                            return;
-                        }
-
-                        MessageFacade.send(sender, this.config.getMessages().getPlayerIsAlreadyRevived(), "{PLAYER}", victimName);
-                    } catch (EliminationException exception) {
-                        this.logger.error("Could not find or update an elimination.", exception);
-                        MessageFacade.send(sender, this.config.getMessages().getCouldNotRevive());
-                    }
                 });
 
                 break;
