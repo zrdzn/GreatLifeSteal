@@ -67,7 +67,7 @@ class SqlEliminationRepository implements EliminationRepository {
                     result.getTimestamp("created_at").toInstant(),
                     playerUuid,
                     result.getString("player_name"),
-                    result.getString("action"),
+                    result.getString("elimination"),
                     ReviveStatus.valueOf(result.getString("revive")),
                     result.getString("last_world")
             );
@@ -93,7 +93,7 @@ class SqlEliminationRepository implements EliminationRepository {
                     result.getTimestamp("created_at").toInstant(),
                     UUID.fromString(result.getString("player_uuid")),
                     playerName,
-                    result.getString("action"),
+                    result.getString("elimination"),
                     ReviveStatus.valueOf(result.getString("revive")),
                     result.getString("last_world")
             );

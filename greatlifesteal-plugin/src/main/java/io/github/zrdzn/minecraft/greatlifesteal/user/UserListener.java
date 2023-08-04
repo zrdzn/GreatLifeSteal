@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import io.github.zrdzn.minecraft.greatlifesteal.GreatLifeStealPlugin;
 import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
+import io.github.zrdzn.minecraft.greatlifesteal.elimination.Elimination;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationException;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationFacade;
 import io.github.zrdzn.minecraft.greatlifesteal.heart.HeartFacade;
@@ -217,12 +219,31 @@ public class UserListener implements Listener {
                 return;
             }
 
-            scheduler.runTaskLater(this.plugin, () ->
-                    elimination.getCommands().forEach(command -> {
-                        command = MessageFacade.formatPlaceholders(command, placeholders);
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-                    }), elimination.getDelay()
-            );
+            scheduler.runTaskAsynchronously(this.plugin, () -> {
+                try {
+                    Optional<Elimination> eliminationMaybe = this.eliminationFacade.findEliminationByPlayerUuid(victim.getUniqueId());
+                    if (eliminationMaybe.isPresent()) {
+                        this.logger.info("Could not eliminate player {} because he is already eliminated.", victimName);
+                        return;
+                    }
+
+                    this.eliminationFacade.createElimination(victim.getUniqueId(), victimName, eliminationKey, victim.getWorld().getName());
+                } catch (EliminationException exception) {
+                    this.logger.error("Could not find or create an elimination.", exception);
+                    return;
+                }
+
+                scheduler.runTaskLater(this.plugin, () -> {
+                    this.logger.info("Executing elimination commands for player {}.", victimName);
+
+                    elimination.getCommands().forEach(eliminationCommand -> {
+                        eliminationCommand = MessageFacade.formatPlaceholders(eliminationCommand, placeholders);
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), eliminationCommand);
+                    });
+
+                    }, elimination.getDelay()
+                );
+            });
         });
     }
 
