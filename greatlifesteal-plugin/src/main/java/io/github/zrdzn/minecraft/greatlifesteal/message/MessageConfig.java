@@ -11,8 +11,8 @@ public class MessageConfig extends OkaeriConfig {
             "&7/&alifesteal health add <player> <health_points> &8- &eAdds the health points to the player.\n" +
             "&7/&alifesteal health remove <player> <health_points> &8- &eSubtracts the health points from the player.\n" +
             "&7/&alifesteal health set <player> <health_points> &8- &eSets the health points for the player.\n" +
-            "&7/&alifesteal eliminate <elimination> <player> &8- &eEliminates the player through the specified elimination key.\n" +
-            "&7/&alifesteal revive <elimination> <player> &8- &eRevives the player for the specified elimination key.";
+            "&7/&aeliminate <elimination> <player> &8- &eEliminates the player through the specified elimination key.\n" +
+            "&7/&arevive <elimination> <player> &8- &eRevives the player for the specified elimination key.";
 
     private String noPermissions = "&cYou don't have enough permissions.";
 
