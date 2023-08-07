@@ -3,21 +3,21 @@ package io.github.zrdzn.minecraft.greatlifesteal.command;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import io.github.zrdzn.minecraft.greatlifesteal.PluginConfig;
 import io.github.zrdzn.minecraft.greatlifesteal.elimination.EliminationConfig;
-import org.bukkit.Bukkit;
+import io.github.zrdzn.minecraft.greatlifesteal.user.UserNameCache;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 
 public class LifeStealTabCompleter implements TabCompleter {
 
     private final PluginConfig config;
+    private final UserNameCache userNameCache;
 
-    public LifeStealTabCompleter(PluginConfig config) {
+    public LifeStealTabCompleter(PluginConfig config, UserNameCache userNameCache) {
         this.config = config;
+        this.userNameCache = userNameCache;
     }
 
     @Override
@@ -45,14 +45,6 @@ public class LifeStealTabCompleter implements TabCompleter {
                             sender.hasPermission("greatlifesteal.command.withdraw")) {
                         this.add("withdraw");
                     }
-
-                    if (sender.hasPermission("greatlifesteal.command.eliminate")) {
-                        this.add("eliminate");
-                    }
-
-                    if (sender.hasPermission("greatlifesteal.command.revive")) {
-                        this.add("revive");
-                    }
                 }
             };
         }
@@ -78,24 +70,18 @@ public class LifeStealTabCompleter implements TabCompleter {
                         }
                     };
                 } else if (args.length == 3) {
-                    return Bukkit.getServer().getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .collect(Collectors.toList());
+                    return new ArrayList<>(this.userNameCache.getUsersNames());
                 } else if (args.length == 4) {
                     return Collections.singletonList(String.valueOf((int) defaultHealth));
                 }
                 break;
             case "lives":
-            case "eliminate":
-            case "revive":
                 return this.getEliminationCompletion(args);
             case "withdraw":
                 if (args.length == 2) {
                     return Collections.singletonList("1");
                 } else if (args.length == 3) {
-                    return Bukkit.getServer().getOnlinePlayers().stream()
-                            .map(Player::getName)
-                            .collect(Collectors.toList());
+                    return new ArrayList<>(this.userNameCache.getUsersNames());
                 }
                 break;
             default:
@@ -114,9 +100,7 @@ public class LifeStealTabCompleter implements TabCompleter {
                 return Collections.emptyList();
             }
 
-            return Bukkit.getServer().getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .collect(Collectors.toList());
+            return new ArrayList<>(this.userNameCache.getUsersNames());
         }
 
         return Collections.emptyList();
