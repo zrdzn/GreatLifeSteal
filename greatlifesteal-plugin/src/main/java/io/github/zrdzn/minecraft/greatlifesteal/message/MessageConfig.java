@@ -5,12 +5,12 @@ import eu.okaeri.configs.OkaeriConfig;
 public class MessageConfig extends OkaeriConfig {
 
     private String commandUsage = "&a&lAvailable commands:\n" +
-            "&7/&alifesteal reload &8- &eReloads the plugin.\n" +
-            "&7/&alifesteal lives <elimination> [player] &8- &eShows the health points for the player.\n" +
-            "&7/&alifesteal withdraw <hearts> [player] &8- &eWithdraws hearts as items.\n" +
-            "&7/&alifesteal health add <player> <health_points> &8- &eAdds the health points to the player.\n" +
-            "&7/&alifesteal health remove <player> <health_points> &8- &eSubtracts the health points from the player.\n" +
-            "&7/&alifesteal health set <player> <health_points> &8- &eSets the health points for the player.\n" +
+            "&7/&agls reload &8- &eReloads the plugin.\n" +
+            "&7/&agls lives <elimination> [player] &8- &eShows the health points for the player.\n" +
+            "&7/&agls withdraw <hearts> [player] &8- &eWithdraws hearts as items.\n" +
+            "&7/&agls health add <player> <health_points> &8- &eAdds the health points to the player.\n" +
+            "&7/&agls health remove <player> <health_points> &8- &eSubtracts the health points from the player.\n" +
+            "&7/&agls health set <player> <health_points> &8- &eSets the health points for the player.\n" +
             "&7/&aeliminate <elimination> <player> &8- &eEliminates the player through the specified elimination key.\n" +
             "&7/&arevive <elimination> <player> &8- &eRevives the player for the specified elimination key.";
 
