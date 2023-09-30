@@ -26,7 +26,7 @@ dependencies {
     implementation(project(":v1_15R1"))
 
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
-    compileOnly("me.clip:placeholderapi:2.11.3")
+    compileOnly("me.clip:placeholderapi:2.11.4")
 
     val okaeriConfigs = "4.0.9"
     implementation("eu.okaeri:okaeri-configs-yaml-bukkit:$okaeriConfigs")
