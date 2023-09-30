@@ -36,20 +36,8 @@ public class SpigotServerFactory {
                 return new V1_13R2SpigotServer();
             case "v1_14_R1":
                 return new V1_14R1SpigotServer(this.plugin);
-            case "v1_15_R1":
-            case "v1_16_R3":
-            case "v1_17_R1":
-            case "v1_18_R2":
-            case "v1_19_R1":
-            case "v1_19_R2":
-            case "v1_19_R3":
-            case "v1_20_R1":
-                return new V1_15R1SpigotServer(this.plugin);
             default:
-                throw new IllegalArgumentException(
-                        "Could not find an adapter for the version: " + version + "\n" +
-                                "Check supported versions on the resource page."
-                );
+                return new V1_15R1SpigotServer(this.plugin);
         }
     }
 
