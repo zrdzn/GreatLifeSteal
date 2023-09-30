@@ -62,6 +62,8 @@ public class MessageConfig extends OkaeriConfig {
 
     private String numberMustBePositive = "&cYou need to provide a number higher than 0.";
 
+    private String healthAddedOnHeartUse = "&aYou have consumed heart and healed yourself.";
+
     private String maxHealthReachedOnKill = "&cYou have reached the maximum amount of health points.";
 
     private String maxHealthReachedOnHeartUse = "&cYou have reached the maximum amount of health points.";
@@ -270,6 +272,14 @@ public class MessageConfig extends OkaeriConfig {
 
     public void setNumberMustBePositive(String numberMustBePositive) {
         this.numberMustBePositive = numberMustBePositive;
+    }
+
+    public String getHealthAddedOnHeartUse() {
+        return healthAddedOnHeartUse;
+    }
+
+    public void setHealthAddedOnHeartUse(String healthAddedOnHeartUse) {
+        this.healthAddedOnHeartUse = healthAddedOnHeartUse;
     }
 
     public String getMaxHealthReachedOnKill() {
