@@ -137,7 +137,7 @@ public class UserListener implements Listener {
                         this.adapter.setMaxHealth(killer, killerNewHealth);
                     }
                 } else {
-                    MessageFacade.send(killer, this.config.getMessages().getMaxHealthReached());
+                    MessageFacade.send(killer, this.config.getMessages().getMaxHealthReachedOnKill());
 
                     // Give the heart item to the killer if it is enabled.
                     if (heartItem != null && this.config.getHeart().getDrop().isOnLimitExceed()) {

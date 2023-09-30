@@ -62,7 +62,9 @@ public class MessageConfig extends OkaeriConfig {
 
     private String numberMustBePositive = "&cYou need to provide a number higher than 0.";
 
-    private String maxHealthReached = "&cYou have reached the maximum amount of health points.";
+    private String maxHealthReachedOnKill = "&cYou have reached the maximum amount of health points.";
+
+    private String maxHealthReachedOnHeartUse = "&cYou have reached the maximum amount of health points.";
 
     private String activeCooldown = "&cYou can't steal hearts from this player for another &e{AMOUNT} seconds&c.";
 
@@ -270,12 +272,20 @@ public class MessageConfig extends OkaeriConfig {
         this.numberMustBePositive = numberMustBePositive;
     }
 
-    public String getMaxHealthReached() {
-        return this.maxHealthReached;
+    public String getMaxHealthReachedOnKill() {
+        return this.maxHealthReachedOnKill;
     }
 
-    public void setMaxHealthReached(String maxHealthReached) {
-        this.maxHealthReached = maxHealthReached;
+    public void setMaxHealthReachedOnKill(String maxHealthReachedOnKill) {
+        this.maxHealthReachedOnKill = maxHealthReachedOnKill;
+    }
+
+    public String getMaxHealthReachedOnHeartUse() {
+        return maxHealthReachedOnHeartUse;
+    }
+
+    public void setMaxHealthReachedOnHeartUse(String maxHealthReachedOnHeartUse) {
+        this.maxHealthReachedOnHeartUse = maxHealthReachedOnHeartUse;
     }
 
     public String getActiveCooldown() {

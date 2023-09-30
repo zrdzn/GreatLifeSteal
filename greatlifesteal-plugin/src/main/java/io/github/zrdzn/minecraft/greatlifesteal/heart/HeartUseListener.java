@@ -56,7 +56,7 @@ public class HeartUseListener implements Listener {
             this.spigotServer.getDamageableAdapter().setMaxHealth(player, playerNewHealth);
             this.spigotServer.getPlayerInventoryAdapter().removeItem(player.getInventory(), heartItemStack);
         } else {
-            MessageFacade.send(player, this.config.getMessages().getMaxHealthReached());
+            MessageFacade.send(player, this.config.getMessages().getMaxHealthReachedOnHeartUse());
         }
 
         event.setCancelled(true);
