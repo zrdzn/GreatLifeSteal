@@ -41,7 +41,7 @@ dependencies {
 
     implementation("com.github.zrdzn:CraftingLib:2.0.1")
 
-    val junit = "5.10.0"
+    val junit = "5.10.1"
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
 
