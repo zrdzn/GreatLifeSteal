@@ -34,7 +34,7 @@ dependencies {
 
     implementation("com.github.Querz:NBT:6.1")
     implementation("org.slf4j:slf4j-reload4j:2.0.9")
-    implementation("org.apache.commons:commons-lang3:3.13.0")
+    implementation("org.apache.commons:commons-lang3:3.14.0")
     implementation("org.bstats:bstats-bukkit:3.0.2")
 
     implementation("com.zaxxer:HikariCP:4.0.3")
