@@ -33,7 +33,7 @@ dependencies {
     implementation("eu.okaeri:okaeri-configs-validator-okaeri:$okaeriConfigs")
 
     implementation("com.github.Querz:NBT:6.1")
-    implementation("org.slf4j:slf4j-reload4j:2.0.13")
+    implementation("org.slf4j:slf4j-reload4j:2.0.15")
     implementation("org.apache.commons:commons-lang3:3.15.0")
     implementation("org.bstats:bstats-bukkit:3.0.2")
 
