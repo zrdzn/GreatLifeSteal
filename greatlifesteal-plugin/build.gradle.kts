@@ -29,7 +29,7 @@ dependencies {
 
     compileOnly("me.clip:placeholderapi:2.11.5")
 
-    val okaeriConfigs = "5.0.2"
+    val okaeriConfigs = "5.0.5"
     implementation("eu.okaeri:okaeri-configs-yaml-bukkit:$okaeriConfigs")
     implementation("eu.okaeri:okaeri-configs-validator-okaeri:$okaeriConfigs")
 
