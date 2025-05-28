@@ -26,22 +26,28 @@ dependencies {
     implementation(project(":v1_15R1"))
 
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
+
     compileOnly("me.clip:placeholderapi:2.11.5")
 
-    val okaeriConfigs = "5.0.2"
+    val okaeriConfigs = "5.0.5"
     implementation("eu.okaeri:okaeri-configs-yaml-bukkit:$okaeriConfigs")
     implementation("eu.okaeri:okaeri-configs-validator-okaeri:$okaeriConfigs")
 
     implementation("com.github.Querz:NBT:6.1")
+    
     implementation("org.slf4j:slf4j-reload4j:2.0.16")
-    implementation("org.apache.commons:commons-lang3:3.15.0")
-    implementation("org.bstats:bstats-bukkit:3.0.2")
+
+    implementation("org.slf4j:slf4j-reload4j:2.0.13")
+    
+    implementation("org.apache.commons:commons-lang3:3.17.0")
+    
+    implementation("org.bstats:bstats-bukkit:3.1.0")
 
     implementation("com.zaxxer:HikariCP:4.0.3")
 
     implementation("com.github.zrdzn:CraftingLib:2.0.1")
 
-    val junit = "5.10.3"
+    val junit = "5.11.3"
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit")
 
