@@ -35,9 +35,9 @@ dependencies {
 
     implementation("com.github.Querz:NBT:6.1")
     
-    implementation("org.slf4j:slf4j-reload4j:2.0.16")
+    implementation("org.slf4j:slf4j-reload4j:2.0.17")
 
-    implementation("org.slf4j:slf4j-reload4j:2.0.13")
+    implementation("org.slf4j:slf4j-reload4j:2.0.17")
     
     implementation("org.apache.commons:commons-lang3:3.17.0")
     
