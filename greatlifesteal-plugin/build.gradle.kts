@@ -39,7 +39,7 @@ dependencies {
 
     implementation("org.slf4j:slf4j-reload4j:2.0.13")
     
-    implementation("org.apache.commons:commons-lang3:3.17.0")
+    implementation("org.apache.commons:commons-lang3:3.20.0")
     
     implementation("org.bstats:bstats-bukkit:3.1.0")
 
